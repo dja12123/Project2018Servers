@@ -38,6 +38,12 @@ public class RouterCore extends DHCPServlet {
      * 
      * @see org.dhcp4java.DHCPServlet#service(org.dhcp4java.DHCPPacket)
      */
+    
+    @Override
+    public DatagramPacket serviceDatagram(DatagramPacket requestDatagram) {
+    	System.out.println("req");
+    	return super.serviceDatagram(requestDatagram);
+    }
     @Override
     public DHCPPacket service(DHCPPacket request) {
         logger.info(request.toString());
