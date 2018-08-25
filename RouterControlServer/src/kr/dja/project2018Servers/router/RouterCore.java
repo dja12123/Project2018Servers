@@ -67,12 +67,23 @@ public class RouterCore extends DHCPServlet
 		
 		NetworkInterface network = getNetworkInterfaces(this.properties.get(CONF_INTERFACE).toString());
 		
-		String addr = network.getInetAddresses().nextElement().getHostAddress() + ":67";
-		mainLogger.log(Level.INFO, "急琶 林家: " + addr);
+		Enumeration<InetAddress> addrList = network.getInetAddresses();
+		String addrStr = null;
+		while(addrList.hasMoreElements())
+		{
+			InetAddress addr = addrList.nextElement();
+			if(addr instanceof Inet4Address)
+			{
+				addrStr = addr.getHostAddress() + ":67";
+				break;
+			}
+		}
+		
+		mainLogger.log(Level.INFO, "急琶 林家: " + addrStr);
 		try
 		{
 			Properties prop = new Properties();
-			prop.setProperty(DHCPCoreServer.SERVER_ADDRESS, addr);
+			prop.setProperty(DHCPCoreServer.SERVER_ADDRESS, addrStr);
 			
 			DHCPCoreServer server = DHCPCoreServer.initServer(this, prop);
 			new Thread(server).start();
