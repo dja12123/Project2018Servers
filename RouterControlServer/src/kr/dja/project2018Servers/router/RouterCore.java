@@ -1,7 +1,9 @@
 package kr.dja.project2018Servers.router;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintWriter;
+import java.io.Reader;
 import java.io.StringWriter;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -39,10 +41,48 @@ import org.dhcp4java.DHCPServlet;
  */
 public class RouterCore extends DHCPServlet
 {
+	public static final String CONF_INTERFACE = "interface";
+
 	private static final String logFormat = "[%1$tT][%2$s][%3$s] %4$s %5$s %n";
 	private static final Logger mainLogger = Logger.getLogger(RouterCore.class.getName().toLowerCase());
 	private static final Logger dhcpLogger = DHCPCoreServer.logger;
-
+	protected Properties properties;
+	
+	public RouterCore()
+	{
+		mainLogger.log(Level.INFO, "서버 시작");
+		
+		this.properties = new Properties();
+		
+		try
+		{
+			InputStream inputStream = this.getClass().getResourceAsStream("/config.properties");
+			this.properties.load(inputStream);
+		}
+		catch (IOException e)
+		{
+			mainLogger.log(Level.SEVERE, "config 로드 실패", e);
+			return;
+		}
+		
+		NetworkInterface network = getNetworkInterfaces(this.properties.get(CONF_INTERFACE).toString());
+		
+		String addr = network.getInetAddresses().nextElement().getHostAddress() + ":67";
+		mainLogger.log(Level.INFO, "선택 주소: " + addr);
+		try
+		{
+			Properties prop = new Properties();
+			prop.setProperty(DHCPCoreServer.SERVER_ADDRESS, addr);
+			
+			DHCPCoreServer server = DHCPCoreServer.initServer(this, prop);
+			new Thread(server).start();
+		}
+		catch (DHCPServerInitException e)
+		{
+			mainLogger.log(Level.SEVERE, "Server init", e);
+		}
+	}
+	
 	@Override
 	public DHCPPacket service(DHCPPacket request)
 	{
@@ -55,26 +95,14 @@ public class RouterCore extends DHCPServlet
 		initLogger(mainLogger, "main");
 		initLogger(dhcpLogger, "dhcp");
 		
-		mainLogger.log(Level.INFO, "test");
-
-		try
-		{
-			Properties prop = new Properties();
-			prop.setProperty(DHCPCoreServer.SERVER_ADDRESS, "192.168.0.1:67");
-			DHCPCoreServer server = DHCPCoreServer.initServer(new RouterCore(), null);
-			new Thread(server).start();
-		}
-		catch (DHCPServerInitException e)
-		{
-			mainLogger.log(Level.SEVERE, "Server init", e);
-		}
+		RouterCore core = new RouterCore();
 	}
 
 	private static void initLogger(Logger logger, String loggerName)
 	{
 		logger.setUseParentHandlers(false);
 		ConsoleHandler handler = new ConsoleHandler();
-		
+
 		handler.setFormatter(new SimpleFormatter()
 		{
 			@Override
@@ -82,7 +110,8 @@ public class RouterCore extends DHCPServlet
 			{
 				String errMsg;
 				Throwable throwable = lr.getThrown();
-				if(throwable == null) errMsg = "";
+				if (throwable == null)
+					errMsg = "";
 				else
 				{
 					StringWriter sw = new StringWriter();
@@ -92,18 +121,20 @@ public class RouterCore extends DHCPServlet
 					throwable.printStackTrace(pw);
 					errMsg = sw.toString();
 				}
-				
-				return String.format(logFormat, new Date(lr.getMillis()), loggerName,
-						lr.getLevel().getLocalizedName(), lr.getMessage(), errMsg);
+
+				return String.format(logFormat, new Date(lr.getMillis()), lr.getLevel().getLocalizedName(), loggerName,
+						lr.getMessage(), errMsg);
 			}
 		});
 		logger.addHandler(handler);
 
 	}
 
-	private static void getNetworkInterfaces(String name)
+	private static NetworkInterface getNetworkInterfaces(String name)
 	{
 		Enumeration<NetworkInterface> nets = null;
+		NetworkInterface findInterface = null;
+
 		try
 		{
 			nets = NetworkInterface.getNetworkInterfaces();
@@ -112,10 +143,51 @@ public class RouterCore extends DHCPServlet
 		{
 			mainLogger.log(Level.SEVERE, "네트워크 인터페이스 목록을 가져올 수 없습니다.", e);
 		}
+		if (nets == null)
+			return null;
 
-		if (nets != null)
+		StringBuffer netInfoBuf = new StringBuffer();
+		netInfoBuf.append("네트워크 인터페이스 스캔\n");
+		while (nets.hasMoreElements())
 		{
+			NetworkInterface net = nets.nextElement();
+			try
+			{
+				if (!net.isUp())
+					continue;
+			}
+			catch (SocketException e)
+			{
+				continue;
+			}
+
+			if (net.getName().equals(name))
+			{
+				findInterface = net;
+				netInfoBuf.append("<SELECT>");
+			}
+
+			netInfoBuf.append("  Name:");
+			netInfoBuf.append(net.getName());
+			netInfoBuf.append(" Addr=>\n");
+
+			int count = 0;
+			Enumeration<InetAddress> addressItr = net.getInetAddresses();
+			while (addressItr.hasMoreElements())
+			{
+				++count;
+				InetAddress addr = addressItr.nextElement();
+				netInfoBuf.append("    IP");
+				netInfoBuf.append(count);
+				netInfoBuf.append(": ");
+				netInfoBuf.append(addr.getHostAddress());
+				netInfoBuf.append("\n");
+			}
+			// netInfoBuf.deleteCharAt(netInfoBuf.length() - 1);
 
 		}
+		mainLogger.log(Level.INFO, netInfoBuf.toString());
+
+		return findInterface;
 	}
 }
