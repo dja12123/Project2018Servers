@@ -46,7 +46,7 @@ public class RouterCore extends DHCPServlet
 	@Override
 	public DHCPPacket service(DHCPPacket request)
 	{
-		mainLogger.log(Level.INFO, "Cap");
+		mainLogger.log(Level.INFO, request.toString());
 		return null;
 	}
 
