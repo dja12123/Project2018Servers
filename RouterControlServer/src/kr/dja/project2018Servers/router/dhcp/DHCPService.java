@@ -64,7 +64,7 @@ public class DHCPService extends DHCPServlet
 		RouterCore.dhcpLogger.log(Level.INFO, request.toString());
 		for(DHCPOption option : request.getOptionsArray())
 		{
-			System.out.println("OPTION: " + option.getValueAsString());
+			System.out.println("OPTION: " + option.toString());
 		}
 
 		DHCPPacket packet = new DHCPPacket();
