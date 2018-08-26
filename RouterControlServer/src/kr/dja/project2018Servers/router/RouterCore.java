@@ -33,80 +33,41 @@ import org.dhcp4java.DHCPCoreServer;
 import org.dhcp4java.DHCPServerInitException;
 import org.dhcp4java.DHCPServlet;
 
+import kr.dja.project2018Servers.router.dhcp.DHCPService;
+
 /**
  * A simple DHCP sniffer based on DHCP servlets.
  *
  * @author Stephan Hadinger
  * @version 1.00
  */
-public class RouterCore extends DHCPServlet
+public class RouterCore
 {
 	public static final String CONF_INTERFACE = "interface";
 
-	private static final String logFormat = "[%1$tT][%2$s][%3$s] %4$s %5$s %n";
-	private static final Logger mainLogger = Logger.getLogger(RouterCore.class.getName().toLowerCase());
-	private static final Logger dhcpLogger = DHCPCoreServer.logger;
-	protected Properties properties;
-	
-	public RouterCore()
+	public static final String logFormat = "[%1$tT][%2$s][%3$s] %4$s %5$s %n";
+	public static final Logger mainLogger = Logger.getLogger(RouterCore.class.getName().toLowerCase());
+	public static final Logger dhcpLogger = DHCPCoreServer.logger;
+	public static final Properties properties = new Properties();
+
+	public static void main(String[] args)
 	{
-		mainLogger.log(Level.INFO, "서버 시작");
 		
-		this.properties = new Properties();
+		initLogger(mainLogger, "main");
+		initLogger(dhcpLogger, "dhcp");
+		mainLogger.log(Level.INFO, "서버 시작");
 		
 		try
 		{
-			InputStream inputStream = this.getClass().getResourceAsStream("/config.properties");
-			this.properties.load(inputStream);
+			properties.load(RouterCore.class.getResourceAsStream("/config.properties"));
 		}
 		catch (IOException e)
 		{
 			mainLogger.log(Level.SEVERE, "config 로드 실패", e);
-			return;
 		}
 		
-		NetworkInterface network = getNetworkInterfaces(this.properties.get(CONF_INTERFACE).toString());
+		DHCPService dhcp = new DHCPService();
 		
-		Enumeration<InetAddress> addrList = network.getInetAddresses();
-		String addrStr = null;
-		while(addrList.hasMoreElements())
-		{
-			InetAddress addr = addrList.nextElement();
-			if(addr instanceof Inet4Address)
-			{
-				addrStr = addr.getHostAddress() + ":67";
-				break;
-			}
-		}
-		
-		mainLogger.log(Level.INFO, "선택 주소: " + addrStr);
-		try
-		{
-			Properties prop = new Properties();
-			prop.setProperty(DHCPCoreServer.SERVER_ADDRESS, addrStr);
-			
-			DHCPCoreServer server = DHCPCoreServer.initServer(this, prop);
-			new Thread(server).start();
-		}
-		catch (DHCPServerInitException e)
-		{
-			mainLogger.log(Level.SEVERE, "Server init", e);
-		}
-	}
-	
-	@Override
-	public DHCPPacket service(DHCPPacket request)
-	{
-		mainLogger.log(Level.INFO, request.toString());
-		return null;
-	}
-
-	public static void main(String[] args)
-	{
-		initLogger(mainLogger, "main");
-		initLogger(dhcpLogger, "dhcp");
-		
-		RouterCore core = new RouterCore();
 	}
 
 	private static void initLogger(Logger logger, String loggerName)
@@ -141,64 +102,5 @@ public class RouterCore extends DHCPServlet
 
 	}
 
-	private static NetworkInterface getNetworkInterfaces(String name)
-	{
-		Enumeration<NetworkInterface> nets = null;
-		NetworkInterface findInterface = null;
-
-		try
-		{
-			nets = NetworkInterface.getNetworkInterfaces();
-		}
-		catch (SocketException e)
-		{
-			mainLogger.log(Level.SEVERE, "네트워크 인터페이스 목록을 가져올 수 없습니다.", e);
-		}
-		if (nets == null)
-			return null;
-
-		StringBuffer netInfoBuf = new StringBuffer();
-		netInfoBuf.append("네트워크 인터페이스 스캔\n");
-		while (nets.hasMoreElements())
-		{
-			NetworkInterface net = nets.nextElement();
-			try
-			{
-				if (!net.isUp())
-					continue;
-			}
-			catch (SocketException e)
-			{
-				continue;
-			}
-
-			if (net.getName().equals(name))
-			{
-				findInterface = net;
-				netInfoBuf.append("<SELECT>");
-			}
-
-			netInfoBuf.append("  Name:");
-			netInfoBuf.append(net.getName());
-			netInfoBuf.append(" Addr=>\n");
-
-			int count = 0;
-			Enumeration<InetAddress> addressItr = net.getInetAddresses();
-			while (addressItr.hasMoreElements())
-			{
-				++count;
-				InetAddress addr = addressItr.nextElement();
-				netInfoBuf.append("    IP");
-				netInfoBuf.append(count);
-				netInfoBuf.append(": ");
-				netInfoBuf.append(addr.getHostAddress());
-				netInfoBuf.append("\n");
-			}
-			// netInfoBuf.deleteCharAt(netInfoBuf.length() - 1);
-
-		}
-		mainLogger.log(Level.INFO, netInfoBuf.toString());
-
-		return findInterface;
-	}
+	
 }
