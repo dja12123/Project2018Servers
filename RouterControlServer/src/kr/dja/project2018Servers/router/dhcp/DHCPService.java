@@ -10,8 +10,8 @@ import java.util.Properties;
 import java.util.logging.Level;
 
 import org.dhcp4java.DHCPCoreServer;
-import org.dhcp4java.DHCPOption;
 import org.dhcp4java.DHCPPacket;
+import org.dhcp4java.DHCPResponseFactory;
 import org.dhcp4java.DHCPServerInitException;
 import org.dhcp4java.DHCPServlet;
 
@@ -65,7 +65,8 @@ public class DHCPService extends DHCPServlet
 		byte[] deviceInfo = request.getOptionRaw((byte)224);
 		RouterCore.dhcpLogger.log(Level.INFO, "DeviceInfo="+new String(deviceInfo));
 
-		DHCPPacket packet = new DHCPPacket();
+		//DHCPResponseFactory.makeDHCPAck(request, offeredAddress, leaseTime, serverIdentifier, message, options)
+		//DHCPResponseFactory.makeDHCPOffer(request, offeredAddress, leaseTime, serverIdentifier, message, options)
 		return null;
 	}
 	
@@ -130,3 +131,5 @@ public class DHCPService extends DHCPServlet
 		return findInterface;
 	}
 }
+
+
