@@ -12,7 +12,7 @@ import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
 
 import kr.dja.project2018.node.db.DB_Handler;
-import kr.dja.project2018.node.dhcp.DHCPService;
+import kr.dja.project2018.node.network.DHCPService;
 
 /**
  * A simple DHCP sniffer based on DHCP servlets.
@@ -22,12 +22,10 @@ import kr.dja.project2018.node.dhcp.DHCPService;
  */
 public class NodeControlCore
 {
-	public static final String PROP_INTERFACE = "interface";
-
 	public static final String logFormat = "[%1$tT][%2$s][%3$s] %4$s %5$s %n";
-	public static final Logger mainLogger = createLogger(NodeControlCore.class.getName().toLowerCase(), "main");;
+	public static final Logger mainLogger = createLogger(NodeControlCore.class.getName().toLowerCase(), "main");
 	
-	public static final Properties properties = new Properties();
+	private static final Properties properties = new Properties();
 	
 	private final DB_Handler dbHandler;
 	private final DHCPService dhcp;
@@ -38,10 +36,10 @@ public class NodeControlCore
 		this.dhcp = new DHCPService();
 	}
 
-	public static void main(String[] args)
+	public static void main(String[] args) throws InterruptedException
 	{
 		mainLogger.log(Level.INFO, "서버 시작");		
-
+		
 		try
 		{
 			properties.load(NodeControlCore.class.getResourceAsStream("/config.properties"));
@@ -52,6 +50,12 @@ public class NodeControlCore
 		}
 		
 		NodeControlCore core = new NodeControlCore();
+
+	}
+	
+	public static String getProp(String key)
+	{
+		return properties.getProperty(key);
 	}
 	
 	public static void initLogger(Logger logger, String loggerName)

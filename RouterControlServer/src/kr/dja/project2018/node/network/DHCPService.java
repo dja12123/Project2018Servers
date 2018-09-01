@@ -1,4 +1,4 @@
-package kr.dja.project2018.node.dhcp;
+package kr.dja.project2018.node.network;
 
 import java.io.IOException;
 import java.net.Inet4Address;
@@ -16,11 +16,13 @@ import org.dhcp4java.DHCPResponseFactory;
 import org.dhcp4java.DHCPServerInitException;
 import org.dhcp4java.DHCPServlet;
 
+import kr.dja.project2018.node.IServiceModule;
 import kr.dja.project2018.node.NodeControlCore;
 
-public class DHCPService extends DHCPServlet
+public class DHCPService extends DHCPServlet implements IServiceModule
 {
 	public static final Logger dhcpLogger = DHCPCoreServer.logger;
+	public static final String PROP_INTERFACE = "dhcpInterface";
 	
 	static
 	{
@@ -29,42 +31,7 @@ public class DHCPService extends DHCPServlet
 	
 	public DHCPService()
 	{
-		dhcpLogger.log(Level.INFO, "DHCP 로드");
-		String loadInterface = NodeControlCore.properties.get(NodeControlCore.PROP_INTERFACE).toString();
-		dhcpLogger.log(Level.INFO, "네트워크 인터페이스 선택: " + loadInterface);
-		NetworkInterface network = getNetworkInterfaces(loadInterface);
 		
-		if(network == null)
-		{
-			dhcpLogger.log(Level.SEVERE, "올바르지 않은 인터페이스");
-			return;
-		}
-		
-		Enumeration<InetAddress> addrList = network.getInetAddresses();
-		String addrStr = null;
-		while(addrList.hasMoreElements())
-		{
-			InetAddress addr = addrList.nextElement();
-			if(addr instanceof Inet4Address)
-			{
-				addrStr = addr.getHostAddress() + ":67";
-				break;
-			}
-		}
-		
-		dhcpLogger.log(Level.INFO, "선택 주소: " + addrStr);
-		try
-		{
-			Properties prop = new Properties();
-			prop.setProperty(DHCPCoreServer.SERVER_ADDRESS, addrStr);
-			
-			DHCPCoreServer server = DHCPCoreServer.initServer(this, prop);
-			new Thread(server).start();
-		}
-		catch (DHCPServerInitException e)
-		{
-			dhcpLogger.log(Level.SEVERE, "Server init", e);
-		}
 	}
 	
 	@Override
@@ -138,6 +105,56 @@ public class DHCPService extends DHCPServlet
 		dhcpLogger.log(Level.INFO, netInfoBuf.toString());
 
 		return findInterface;
+	}
+
+	@Override
+	public boolean start()
+	{
+		dhcpLogger.log(Level.INFO, "DHCP 로드");
+		String loadInterface = NodeControlCore.getProp(PROP_INTERFACE).toString();
+		dhcpLogger.log(Level.INFO, "네트워크 인터페이스 선택: " + loadInterface);
+		NetworkInterface network = getNetworkInterfaces(loadInterface);
+		
+		if(network == null)
+		{
+			dhcpLogger.log(Level.SEVERE, "올바르지 않은 인터페이스");
+			return false;
+		}
+		
+		Enumeration<InetAddress> addrList = network.getInetAddresses();
+		String addrStr = null;
+		while(addrList.hasMoreElements())
+		{
+			InetAddress addr = addrList.nextElement();
+			if(addr instanceof Inet4Address)
+			{
+				addrStr = addr.getHostAddress() + ":67";
+				break;
+			}
+		}
+		
+		dhcpLogger.log(Level.INFO, "선택 주소: " + addrStr);
+		try
+		{
+			Properties prop = new Properties();
+			prop.setProperty(DHCPCoreServer.SERVER_ADDRESS, addrStr);
+			
+			DHCPCoreServer server = DHCPCoreServer.initServer(this, prop);
+			new Thread(server).start();
+		}
+		catch (DHCPServerInitException e)
+		{
+			dhcpLogger.log(Level.SEVERE, "dhcp초기화 실패", e);
+			return false;
+		}
+		return true;
+	}
+
+	@Override
+	public void stop()
+	{
+		// TODO Auto-generated method stub
+		
 	}
 }
 

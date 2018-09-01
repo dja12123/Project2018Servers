@@ -10,9 +10,11 @@ import java.util.logging.Logger;
 
 import org.sqlite.JDBC;
 import org.sqlite.SQLiteConfig;
+
+import kr.dja.project2018.node.IServiceModule;
 import kr.dja.project2018.node.NodeControlCore;
 
-public class DB_Handler
+public class DB_Handler implements IServiceModule
 {
 	public static final String PROP_DB_FILE = "databaseFile";
 	
@@ -38,22 +40,6 @@ public class DB_Handler
 		databaseLogger.log(Level.INFO, "데이터베이스 로드");
 		this.config = new SQLiteConfig();
 		System.out.println();
-		this.open();
-		
-		ResultSet set = this.query("select * from test");
-
-		try
-		{
-			while(set.next())
-			{
-				System.out.println(set.getString(2));
-			}
-		}
-		catch (SQLException e)
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 	}
 	
 	public boolean executeQuery(String query)
@@ -91,11 +77,12 @@ public class DB_Handler
 		return rs;
 	}
 	
-	public void open()
+	@Override
+	public boolean start()
 	{
-		if(this.isOpened) return;
+		if(this.isOpened) this.stop();
 		String path = DB_Handler.class.getProtectionDomain().getCodeSource().getLocation().getPath()+
-				NodeControlCore.properties.getProperty(PROP_DB_FILE);
+				NodeControlCore.getProp(PROP_DB_FILE);
 		databaseLogger.log(Level.INFO, "데이터베이스 열기 ("+path+")");
 		try
 		{
@@ -105,14 +92,17 @@ public class DB_Handler
 		catch(SQLException e)
 		{
 			databaseLogger.log(Level.SEVERE, "데이터베이스 열기 실패", e);
+			return false;
 		}
 		this.isOpened = true;
+		return true;
 	}
-	
-	public void close()
+
+	@Override
+	public void stop()
 	{
-		if(!this.isOpened) return;
-		
+		if (!this.isOpened) return;
+
 		try
 		{
 			this.connection.close();
@@ -122,5 +112,6 @@ public class DB_Handler
 			databaseLogger.log(Level.SEVERE, "데이터베이스 닫기 실패", e);
 		}
 		this.isOpened = false;
+
 	}
 }
