@@ -1,0 +1,47 @@
+apply plugin: 'java'
+apply plugin: 'eclipse'
+ 
+ext {
+  javaVersion='1.8'
+}
+ 
+buildDir = 'build'
+ 
+repositories {
+  mavenCentral()
+}
+ 
+dependencies {
+    compile files('Lib/sqlite-jdbc-3.23.1.jar')
+    compile project(':dhcp4java')
+}
+ 
+task initSrc << {
+    project.sourceSets*.allSource.srcDirTrees.flatten().dir.each { dir ->
+        dir.mkdirs()
+    }
+}
+ 
+sourceCompatibility = javaVersion
+targetCompatibility = javaVersion
+ 
+// �ҽ� ���ڵ� ������� 1
+//[compileJava, compileTestJava, javadoc]*.options*.encoding = 'UTF-8'
+// �ҽ� ���ڵ� ������� 2
+//tasks.withType(JavaCompile) {
+//    options.encoding = 'UTF-8'
+//}
+//javadoc {
+//    options.encoding = 'UTF-8'
+//}
+
+/* Eclipse ���� ������ */
+tasks.eclipse.dependsOn cleanEclipse
+tasks.eclipse.dependsOn initSrc
+ 
+eclipse {
+  classpath {
+    downloadSources = true
+    defaultOutputDir = file("${buildDir}/classes/main")
+  }
+}
