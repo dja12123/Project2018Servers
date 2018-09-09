@@ -12,6 +12,7 @@ import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
 
 import kr.dja.project2018.node.db.DB_Handler;
+import kr.dja.project2018.node.device.DeviceInfo;
 import kr.dja.project2018.node.network.DHCPService;
 
 /**
@@ -29,16 +30,45 @@ public class NodeControlCore
 	
 	private final DB_Handler dbHandler;
 	private final DHCPService dhcp;
+	private final DeviceInfo deviceInfo;
 	
 	public NodeControlCore()
 	{
 		this.dbHandler = new DB_Handler();
 		this.dhcp = new DHCPService();
+		this.deviceInfo = new DeviceInfo(this.dbHandler);
+		
+		this.startService();
+	}
+	
+	private void startService()
+	{
+		try
+		{
+			if(!this.dbHandler.start()) throw new Exception("DB핸들러 로드 실패");
+			if(!this.deviceInfo.start()) throw new Exception("장치 정보 모듈 로드 실패");
+		}
+		catch(Exception e)
+		{
+			mainLogger.log(Level.SEVERE, "서비스 시작중 오류", e);
+			this.stopService();
+			return;
+		}
+		mainLogger.log(Level.INFO, "서비스 시작 완료");
+	}
+	
+	private void stopService()
+	{
+		this.dbHandler.stop();
+		this.deviceInfo.stop();
+		mainLogger.log(Level.INFO, "서비스 중지");
 	}
 
 	public static void main(String[] args) throws InterruptedException
 	{
-		mainLogger.log(Level.INFO, "서버 시작");		
+		Logger.getGlobal().setLevel(Level.FINER);
+		
+		mainLogger.log(Level.INFO, "서버 시작");
 		
 		try
 		{
@@ -50,7 +80,6 @@ public class NodeControlCore
 		}
 		
 		NodeControlCore core = new NodeControlCore();
-
 	}
 	
 	public static String getProp(String key)
