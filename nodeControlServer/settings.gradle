@@ -7,6 +7,6 @@
  * in the user guide at https://docs.gradle.org/4.10/userguide/multi_project_builds.html
  */
 
-rootProject.name = 'project2018'
+rootProject.name = 'nodeControlServer'
 
 include 'dhcp4java'
