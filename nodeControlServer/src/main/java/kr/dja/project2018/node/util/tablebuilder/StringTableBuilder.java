@@ -3,7 +3,7 @@ package kr.dja.project2018.node.util.tablebuilder;
 import java.util.ArrayList;
 
 public class StringTableBuilder
-{// 문자열로 테이블을 제작.
+{
 	private static final char HEAD_ROW_SEP = '-';
 	private static final char HEAD_COL_SEP = '|';
 	private static final char DATA_COL_SEP = ':';

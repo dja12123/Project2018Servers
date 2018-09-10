@@ -46,7 +46,7 @@ public class InfoBroadcast implements Runnable, IServiceModule
 	@Override
 	public void run()
 	{
-		broadcastLogger.log(Level.INFO, "³ëµå ¾Ë¸² ½ÃÀÛ");
+		broadcastLogger.log(Level.INFO, "ë…¸ë“œ ì•Œë¦¼ ì‹œì‘");
 		while(this.isRun)
 		{
 			try
@@ -60,7 +60,7 @@ public class InfoBroadcast implements Runnable, IServiceModule
 			}
 			catch (IOException e)
 			{
-				broadcastLogger.log(Level.SEVERE, "ÆĞÅ¶ Àü¼Û ¿À·ù");
+				broadcastLogger.log(Level.SEVERE, "íŒ¨í‚· ì „ì†¡ ì˜¤ë¥˜");
 			}
 		}
 	}
@@ -83,7 +83,7 @@ public class InfoBroadcast implements Runnable, IServiceModule
 		}
 		catch (SocketException e)
 		{
-			broadcastLogger.log(Level.SEVERE, "¼ÒÄ¹ »ı¼º ¿À·ù", e);
+			broadcastLogger.log(Level.SEVERE, "ì†Œìº£ ìƒì„± ì˜¤ë¥˜", e);
 			return false;
 		}
 		

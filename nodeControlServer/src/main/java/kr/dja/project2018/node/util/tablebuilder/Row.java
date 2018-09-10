@@ -49,7 +49,7 @@ public class Row
 	{
 		while(this.rowSpace.size() < this.dataList.size() + 1)
 			this.rowSpace.add(0);
-		// rowSpaceÀÇ 0¹ø °ø°£Àº Å×ÀÌºíÀÇ Çìµå¸¦ À§ÇÑ °ø°£.
+		// rowSpaceì˜ 0ë²ˆ ê³µê°„ì€ í…Œì´ë¸”ì˜ í—¤ë“œë¥¼ ìœ„í•œ ê³µê°„.
 		
 		if(this.rowSpace.get(this.dataList.size()) < str.length())
 		{

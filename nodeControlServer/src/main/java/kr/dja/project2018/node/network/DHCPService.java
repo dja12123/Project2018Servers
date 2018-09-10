@@ -57,13 +57,13 @@ public class DHCPService extends DHCPServlet implements IServiceModule
 		}
 		catch (SocketException e)
 		{
-			dhcpLogger.log(Level.SEVERE, "³×Æ®¿öÅ© ÀÎÅÍÆäÀÌ½º ¸ñ·ÏÀ» °¡Á®¿Ã ¼ö ¾ø½À´Ï´Ù.", e);
+			dhcpLogger.log(Level.SEVERE, "ë„¤íŠ¸ì›Œí¬ ì¸í„°í˜ì´ìŠ¤ ëª©ë¡ì„ ê°€ì ¸ì˜¬ ìˆ˜ ì—†ìŠµë‹ˆë‹¤.", e);
 		}
 		if (nets == null)
 			return null;
 
 		StringBuffer netInfoBuf = new StringBuffer();
-		netInfoBuf.append("³×Æ®¿öÅ© ÀÎÅÍÆäÀÌ½º ½ºÄµ\n");
+		netInfoBuf.append("ë„¤íŠ¸ì›Œí¬ ì¸í„°í˜ì´ìŠ¤ ìŠ¤ìº”\n");
 		while (nets.hasMoreElements())
 		{
 			NetworkInterface net = nets.nextElement();
@@ -110,14 +110,14 @@ public class DHCPService extends DHCPServlet implements IServiceModule
 	@Override
 	public boolean start()
 	{
-		dhcpLogger.log(Level.INFO, "DHCP ·Îµå");
+		dhcpLogger.log(Level.INFO, "DHCP ë¡œë“œ");
 		String loadInterface = NodeControlCore.getProp(PROP_INTERFACE).toString();
-		dhcpLogger.log(Level.INFO, "³×Æ®¿öÅ© ÀÎÅÍÆäÀÌ½º ¼±ÅÃ: " + loadInterface);
+		dhcpLogger.log(Level.INFO, "ë„¤íŠ¸ì›Œí¬ ì¸í„°í˜ì´ìŠ¤ ì„ íƒ: " + loadInterface);
 		NetworkInterface network = getNetworkInterfaces(loadInterface);
 		
 		if(network == null)
 		{
-			dhcpLogger.log(Level.SEVERE, "¿Ã¹Ù¸£Áö ¾ÊÀº ÀÎÅÍÆäÀÌ½º");
+			dhcpLogger.log(Level.SEVERE, "ì˜¬ë°”ë¥´ì§€ ì•Šì€ ì¸í„°í˜ì´ìŠ¤");
 			return false;
 		}
 		
@@ -133,7 +133,7 @@ public class DHCPService extends DHCPServlet implements IServiceModule
 			}
 		}
 		
-		dhcpLogger.log(Level.INFO, "¼±ÅÃ ÁÖ¼Ò: " + addrStr);
+		dhcpLogger.log(Level.INFO, "ì„ íƒ ì£¼ì†Œ: " + addrStr);
 		try
 		{
 			Properties prop = new Properties();
@@ -144,7 +144,7 @@ public class DHCPService extends DHCPServlet implements IServiceModule
 		}
 		catch (DHCPServerInitException e)
 		{
-			dhcpLogger.log(Level.SEVERE, "dhcpÃÊ±âÈ­ ½ÇÆĞ", e);
+			dhcpLogger.log(Level.SEVERE, "dhcpì´ˆê¸°í™” ì‹¤íŒ¨", e);
 			return false;
 		}
 		return true;
@@ -157,5 +157,3 @@ public class DHCPService extends DHCPServlet implements IServiceModule
 		
 	}
 }
-
-

@@ -45,30 +45,30 @@ public class NodeControlCore
 	{
 		try
 		{
-			if(!this.dbHandler.start()) throw new Exception("DBÇÚµé·¯ ·Îµå ½ÇÆÐ");
-			if(!this.deviceInfo.start()) throw new Exception("ÀåÄ¡ Á¤º¸ ¸ðµâ ·Îµå ½ÇÆÐ");
+			if(!this.dbHandler.start()) throw new Exception("DBí•¸ë“¤ëŸ¬ ë¡œë“œ ì‹¤íŒ¨");
+			if(!this.deviceInfo.start()) throw new Exception("ìž¥ì¹˜ ì •ë³´ ëª¨ë“ˆ ë¡œë“œ ì‹¤íŒ¨");
 		}
 		catch(Exception e)
 		{
-			mainLogger.log(Level.SEVERE, "¼­ºñ½º ½ÃÀÛÁß ¿À·ù", e);
+			mainLogger.log(Level.SEVERE, "ì„œë¹„ìŠ¤ ì‹œìž‘ì¤‘ ì˜¤ë¥˜", e);
 			this.stopService();
 			return;
 		}
-		mainLogger.log(Level.INFO, "¼­ºñ½º ½ÃÀÛ ¿Ï·á");
+		mainLogger.log(Level.INFO, "ì„œë¹„ìŠ¤ ì‹œìž‘ ì™„ë£Œ");
 	}
 	
 	private void stopService()
 	{
 		this.dbHandler.stop();
 		this.deviceInfo.stop();
-		mainLogger.log(Level.INFO, "¼­ºñ½º ÁßÁö");
+		mainLogger.log(Level.INFO, "ì„œë¹„ìŠ¤ ì¤‘ì§€");
 	}
 
 	public static void main(String[] args) throws InterruptedException
 	{
 		Logger.getGlobal().setLevel(Level.FINER);
 		
-		mainLogger.log(Level.INFO, "¼­¹ö ½ÃÀÛ");
+		mainLogger.log(Level.INFO, "ì„œë²„ ì‹œìž‘");
 		
 		try
 		{
@@ -76,7 +76,7 @@ public class NodeControlCore
 		}
 		catch (IOException e)
 		{
-			mainLogger.log(Level.SEVERE, "config ·Îµå ½ÇÆÐ", e);
+			mainLogger.log(Level.SEVERE, "config ë¡œë“œ ì‹¤íŒ¨", e);
 		}
 		
 		NodeControlCore core = new NodeControlCore();

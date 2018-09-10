@@ -39,7 +39,7 @@ public class DB_Handler implements IServiceModule
 		}
 		catch (Exception e)
 		{
-			databaseLogger.log(Level.SEVERE, "JDBC ·Îµå ½ÇÆÐ", e);
+			databaseLogger.log(Level.SEVERE, "JDBC ë¡œë“œ ì‹¤íŒ¨", e);
 		}
 	}
 	
@@ -59,7 +59,7 @@ public class DB_Handler implements IServiceModule
 		}
 		catch (SQLException e)
 		{
-			databaseLogger.log(Level.SEVERE, "ÁúÀÇ ½ÇÆÐ("+query+")", e);
+			databaseLogger.log(Level.SEVERE, "ì§ˆì˜ ì‹¤íŒ¨("+query+")", e);
 			return false;
 		}
 		return true;
@@ -80,7 +80,7 @@ public class DB_Handler implements IServiceModule
 		}
 		catch (SQLException e)
 		{
-			databaseLogger.log(Level.SEVERE, "ÁúÀÇ ½ÇÆÐ("+query+")", e);
+			databaseLogger.log(Level.SEVERE, "ì§ˆì˜ ì‹¤íŒ¨("+query+")", e);
 			return null;
 		}
 		try
@@ -90,7 +90,7 @@ public class DB_Handler implements IServiceModule
 		}
 		catch (SQLException e)
 		{
-			databaseLogger.log(Level.SEVERE, "CachedRowSet ¸¸µé±â ½ÇÆÐ", e);
+			databaseLogger.log(Level.SEVERE, "CachedRowSet ë§Œë“¤ê¸° ì‹¤íŒ¨", e);
 		}
 		
 		return crs;
@@ -102,7 +102,7 @@ public class DB_Handler implements IServiceModule
 		if(this.isOpened) this.stop();
 		String path = DB_Handler.class.getProtectionDomain().getCodeSource().getLocation().getPath()+
 				NodeControlCore.getProp(PROP_DB_FILE);
-		databaseLogger.log(Level.INFO, "µ¥ÀÌÅÍº£ÀÌ½º ¿­±â ("+path+")");
+		databaseLogger.log(Level.INFO, "ë°ì´í„°ë² ì´ìŠ¤ ì—´ê¸° ("+path+")");
 		try
 		{
 			this.connection = DriverManager.getConnection(JDBC.PREFIX+path, this.config.toProperties());
@@ -110,7 +110,7 @@ public class DB_Handler implements IServiceModule
 		}
 		catch(SQLException e)
 		{
-			databaseLogger.log(Level.SEVERE, "µ¥ÀÌÅÍº£ÀÌ½º ¿­±â ½ÇÆÐ", e);
+			databaseLogger.log(Level.SEVERE, "ë°ì´í„°ë² ì´ìŠ¤ ì—´ê¸° ì‹¤íŒ¨", e);
 			return false;
 		}
 		this.isOpened = true;
@@ -128,7 +128,7 @@ public class DB_Handler implements IServiceModule
 		}
 		catch (SQLException e)
 		{
-			databaseLogger.log(Level.SEVERE, "µ¥ÀÌÅÍº£ÀÌ½º ´Ý±â ½ÇÆÐ", e);
+			databaseLogger.log(Level.SEVERE, "ë°ì´í„°ë² ì´ìŠ¤ ë‹«ê¸° ì‹¤íŒ¨", e);
 		}
 		this.isOpened = false;
 
@@ -162,7 +162,7 @@ public class DB_Handler implements IServiceModule
 		}
 		catch (Exception e)
 		{
-			databaseLogger.log(Level.WARNING, "ÇÁ¸°Æ® ¿À·ù", e);
+			databaseLogger.log(Level.WARNING, "í”„ë¦°íŠ¸ ì˜¤ë¥˜", e);
 		}
 		System.out.println(tb.build());
 	}
@@ -175,7 +175,7 @@ public class DB_Handler implements IServiceModule
 			int columnsNumber = rs.getMetaData().getColumnCount();
 			if(!(col > 0 && col <= columnsNumber))
 			{
-				databaseLogger.log(Level.WARNING, "°Ë»ö column no ¿À·ù(1~"+columnsNumber+" input:"+col);
+				databaseLogger.log(Level.WARNING, "ê²€ìƒ‰ column no ì˜¤ë¥˜(1~"+columnsNumber+" input:"+col);
 				return false;
 			}
 			while(rs.next())
@@ -189,7 +189,7 @@ public class DB_Handler implements IServiceModule
 		}
 		catch (SQLException e)
 		{
-			databaseLogger.log(Level.WARNING, "°Ë»ö ¿À·ù", e);
+			databaseLogger.log(Level.WARNING, "ê²€ìƒ‰ ì˜¤ë¥˜", e);
 		}
 		return false;
 	}
@@ -216,7 +216,7 @@ public class DB_Handler implements IServiceModule
 		}
 		catch (SQLException e)
 		{
-			databaseLogger.log(Level.WARNING, "toArray ¿À·ù", e);
+			databaseLogger.log(Level.WARNING, "toArray ì˜¤ë¥˜", e);
 			return null;
 		}
 		String[][] arr = new String[list.size()][];
