@@ -1,47 +1,84 @@
-apply plugin: 'java'
-apply plugin: 'eclipse'
- 
-ext {
-  javaVersion='1.8'
+//gradle plugins for this project
+plugins 
+{
+    id 'java'
+    id 'application'
+    id 'eclipse'
 }
- 
-buildDir = 'build'
- 
-repositories {
-  mavenCentral()
+
+//variables for gradle script
+ext 
+{
+  _buildDir = 'jar'
+  _javaVersion = '1.8'
+  _mainClassName = 'project2018.node.NodeControlCore'
 }
+
+//set variables to proper options
+mainClassName = _mainClassName
  
-dependencies {
+sourceCompatibility = _javaVersion
+targetCompatibility = _javaVersion
+
+//repos for libs
+repositories 
+{
+    mavenCentral()
+    jcenter()
+}
+
+//libs for this project
+dependencies 
+{
     compile files('Lib/sqlite-jdbc-3.23.1.jar')
     compile project(':dhcp4java')
 }
- 
-task initSrc << {
+
+//options for making jarFile
+jar 
+{
+    manifest 
+    {
+        attributes 'Main-Class': _mainClassName
+    }
+    from 
+    {
+        configurations.compile.collect 
+        {
+            it.isDirectory() ? it : zipTree(it)
+        }
+    }
+}
+
+
+//etc settings
+eclipse 
+{
+  classpath 
+  {
+    downloadSources = true
+    defaultOutputDir = file("${buildDir}/classes/main")
+  }
+}
+
+task initSrc << 
+{
     project.sourceSets*.allSource.srcDirTrees.flatten().dir.each { dir ->
         dir.mkdirs()
     }
 }
- 
-sourceCompatibility = javaVersion
-targetCompatibility = javaVersion
- 
-// �ҽ� ���ڵ� ������� 1
-//[compileJava, compileTestJava, javadoc]*.options*.encoding = 'UTF-8'
-// �ҽ� ���ڵ� ������� 2
-//tasks.withType(JavaCompile) {
-//    options.encoding = 'UTF-8'
-//}
-//javadoc {
-//    options.encoding = 'UTF-8'
-//}
 
-/* Eclipse ���� ������ */
+
 tasks.eclipse.dependsOn cleanEclipse
 tasks.eclipse.dependsOn initSrc
- 
-eclipse {
-  classpath {
-    downloadSources = true
-    defaultOutputDir = file("${buildDir}/classes/main")
-  }
+
+
+[compileJava, compileTestJava, javadoc]*.options*.encoding = 'UTF-8'
+tasks.withType(JavaCompile) 
+{
+    options.encoding = 'UTF-8'
+}
+javadoc 
+{
+    options.encoding = 'UTF-8'
 }
