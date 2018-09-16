@@ -16,7 +16,6 @@ import kr.dja.project2018.node.db.DB_Handler;
 
 public class InfoBroadcast implements Runnable, IServiceModule
 {
-	public static final String PROP_INFOBROADCAST_PORT = "infoBroadcastPort";
 	public static final Logger broadcastLogger = NodeControlCore.createLogger(DB_Handler.class.getName().toLowerCase(), "broadcast");
 	private static InetAddress broadcastIA;
 	
@@ -88,7 +87,7 @@ public class InfoBroadcast implements Runnable, IServiceModule
 		}
 		
 		byte[] infoMessage = this.infoString.getBytes();
-		int port = Integer.valueOf(NodeControlCore.getProp(PROP_INFOBROADCAST_PORT));
+		int port = Integer.valueOf(NodeControlCore.getProp(NetworkManager.PROP_INFOBROADCAST_PORT));
 		this.packet = new DatagramPacket(infoMessage, infoMessage.length, broadcastIA, port);
 		
 		this.broadcastThread = new Thread(this);
