@@ -27,6 +27,13 @@ public class DB_Handler implements IServiceModule
 	public static final String PROP_DB_FILE = "databaseFile";
 	
 	public static final Logger databaseLogger = NodeControlCore.createLogger(DB_Handler.class.getName().toLowerCase(), "db");
+	
+	private static final String INFO_TABLE_SCHEMA = 
+			"CREATE TABLE deviceInfo("
+		+		"class_path varchar(128), "
+		+		"key varchar(128), "
+		+		"value varchar(128));";
+	
 	private Connection connection;
 	private SQLiteConfig config;
 	private boolean isOpened = false;
@@ -113,6 +120,9 @@ public class DB_Handler implements IServiceModule
 			databaseLogger.log(Level.SEVERE, "데이터베이스 열기 실패", e);
 			return false;
 		}
+		
+		
+		
 		this.isOpened = true;
 		return true;
 	}
@@ -132,6 +142,13 @@ public class DB_Handler implements IServiceModule
 		}
 		this.isOpened = false;
 
+	}
+	
+	public void storeKeyValue(Class<?> classPath, String key, String value)
+	{
+		String module = classPath.toString();
+		
+		//this.executeQuery("insert into ")
 	}
 	
 	public static void printResultSet(CachedRowSet rs)
@@ -165,6 +182,22 @@ public class DB_Handler implements IServiceModule
 			databaseLogger.log(Level.WARNING, "프린트 오류", e);
 		}
 		System.out.println(tb.build());
+	}
+	
+	public boolean checkAndCreateTable(String schema)
+	{
+		//this.connection.
+		
+		CachedRowSet rs;
+		rs = this.query("select * from sqlite_master;");
+		
+		if(!DB_Handler.isExist(rs, INFO_TABLE_SCHEMA, 5));
+		{
+			databaseLogger.log(Level.WARNING, "데이터베이스 스키마 없음, 재생성");
+			this.executeQuery(INFO_TABLE_SCHEMA);
+		}
+		
+		return false;
 	}
 	
 	public static boolean isExist(CachedRowSet rs, String key, int col)

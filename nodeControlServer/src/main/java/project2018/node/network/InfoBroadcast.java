@@ -13,15 +13,22 @@ import java.util.logging.Logger;
 import project2018.node.IServiceModule;
 import project2018.node.NodeControlCore;
 import project2018.node.db.DB_Handler;
+import project2018.node.device.DeviceInfo;
 
 public class InfoBroadcast implements Runnable, IServiceModule
 {
+	public static final String PROP_DELAY_INFOMSG = "delayInfoBroadcast";
+	
 	public static final Logger broadcastLogger = NodeControlCore.createLogger(DB_Handler.class.getName().toLowerCase(), "broadcast");
 	private static InetAddress broadcastIA;
 	
+	private final DeviceInfo deviceInfo;
+	
+	private int broadCastDelay;
 	private Thread broadcastThread = null;
 	private boolean isRun = false;
 	private DatagramSocket dgramSocket = null;
+	
 	private String infoString;
 	private DatagramPacket packet;
 	
@@ -37,9 +44,9 @@ public class InfoBroadcast implements Runnable, IServiceModule
 		}
 	}
 	
-	public InfoBroadcast()
+	public InfoBroadcast(DeviceInfo deviceInfo)
 	{
-
+		this.deviceInfo = deviceInfo;
 	}
 
 	@Override
@@ -50,7 +57,7 @@ public class InfoBroadcast implements Runnable, IServiceModule
 		{
 			try
 			{
-				Thread.sleep(2000);
+				Thread.sleep(this.broadCastDelay);
 			}
 			catch (InterruptedException e) {}
 			try
@@ -67,7 +74,7 @@ public class InfoBroadcast implements Runnable, IServiceModule
 	private void broadCastInfo()
 	{
 		byte[] infoMessage = this.infoString.getBytes();
-		
+	
 		
 	}
 	
@@ -85,6 +92,11 @@ public class InfoBroadcast implements Runnable, IServiceModule
 			broadcastLogger.log(Level.SEVERE, "소캣 생성 오류", e);
 			return false;
 		}
+		
+		this.broadCastDelay = Integer.parseInt(NodeControlCore.getProp(PROP_DELAY_INFOMSG));
+		
+		StringBuffer infoStringBuffer = new StringBuffer();
+		
 		
 		byte[] infoMessage = this.infoString.getBytes();
 		int port = Integer.valueOf(NodeControlCore.getProp(NetworkManager.PROP_INFOBROADCAST_PORT));
