@@ -15,12 +15,6 @@ import project2018.node.db.DB_Handler;
 import project2018.node.device.DeviceInfo;
 import project2018.node.network.DHCPService;
 
-/**
- * A simple DHCP sniffer based on DHCP servlets.
- *
- * @author Stephan Hadinger
- * @version 1.00
- */
 public class NodeControlCore
 {
 	public static final String logFormat = "[%1$tT][%2$s][%3$s] %4$s %5$s %n";
