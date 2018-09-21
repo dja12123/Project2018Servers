@@ -1,6 +1,6 @@
 package project2018.node.db;
 
-import java.sql.Array;
+import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -28,11 +28,11 @@ public class DB_Handler implements IServiceModule
 	
 	public static final Logger databaseLogger = NodeControlCore.createLogger(DB_Handler.class.getName().toLowerCase(), "db");
 	
-	private static final String INFO_TABLE_SCHEMA = 
+	private static final String Variable_Property_Schema = 
 			"CREATE TABLE deviceInfo("
 		+		"class_path varchar(128), "
 		+		"key varchar(128), "
-		+		"value varchar(128));";
+		+		"value varchar(128))";
 	
 	private Connection connection;
 	private SQLiteConfig config;
@@ -74,7 +74,11 @@ public class DB_Handler implements IServiceModule
 	
 	public CachedRowSet query(String query)
 	{
-		if(!this.isOpened) return null;
+		if(!this.isOpened)
+		{
+			databaseLogger.log(Level.SEVERE, "세션 닫힘");
+			return null;
+		}
 		CachedRowSet crs = null;
 		PreparedStatement prep = null;
 		ResultSet rs = null;
@@ -83,7 +87,6 @@ public class DB_Handler implements IServiceModule
 		{
 			prep = this.connection.prepareStatement(query);
 			rs = prep.executeQuery();
-			
 		}
 		catch (SQLException e)
 		{
@@ -121,9 +124,8 @@ public class DB_Handler implements IServiceModule
 			return false;
 		}
 		
-		
-		
 		this.isOpened = true;
+		this.checkAndCreateTable(Variable_Property_Schema);
 		return true;
 	}
 
@@ -155,7 +157,6 @@ public class DB_Handler implements IServiceModule
 	{// https://gist.github.com/jimjam88/8559599
 		databaseLogger.log(Level.INFO, "-- ResultSet INFO --");
 		StringTableBuilder tb = new StringTableBuilder("No", "");
-		
 		try
 		{
 			if(!rs.isBeforeFirst()) rs.beforeFirst();
@@ -184,20 +185,37 @@ public class DB_Handler implements IServiceModule
 		System.out.println(tb.build());
 	}
 	
-	public boolean checkAndCreateTable(String schema)
+	public void checkAndCreateTable(String schema)
 	{
-		//this.connection.
+		String nativeSQL = null;
+		try
+		{
+			nativeSQL = this.connection.nativeSQL(schema);
+		}
+		catch (SQLException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		String str = nativeSQL.toString();
+		System.out.println(str);
+		 
 		
 		CachedRowSet rs;
-		rs = this.query("select * from sqlite_master;");
-		
-		if(!DB_Handler.isExist(rs, INFO_TABLE_SCHEMA, 5));
+		rs = this.query("select tbl_name from sqlite_master where lower(sql) = lower('"+schema+"')");
+		if(rs.size() == 0)
 		{
-			databaseLogger.log(Level.WARNING, "데이터베이스 스키마 없음, 재생성");
-			this.executeQuery(INFO_TABLE_SCHEMA);
+			
+			/*if(this.query("select tbl_name from sqlite_master where tbl_name = lower("++")"))
+			{
+				
+			}*/
+			databaseLogger.log(Level.INFO, "테이블 생성("+schema+")");
+			this.executeQuery(schema);
+			return;
 		}
-		
-		return false;
+		String[][] result = toArray(rs);
+		databaseLogger.log(Level.INFO, "테이블 확인("+result[0][0]+")");
 	}
 	
 	public static boolean isExist(CachedRowSet rs, String key, int col)

@@ -17,7 +17,7 @@ import project2018.node.db.DB_Handler;
 
 public class DeviceInfo implements IServiceModule
 {
-	public static final Logger deviceInfoLogger = NodeControlCore.createLogger(DB_Handler.class.getName().toLowerCase(), "deviceInfo");
+	public static final Logger deviceInfoLogger = NodeControlCore.createLogger(DeviceInfo.class.getName().toLowerCase(), "deviceInfo");
 	
 	private static final String INFO_TABLE_SCHEMA = 
 				"CREATE TABLE deviceInfo("
@@ -34,20 +34,7 @@ public class DeviceInfo implements IServiceModule
 	@Override
 	public boolean start()
 	{
-		CachedRowSet rs;
-		rs = this.dbHandler.query("select * from sqlite_master;");
-		
-		if(!DB_Handler.isExist(rs, INFO_TABLE_SCHEMA, 5));
-		{
-			deviceInfoLogger.log(Level.WARNING, "데이터베이스 스키마 없음, 재생성");
-			this.dbHandler.executeQuery(INFO_TABLE_SCHEMA);
-		}
-		
-		rs = this.dbHandler.query("select * from deviceInfo");
-		
-		
-		
-			
+		this.dbHandler.checkAndCreateTable(INFO_TABLE_SCHEMA);
 		return true;
 	}
 
