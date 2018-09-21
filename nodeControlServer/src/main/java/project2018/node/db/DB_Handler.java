@@ -205,7 +205,8 @@ public class DB_Handler implements IServiceModule
 		rs = this.query("select tbl_name from sqlite_master where lower(sql) = lower('"+schema+"')");
 		if(rs.size() == 0)
 		{
-			
+			System.out.println("Helo");
+			//asdasdsadsaddsasdadsa
 			/*if(this.query("select tbl_name from sqlite_master where tbl_name = lower("++")"))
 			{
 				
