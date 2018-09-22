@@ -42,6 +42,7 @@ public class DB_Handler implements IServiceModule
 	{
 		try
 		{
+			//test
 			Class.forName("org.sqlite.JDBC");
 		}
 		catch (Exception e)
