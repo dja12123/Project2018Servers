@@ -75,6 +75,7 @@ public class NetScanner extends Observable<byte[]> implements IServiceModule, Ru
 			try
 			{
 				socket.receive(packet);
+				
 			}
 			catch (IOException e)
 			{

@@ -39,7 +39,7 @@ public class DB_Handler implements IServiceModule
 	private boolean isOpened = false;
 	
 	static
-	{
+	{//test22
 		try
 		{
 			//test11
