@@ -15,10 +15,18 @@ import node.db.DB_Handler;
 import node.device.DeviceInfo;
 import node.network.DHCPService;
 
+/**
+  * @FileName : NodeControlCore.java
+  * @Project : Project2018Servers
+  * @Date : 2018. 9. 23. 
+  * @작성자 : dja12123
+  * @변경이력 :
+  * @프로그램 설명 : 전체 모듈의 시작과 종료를 관리.
+  */
 public class NodeControlCore
 {
-	public static final String logFormat = "[%1$tT][%2$s][%3$s] %4$s %5$s %n";
-	public static final Logger mainLogger = createLogger(NodeControlCore.class, "main");
+	public static final String logFormat = "[%1$tT][%2$s][%3$s] %4$s %5$s %n";// 로그 포맷
+	public static final Logger mainLogger = createLogger(NodeControlCore.class, "main");// 메인 로거
 	
 	private static final Properties properties = new Properties();
 	
@@ -84,7 +92,8 @@ public class NodeControlCore
 	}
 	
 	public static void initLogger(Logger logger, String loggerName)
-	{
+	{// 로그 초기화 기능
+	 // 다른 모듈에서 기존에 사용하던 logger이 있을경우 우리 시스템 메인 로거에 등록함.
 		logger.setUseParentHandlers(false);
 		ConsoleHandler handler = new ConsoleHandler();
 
@@ -115,7 +124,7 @@ public class NodeControlCore
 	}
 
 	public static Logger createLogger(Class<?> module, String loggerName)
-	{
+	{// 해당 모듈에서 사용할 로거를 만들고 초기화.
 		Logger logger = Logger.getLogger(module.getName().toLowerCase());
 		initLogger(logger, loggerName);
 		return logger;
