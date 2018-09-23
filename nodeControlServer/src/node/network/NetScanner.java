@@ -16,7 +16,7 @@ import node.util.observer.Observable;
 
 public class NetScanner extends Observable<byte[]> implements IServiceModule, Runnable
 {
-	public static final Logger netScannerLogger = NodeControlCore.createLogger(NetScanner.class.getName().toLowerCase(), "netScanner");
+	public static final Logger netScannerLogger = NodeControlCore.createLogger(NetScanner.class, "netScanner");
 	
 	private Thread worker = null;
 	private boolean isWork;

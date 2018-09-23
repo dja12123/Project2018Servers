@@ -18,7 +18,7 @@ import node.network.DHCPService;
 public class NodeControlCore
 {
 	public static final String logFormat = "[%1$tT][%2$s][%3$s] %4$s %5$s %n";
-	public static final Logger mainLogger = createLogger(NodeControlCore.class.getName().toLowerCase(), "main");
+	public static final Logger mainLogger = createLogger(NodeControlCore.class, "main");
 	
 	private static final Properties properties = new Properties();
 	
@@ -114,9 +114,9 @@ public class NodeControlCore
 		logger.addHandler(handler);
 	}
 
-	public static Logger createLogger(String path, String loggerName)
+	public static Logger createLogger(Class<?> module, String loggerName)
 	{
-		Logger logger = Logger.getLogger(path);
+		Logger logger = Logger.getLogger(module.getName().toLowerCase());
 		initLogger(logger, loggerName);
 		return logger;
 	}

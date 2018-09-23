@@ -1,3 +1,4 @@
+
 package node.db;
 
 import java.sql.CallableStatement;
@@ -22,11 +23,19 @@ import node.NodeControlCore;
 import node.util.tablebuilder.Row;
 import node.util.tablebuilder.StringTableBuilder;
 
+/**
+  * @FileName : DB_Handler.java
+  * @Project : Project2018Servers
+  * @Date : 2018. 9. 23. 
+  * @작성자 : dja12123
+  * @변경이력 :
+  * @프로그램 설명 :
+  */
 public class DB_Handler implements IServiceModule
 {
 	public static final String PROP_DB_FILE = "databaseFile";
 	
-	public static final Logger databaseLogger = NodeControlCore.createLogger(DB_Handler.class.getName().toLowerCase(), "db");
+	public static final Logger databaseLogger = NodeControlCore.createLogger(DB_Handler.class, "db");
 	
 	private static final String Variable_Property_Schema = 
 			"CREATE TABLE deviceInfo("

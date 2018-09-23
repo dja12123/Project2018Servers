@@ -3,6 +3,14 @@ package node.network;
 import java.nio.ByteBuffer;
 import java.util.UUID;
 
+/**
+  * @FileName : NetworkPacket.java
+  * @Project : Project2018Servers
+  * @Date : 2018. 9. 23. 
+  * @작성자 : dja12123
+  * @변경이력 :
+  * @프로그램 설명 :
+  */
 public class NetworkPacket
 {
 	private static final byte[] MAGIC_NO = new byte[] {0b01000011, 0b00110101, 0b00110000, 0b00110111};
@@ -15,6 +23,7 @@ public class NetworkPacket
 	// 0:null 1:isBroadCast 2:isStringValue 3:null 4:null 5:null 6:null 7:null
 	private static final int START_SENDER = 5;
 	private static final int RANGE_SENDER = 16;
+	private static final int START_RECEIVER = 16;
 	private static final int RANGE_RECEIVER = 16;
 	private static final int RANGE_KEYLEN = 2;
 	private static final int RANGE_VALUELEN = 4;

@@ -19,7 +19,7 @@ public class InfoBroadcast implements Runnable, IServiceModule
 {
 	public static final String PROP_DELAY_INFOMSG = "delayInfoBroadcast";
 	
-	public static final Logger broadcastLogger = NodeControlCore.createLogger(DB_Handler.class.getName().toLowerCase(), "broadcast");
+	public static final Logger broadcastLogger = NodeControlCore.createLogger(DB_Handler.class, "broadcast");
 	private static InetAddress broadcastIA;
 	
 	private final DeviceInfo deviceInfo;
