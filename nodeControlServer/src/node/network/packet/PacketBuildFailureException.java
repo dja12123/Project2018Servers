@@ -10,6 +10,11 @@ package node.network.packet;
   */
 class PacketBuildFailureException extends Exception
 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public PacketBuildFailureException(String msg)
 	{
 		super(msg);

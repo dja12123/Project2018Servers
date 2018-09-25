@@ -56,9 +56,8 @@ public class PacketUtil
 	
 	public static boolean checkOption(short optionArea, int option)
 	{
-		option -= 1;
-		int checkPointer = 0b0100000000000000 >> option;
-		if((optionArea & checkPointer) == 1)
+		int checkPointer = 0b0100000000000000 >> (option - 1);
+		if((optionArea & checkPointer) != 0)
 		{
 			return true;
 		}
@@ -67,8 +66,7 @@ public class PacketUtil
 	
 	public static short writeOption(short optionArea, int option)
 	{
-		System.out.println(option);
-		short mask = (short)(0b0100000000000000 >> (option - 1));
+		int mask = 0b0100000000000000 >> (option - 1);
 		optionArea = (short)(optionArea | mask);
 		return optionArea;
 	}

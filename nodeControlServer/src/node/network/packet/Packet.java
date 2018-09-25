@@ -60,7 +60,6 @@ public class Packet
 	
 	public String getKey()
 	{
-		System.out.println(this.keySize);
 		byte[] keyByte = new byte[this.keySize];
 		this.source.position(PacketUtil.HEADER_SIZE);
 		this.source.get(keyByte);
@@ -116,7 +115,7 @@ public class Packet
 		else buf.append("[broadcast]");
 		buf.append('\n');
 		buf.append("option:");
-		buf.append(Integer.toBinaryString(this.source.getShort(PacketUtil.START_OPTION)));
+		buf.append(String.format("%16s", Integer.toBinaryString(this.source.getShort(PacketUtil.START_OPTION))).replace(' ', '0'));
 		buf.append('\n');
 		buf.append("key("+this.keySize+"):");
 		buf.append(this.getKey());

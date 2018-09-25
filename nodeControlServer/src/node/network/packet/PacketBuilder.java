@@ -37,7 +37,7 @@ public class PacketBuilder
 			builder.setSender(sender)
 			.setReceiver(receiver)
 			.setKey("Hello")
-			.setData("world!!");
+			.setData(new byte[] {0x71, 0x72});
 			
 			packet = builder.createPacket();
 		}
@@ -157,7 +157,6 @@ public class PacketBuilder
 			buffer.put(PacketUtil.BROADCAST_RECEIVER);
 		buffer.put(this.key);
 		buffer.put(this.data);
-		
 		
 		Packet createdPacket = new Packet(buffer.array());
 		
