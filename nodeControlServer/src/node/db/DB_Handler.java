@@ -1,4 +1,3 @@
-
 package node.db;
 
 import java.sql.CallableStatement;
@@ -34,7 +33,9 @@ import node.util.tablebuilder.StringTableBuilder;
 public class DB_Handler implements IServiceModule
 {
 	public static final String PROP_DB_FILE = "databaseFile";
-	
+	private final String TABLE_SEARCH_QUERY = "select * from sqlite_master %s;";
+	private final String TABLE_CHECK_QUERY = "PRAGMA table_info(%s);";
+
 	public static final Logger databaseLogger = NodeControlCore.createLogger(DB_Handler.class, "db");
 	
 	private static final String Variable_Property_Schema = 
@@ -161,6 +162,117 @@ public class DB_Handler implements IServiceModule
 		String module = classPath.toString();
 		
 		//this.executeQuery("insert into ")
+	}
+	
+
+	private String getTableName(String rawQuery)
+	{
+		StringBuffer buffer = new StringBuffer(rawQuery.length());
+		boolean whiteSpace = false;
+		
+		for(char c : rawQuery.toCharArray())
+		{
+			if(c == ' ')
+			{
+				if(whiteSpace)
+					continue;
+				
+				buffer.append(c);
+				whiteSpace = true;
+				
+				continue;
+			}
+			buffer.append(c);
+			whiteSpace = false;
+		}
+		
+		rawQuery = buffer.toString();
+		try
+		{
+			String temp = rawQuery.substring(0, rawQuery.indexOf("("));
+			
+			return temp.split(" ")[2];
+		}
+		catch(IndexOutOfBoundsException e)
+		{
+			e.printStackTrace();
+		}
+		
+		return "";
+	}
+	
+	public boolean checkTable(String query)
+	{
+		try
+		{
+			String tableName = getTableName(query);
+			String option = String.format("where %s = '%s'","tbl_name",tableName);
+			CachedRowSet rs = query(String.format(TABLE_SEARCH_QUERY, option));
+			
+			int rowCount = rs.last() ? rs.getRow() : 0;
+			if(rowCount == 0)
+				return false;
+		}
+		catch (SQLException e)
+		{
+			//err message HERE!
+		}
+		
+		return true;
+	}
+	
+	public boolean checkStruct(String query)
+	{
+		try
+		{
+			String tableName = getTableName(query);
+			CachedRowSet rs = query(String.format(TABLE_CHECK_QUERY,tableName));
+			HashMap<String, String> dic = new HashMap<>();
+			
+			while(rs.next())
+			{
+				dic.put(rs.getString(2).toLowerCase(), String.format("%s,%d,%d", rs.getString(3),rs.getInt(4),rs.getInt(6)));
+			}
+			
+			int rowCount = rs.last() ? rs.getRow() : 0;
+			
+			String rawStruct = query.substring(query.indexOf("("), query.length());
+			
+			String newQuery = String.format("CREATE TABLE tmp_%s%s",tableName, rawStruct);
+			
+			executeQuery(newQuery);
+			rs = query(String.format(TABLE_CHECK_QUERY,"tmp_" + tableName));
+			executeQuery(String.format("DROP TABLE tmp_%s;", tableName));
+			
+			if(rowCount != (rs.last() ? rs.getRow() : 0))
+				return false;
+			
+			rs.beforeFirst();
+			while(rs.next())
+			{
+				String key = rs.getString(2).toLowerCase();
+				if(dic.containsKey(key))
+				{
+					String dest = dic.get(key);
+					
+					String[] temp = dest.split(",");
+					
+					String type = temp[0];
+					int notNull = Integer.valueOf(temp[1]);
+					int pk = Integer.valueOf(temp[2]);
+					
+					if(!(type.equals(rs.getString(3)) && notNull == rs.getInt(4) && pk == rs.getInt(6)))
+						return false;
+				}
+				else
+					return false;
+			}
+		}
+		catch (SQLException e)
+		{
+			//err message HERE!
+		}
+		return true;
 	}
 	
 	public static void printResultSet(CachedRowSet rs)
