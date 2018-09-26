@@ -1,0 +1,51 @@
+//gradle plugins for this project
+plugins 
+{
+    id 'java'
+    id 'application'
+}
+
+//variables for gradle script
+ext 
+{
+  _javaVersion = '1.8'
+  _mainClassName = 'node.NodeControlCore'
+}
+
+//set variables to proper options
+mainClassName = _mainClassName
+ 
+sourceCompatibility = _javaVersion
+targetCompatibility = _javaVersion
+
+//libs for this project
+dependencies 
+{
+    compile project(':nodeControlServer')
+}
+
+//options for making jarFile
+jar 
+{
+    manifest 
+    {
+        attributes 'Main-Class': _mainClassName
+    }
+    from 
+    {
+        configurations.compile.collect 
+        {
+            it.isDirectory() ? it : zipTree(it)
+        }
+    }
+}
+
+[compileJava, compileTestJava, javadoc]*.options*.encoding = 'UTF-8'
+tasks.withType(JavaCompile) 
+{
+    options.encoding = 'UTF-8'
+}
+javadoc 
+{
+    options.encoding = 'UTF-8'
+}
