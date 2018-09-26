@@ -14,8 +14,5 @@ public class DeviceTable
 		
 	}
 	
-	registerDevice()
-	{
-		
-	}
+
 }
