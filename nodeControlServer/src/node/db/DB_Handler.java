@@ -7,6 +7,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -49,10 +50,9 @@ public class DB_Handler implements IServiceModule
 	private boolean isOpened = false;
 	
 	static
-	{//test22
+	{
 		try
 		{
-			//test11
 			Class.forName("org.sqlite.JDBC");
 		}
 		catch (Exception e)

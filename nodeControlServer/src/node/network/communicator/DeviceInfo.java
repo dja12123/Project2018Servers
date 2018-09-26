@@ -1,4 +1,4 @@
-package node.device;
+package node.network.communicator;
 
 import java.net.Inet4Address;
 import java.sql.ResultSet;

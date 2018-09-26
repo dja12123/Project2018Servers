@@ -1,4 +1,4 @@
-package node.network;
+package node.network.service;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -13,7 +13,8 @@ import java.util.logging.Logger;
 import node.IServiceModule;
 import node.NodeControlCore;
 import node.db.DB_Handler;
-import node.device.DeviceInfo;
+import node.network.NetworkManager;
+import node.network.communicator.DeviceInfo;
 
 public class InfoBroadcast implements Runnable, IServiceModule
 {

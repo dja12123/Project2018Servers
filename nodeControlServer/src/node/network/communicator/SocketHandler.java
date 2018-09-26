@@ -1,4 +1,4 @@
-package node.network;
+package node.network.communicator;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -12,18 +12,19 @@ import java.util.logging.Logger;
 import node.IServiceModule;
 import node.NodeControlCore;
 import node.db.DB_Handler;
+import node.network.NetworkManager;
 import node.util.observer.Observable;
 
-public class NetScanner extends Observable<byte[]> implements IServiceModule, Runnable
+public class SocketHandler implements IServiceModule, Runnable
 {
-	public static final Logger netScannerLogger = NodeControlCore.createLogger(NetScanner.class, "netScanner");
+	public static final Logger netScannerLogger = NodeControlCore.createLogger(SocketHandler.class, "netScanner");
 	
 	private Thread worker = null;
 	private boolean isWork;
 	
 	private DatagramSocket socket;
 	
-	public NetScanner()
+	public SocketHandler()
 	{
 		
 	}

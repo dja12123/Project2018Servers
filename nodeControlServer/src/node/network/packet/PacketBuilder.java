@@ -37,7 +37,7 @@ public class PacketBuilder
 			builder.setSender(sender)
 			.setReceiver(receiver)
 			.setKey("Hello")
-			.setData(new byte[] {0x71, 0x72});
+			.setData("data");
 			
 			packet = builder.createPacket();
 		}

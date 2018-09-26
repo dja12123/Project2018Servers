@@ -12,8 +12,8 @@ import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
 
 import node.db.DB_Handler;
-import node.device.DeviceInfo;
-import node.network.DHCPService;
+import node.network.communicator.DeviceInfo;
+import node.network.service.DHCPService;
 
 /**
   * @FileName : NodeControlCore.java

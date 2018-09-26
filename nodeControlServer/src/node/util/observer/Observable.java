@@ -5,7 +5,6 @@ import java.util.List;
 
 public class Observable<ObservedType>
 {
-
 	private List<Observer<ObservedType>> _observers = new LinkedList<Observer<ObservedType>>();
 
 	public void addObserver(Observer<ObservedType> obs)
@@ -20,6 +19,15 @@ public class Observable<ObservedType>
 		}
 		_observers.add(obs);
 	}
+	
+	public void removeObserver(Observer<ObservedType> obs)
+	{
+		if (obs == null)
+		{
+			throw new IllegalArgumentException("Tried to remove a null observer");
+		}
+		_observers.remove(obs);
+	}
 
 	public void notifyObservers(ObservedType data)
 	{
@@ -27,5 +35,10 @@ public class Observable<ObservedType>
 		{
 			obs.update(this, data);
 		}
+	}
+	
+	public int size()
+	{
+		return this._observers.size();
 	}
 }

@@ -1,4 +1,4 @@
-package node.network;
+package node.network.service;
 
 import java.io.IOException;
 import java.net.Inet4Address;

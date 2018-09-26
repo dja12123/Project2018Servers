@@ -9,7 +9,7 @@ import java.util.UUID;
   * @Date : 2018. 9. 23. 
   * @작성자 : dja12123
   * @변경이력 :
-  * @프로그램 설명 : 네트워크 패킷 처리기
+  * @프로그램 설명 : 네트워크 패킷
   */
 public class Packet
 {
