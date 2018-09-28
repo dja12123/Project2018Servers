@@ -128,24 +128,4 @@ public class Packet
 		
 		return buf.toString();
 	}
-	
-	public static boolean isPacket(byte[] arr)
-	{
-		if(arr.length < PacketUtil.HEADER_SIZE)
-			return false;
-		
-		ByteBuffer buf;
-		buf = ByteBuffer.wrap(arr, PacketUtil.START_MAGICNO, PacketUtil.RANGE_MAGICNO);
-		
-		if(!buf.equals(ByteBuffer.wrap(PacketUtil.MAGIC_NO)))
-			return false;
-		
-		buf = ByteBuffer.wrap(arr);
-		
-		if(buf.getInt(PacketUtil.START_KEYLEN) + buf.getInt(PacketUtil.START_DATALEN) + PacketUtil.HEADER_SIZE != arr.length)
-			return false;
-		
-		return true;
-	}
-
 }

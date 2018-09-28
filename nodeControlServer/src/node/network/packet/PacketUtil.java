@@ -1,6 +1,7 @@
 package node.network.packet;
 
 import java.nio.ByteBuffer;
+import java.util.Arrays;
 import java.util.UUID;
 
 /**
@@ -86,5 +87,40 @@ public class PacketUtil
 		bb.putLong(uuid.getMostSignificantBits());
 		bb.putLong(uuid.getLeastSignificantBits());
 		return bb.array();
+	}
+	
+	public static boolean isPacket(byte[] arr)
+	{
+		if(arr.length < PacketUtil.HEADER_SIZE)
+			return false;
+		
+		ByteBuffer buf;
+		buf = ByteBuffer.wrap(arr, PacketUtil.START_MAGICNO, PacketUtil.RANGE_MAGICNO);
+		
+		if(!buf.equals(ByteBuffer.wrap(PacketUtil.MAGIC_NO)))
+			return false;
+		
+		buf = ByteBuffer.wrap(arr);
+		
+		if(buf.getInt(PacketUtil.START_KEYLEN) + buf.getInt(PacketUtil.START_DATALEN) + PacketUtil.HEADER_SIZE != arr.length)
+			return false;
+		
+		return true;
+	}
+	
+	public static byte[] clonePacketByte(byte[] packetBuffer)
+	{
+		byte[] copyBuffer;
+		int keySize, dataSize;
+		
+		ByteBuffer byteBuffer = ByteBuffer.wrap(packetBuffer);
+		byteBuffer.position(START_KEYLEN);
+		keySize = byteBuffer.getInt();
+		byteBuffer.position(START_DATALEN);
+		dataSize = byteBuffer.getInt();
+		
+		copyBuffer = Arrays.copyOf(packetBuffer, HEADER_SIZE + keySize + dataSize);
+		
+		return copyBuffer;
 	}
 }

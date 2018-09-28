@@ -6,18 +6,21 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import node.IServiceModule;
 import node.NodeControlCore;
-import node.db.DB_Handler;
 import node.network.NetworkManager;
-import node.util.observer.Observable;
+import node.network.packet.Packet;
+import node.network.packet.PacketUtil;
 
 public class SocketHandler implements IServiceModule, Runnable
 {
 	public static final Logger netScannerLogger = NodeControlCore.createLogger(SocketHandler.class, "netScanner");
+	private ExecutorService packetProcessService = Executors.newCachedThreadPool();
 	
 	private Thread worker = null;
 	private boolean isWork;
@@ -63,20 +66,22 @@ public class SocketHandler implements IServiceModule, Runnable
 		
 		this.isWork = false;
 		this.worker.interrupt();
+		this.socket.close();
 	}
 
 	@Override
 	public void run()
 	{
-		byte[] packetBuffer = new byte[8192];
+		byte[] packetBuffer = new byte[PacketUtil.HEADER_SIZE + PacketUtil.MAX_SIZE_KEY + PacketUtil.MAX_SIZE_DATA];
 		DatagramPacket packet;
 		while(this.isWork)
 		{
 			packet = new DatagramPacket(packetBuffer, packetBuffer.length);
 			try
 			{
-				socket.receive(packet);
-				
+				this.socket.receive(packet);
+				//PacketUtil.
+				this.packetProcessService.execute(new PacketProcess(packet));
 			}
 			catch (IOException e)
 			{
@@ -84,4 +89,26 @@ public class SocketHandler implements IServiceModule, Runnable
 			}
 		}
 	}
+	
+	public void sendMessage(Packet packet)
+	{// 장치 테이블 조회후 날리기?
+		
+	}
+}
+
+class PacketProcess implements Runnable
+{
+
+	public PacketProcess(DatagramPacket packet)
+	{
+		// TODO Auto-generated constructor stub
+	}
+
+	@Override
+	public void run()
+	{
+		// TODO Auto-generated method stub
+		
+	}
+	
 }
