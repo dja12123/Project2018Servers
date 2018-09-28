@@ -35,7 +35,7 @@ public class PacketBuilder
 		try
 		{
 			builder.setSender(sender)
-			.setReceiver(receiver)
+			.setBroadCast()
 			.setKey("Hello")
 			.setData("data");
 			
@@ -79,6 +79,7 @@ public class PacketBuilder
 		if(this.setReceiver) throw new PacketBuildFailureException("The receiver has already been assigned");
 		
 		this.option = PacketUtil.writeOption(this.option, PacketUtil.OPT_ISBROADCAST);
+		this.receiver = PacketUtil.BROADCAST_RECEIVER;
 		this.setReceiver = true;
 		return this;
 	}

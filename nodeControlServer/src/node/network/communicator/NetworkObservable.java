@@ -7,11 +7,19 @@ import node.network.packet.Packet;
 import node.util.observer.Observable;
 import node.util.observer.Observer;
 
-public class CommunicationHandler
+/**
+  * @FileName : NetworkObservable.java
+  * @Project : Project2018Servers
+  * @Date : 2018. 9. 26. 
+  * @작성자 : dja12123
+  * @변경이력 :
+  * @프로그램 설명 : 네트워크 수신기 옵저버블
+  */
+public class NetworkObservable
 {
 	private Map<String, Observable<NetworkEvent>> observerMap;
 	
-	private CommunicationHandler()
+	private NetworkObservable()
 	{
 		this.observerMap = new HashMap<String, Observable<NetworkEvent>>();
 	}
@@ -46,8 +54,14 @@ public class CommunicationHandler
 		}
 	}
 	
-	public void sendMessage(Packet packet)
+	void packetReceive(Packet packet, DeviceInfo sender)
 	{
-		
+		NetworkEvent eventObj = new NetworkEvent(packet, sender);
+		String key = packet.getKey();
+		Observable<NetworkEvent> observable = this.observerMap.getOrDefault(key, null);
+		if(observable != null)
+		{
+			observable.notifyObservers(eventObj);
+		}
 	}
 }
