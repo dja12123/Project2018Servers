@@ -29,7 +29,7 @@ public class NetScanner extends Observable<byte[]> implements IServiceModule, Ru
 	}
 
 	@Override
-	public boolean start()
+	public boolean startModule()
 	{
 		if(this.isWork) return true;
 		
@@ -56,7 +56,7 @@ public class NetScanner extends Observable<byte[]> implements IServiceModule, Ru
 	}
 
 	@Override
-	public void stop()
+	public void stopModule()
 	{
 		if(!this.isWork) return;
 		

@@ -59,14 +59,14 @@ public class WebServiceMain extends NanoHTTPD implements IServiceModule
 	}
 	
 	@Override
-	public boolean start()
+	public boolean startModule()
 	{
 		ServerRunner.run(WebServiceMain.class);
 		return true;
 	}
 
 	@Override
-	public void stop()
+	public void stopModule()
 	{
 		
 		

@@ -32,14 +32,14 @@ public class DeviceInfo implements IServiceModule
 	}
 
 	@Override
-	public boolean start()
+	public boolean startModule()
 	{
 		this.dbHandler.checkAndCreateTable(INFO_TABLE_SCHEMA);
 		return true;
 	}
 
 	@Override
-	public void stop()
+	public void stopModule()
 	{
 		// TODO Auto-generated method stub
 		

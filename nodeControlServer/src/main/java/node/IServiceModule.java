@@ -2,6 +2,6 @@ package node;
 
 public interface IServiceModule
 {
-	boolean start();
-	void stop();
+	boolean startModule();
+	void stopModule();
 }

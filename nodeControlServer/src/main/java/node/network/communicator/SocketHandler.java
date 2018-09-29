@@ -33,7 +33,7 @@ public class SocketHandler implements IServiceModule, Runnable
 	}
 
 	@Override
-	public boolean start()
+	public boolean startModule()
 	{
 		if(this.isWork) return true;
 		
@@ -60,7 +60,7 @@ public class SocketHandler implements IServiceModule, Runnable
 	}
 
 	@Override
-	public void stop()
+	public void stopModule()
 	{
 		if(!this.isWork) return;
 		

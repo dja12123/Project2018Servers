@@ -108,7 +108,7 @@ public class DHCPService extends DHCPServlet implements IServiceModule
 	}
 
 	@Override
-	public boolean start()
+	public boolean startModule()
 	{
 		dhcpLogger.log(Level.INFO, "DHCP 로드");
 		String loadInterface = NodeControlCore.getProp(PROP_INTERFACE).toString();
@@ -151,7 +151,7 @@ public class DHCPService extends DHCPServlet implements IServiceModule
 	}
 
 	@Override
-	public void stop()
+	public void stopModule()
 	{
 		// TODO Auto-generated method stub
 		

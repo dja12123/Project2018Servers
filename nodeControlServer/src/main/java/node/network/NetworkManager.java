@@ -12,14 +12,14 @@ public class NetworkManager implements IServiceModule
 	}
 
 	@Override
-	public boolean start()
+	public boolean startModule()
 	{
 		
 		return false;
 	}
 
 	@Override
-	public void stop()
+	public void stopModule()
 	{
 		
 		

@@ -65,8 +65,8 @@ public class NodeControlCore
 	{
 		try
 		{
-			if(!this.dbHandler.start()) throw new Exception("DB핸들러 로드 실패");
-			if(!this.deviceInfo.start()) throw new Exception("장치 정보 모듈 로드 실패");
+			if(!this.dbHandler.startModule()) throw new Exception("DB핸들러 로드 실패");
+			if(!this.deviceInfo.startModule()) throw new Exception("장치 정보 모듈 로드 실패");
 		}
 		catch(Exception e)
 		{
@@ -79,8 +79,8 @@ public class NodeControlCore
 	
 	private void stopService()
 	{
-		this.dbHandler.stop();
-		this.deviceInfo.stop();
+		this.dbHandler.stopModule();
+		this.deviceInfo.stopModule();
 		mainLogger.log(Level.INFO, "서비스 중지");
 	}
 

@@ -78,9 +78,9 @@ public class InfoBroadcast implements Runnable, IServiceModule
 		
 	}
 	
-	public boolean start()
+	public boolean startModule()
 	{
-		if(this.isRun) this.stop();
+		if(this.isRun) this.stopModule();
 		this.isRun = true;
 		
 		try
@@ -107,7 +107,7 @@ public class InfoBroadcast implements Runnable, IServiceModule
 		return true;
 	}
 	
-	public void stop()
+	public void stopModule()
 	{
 		if(!this.isRun) return;
 		this.isRun = false;

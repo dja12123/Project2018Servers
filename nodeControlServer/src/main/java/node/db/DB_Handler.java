@@ -119,9 +119,9 @@ public class DB_Handler implements IServiceModule
 	}
 	
 	@Override
-	public boolean start()
+	public boolean startModule()
 	{
-		if(this.isOpened) this.stop();
+		if(this.isOpened) this.stopModule();
 		String path = DB_Handler.class.getProtectionDomain().getCodeSource().getLocation().getPath()+
 				NodeControlCore.getProp(PROP_DB_FILE);
 		databaseLogger.log(Level.INFO, "데이터베이스 열기 ("+path+")");
@@ -142,7 +142,7 @@ public class DB_Handler implements IServiceModule
 	}
 
 	@Override
-	public void stop()
+	public void stopModule()
 	{
 		if (!this.isOpened) return;
 

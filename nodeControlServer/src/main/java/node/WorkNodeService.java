@@ -8,14 +8,14 @@ public class WorkNodeService implements IServiceModule
 	}
 
 	@Override
-	public boolean start()
+	public boolean startModule()
 	{
 		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
-	public void stop()
+	public void stopModule()
 	{
 		// TODO Auto-generated method stub
 		
