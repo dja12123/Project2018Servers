@@ -1,4 +1,4 @@
-package node.network.packet;
+package main.java.node.network.packet;
 
 import java.nio.ByteBuffer;
 import java.util.UUID;
@@ -9,7 +9,7 @@ import java.util.UUID;
   * @Date : 2018. 9. 23. 
   * @작성자 : dja12123
   * @변경이력 :
-  * @프로그램 설명 : 네트워크 패킷 처리기
+  * @프로그램 설명 : 네트워크 패킷
   */
 public class Packet
 {
@@ -60,7 +60,6 @@ public class Packet
 	
 	public String getKey()
 	{
-		System.out.println(this.keySize);
 		byte[] keyByte = new byte[this.keySize];
 		this.source.position(PacketUtil.HEADER_SIZE);
 		this.source.get(keyByte);
@@ -116,7 +115,7 @@ public class Packet
 		else buf.append("[broadcast]");
 		buf.append('\n');
 		buf.append("option:");
-		buf.append(Integer.toBinaryString(this.source.getShort(PacketUtil.START_OPTION)));
+		buf.append(String.format("%16s", Integer.toBinaryString(this.source.getShort(PacketUtil.START_OPTION))).replace(' ', '0'));
 		buf.append('\n');
 		buf.append("key("+this.keySize+"):");
 		buf.append(this.getKey());
@@ -129,24 +128,4 @@ public class Packet
 		
 		return buf.toString();
 	}
-	
-	public static boolean isPacket(byte[] arr)
-	{
-		if(arr.length < PacketUtil.HEADER_SIZE)
-			return false;
-		
-		ByteBuffer buf;
-		buf = ByteBuffer.wrap(arr, PacketUtil.START_MAGICNO, PacketUtil.RANGE_MAGICNO);
-		
-		if(!buf.equals(ByteBuffer.wrap(PacketUtil.MAGIC_NO)))
-			return false;
-		
-		buf = ByteBuffer.wrap(arr);
-		
-		if(buf.getInt(PacketUtil.START_KEYLEN) + buf.getInt(PacketUtil.START_DATALEN) + PacketUtil.HEADER_SIZE != arr.length)
-			return false;
-		
-		return true;
-	}
-
 }
