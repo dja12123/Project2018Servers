@@ -9,4 +9,5 @@ dependencies
 {
     compile files('lib/sqlite-jdbc-3.23.1.jar')
     compile files('lib/nanohttpd-2.3.1.jar')
-    compile project(':dhcp4java')}
+    compile project(':dhcp4java')
+}
