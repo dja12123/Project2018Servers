@@ -15,6 +15,7 @@ import fi.iki.elonen.util.ServerRunner;
 
 public class WebServiceMain extends NanoHTTPD implements IServiceModule 
 {
+	//NodeControlCore.createLogger를 이용
 	private static final Logger LOG = Logger.getLogger(WebServiceMain.class.getName());
 	
 	public WebServiceMain() {
@@ -34,7 +35,12 @@ public class WebServiceMain extends NanoHTTPD implements IServiceModule
 		String uri = session.getUri();
 		WebServiceMain.LOG.info(method + " '" + uri + "' ");
 		
-		File readFile = new File("~/nanohttpd/www/index.html");
+		//웹서비스 할 때 필요한 파일 스트림 모듈로 만들기(fileIO 패키지)
+		//StringBuffer 적극 사용
+		//url이용해서 어떤 요청인지 구분 ->
+		//   refer:: https://github.com/Teaonly/android-eye/blob/master/src/teaonly/droideye/TeaServer.java
+		
+		File readFile = new File("/home/pi/nanohttpd/www/index.html");
 		BufferedReader readBuffer = null;
 		try 
 		{
@@ -45,11 +51,11 @@ public class WebServiceMain extends NanoHTTPD implements IServiceModule
 			e.printStackTrace();
 		}
 		
-		String msg = null;
+		String msg = "";
 		
         try 
         {
-			while ((msg = readBuffer.readLine()) != null) {}
+			while ((msg += readBuffer.readLine()) != null) {}
 			readBuffer.close();
         } 
 		catch (IOException e) 
@@ -61,7 +67,7 @@ public class WebServiceMain extends NanoHTTPD implements IServiceModule
         	e1.printStackTrace();
         }
 
-
+        
 		return newFixedLengthResponse(msg);
 	}
 	
