@@ -1,4 +1,4 @@
-package main.java.node.network.communicator;
+package node.network.communicator;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -11,8 +11,8 @@ import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import main.java.node.network.packet.Packet;
-import main.java.node.network.packet.PacketUtil;
+import node.network.packet.Packet;
+import node.network.packet.PacketUtil;
 import node.IServiceModule;
 import node.NodeControlCore;
 import node.network.NetworkManager;

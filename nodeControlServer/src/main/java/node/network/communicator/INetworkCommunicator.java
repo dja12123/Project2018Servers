@@ -1,4 +1,4 @@
-package main.java.node.network.communicator;
+package node.network.communicator;
 
 public interface INetworkCommunicator
 {
