@@ -1,0 +1,12 @@
+//gradle plugins for this project
+plugins 
+{
+    id 'java'
+}
+
+//libs for this project
+dependencies 
+{
+    compile files('lib/sqlite-jdbc-3.23.1.jar')
+    compile project(':dhcp4java')
+}
