@@ -18,6 +18,12 @@ mainClassName = _mainClassName
 sourceCompatibility = _javaVersion
 targetCompatibility = _javaVersion
 
+repositories 
+{
+    mavenCentral()
+    jcenter()
+}
+
 //libs for this project
 dependencies 
 {
