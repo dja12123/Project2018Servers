@@ -21,6 +21,13 @@ public class WebServiceMain extends NanoHTTPD implements IServiceModule
 		super(80);
 	}
 	
+	public static void main(String[] args)
+	{
+		System.out.println("Hello!");
+		WebServiceMain main = new WebServiceMain();
+		main.startModule();
+	}
+	
 	@Override
 	public Response serve(IHTTPSession session) {
 		Method method = session.getMethod();
