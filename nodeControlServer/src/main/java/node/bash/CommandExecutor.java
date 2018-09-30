@@ -8,9 +8,15 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.Writer;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import node.log.LogWriter;
 
 public class CommandExecutor {
 	//매개변수로 ArrayList<문자열> 타입으로 넘기면 bash명령이 실행됨
+	public static final Logger cmdlogger = LogWriter.createLogger(CommandExecutor.class, "cmd");
+	
 	public static void executeCommands(ArrayList<String> cmd) throws IOException {
 		StringBuffer successOutput = new StringBuffer();
 		StringBuffer errorOutput = new StringBuffer();
@@ -27,15 +33,15 @@ public class CommandExecutor {
 	        Process process = pb.start();
 	        successBufferReader = new BufferedReader(new InputStreamReader(process.getInputStream(), "UTF-8"));
 	        while((msg = successBufferReader.readLine()) != null) {
-	        	successOutput.append(msg + System.getProperty("line.separator"));
+	        	cmdlogger.log(Level.SEVERE, msg + System.getProperty("line.separator"));
 	        }
 	        errorBufferReader = new BufferedReader(new InputStreamReader(process.getErrorStream(), "UTF-8"));
 	        while((msg = errorBufferReader.readLine()) != null) {
-	        	errorOutput.append(msg + System.getProperty("line.separator"));
+	        	cmdlogger.log(Level.SEVERE, msg + System.getProperty("line.separator"));
 	        }
 	        
 	        process.waitFor();
-	        //shell 실행이 정상종료/ 비정상종료 됬을때 콘솔에 로그 표시
+	        /*//shell 실행이 정상종료/ 비정상종료 됬을때 콘솔에 로그 표시
 	        if(process.exitValue() == 0) {
 	        	System.out.println("Succeed Process# Here Printed Process log");
 	        	System.out.println(successOutput.toString());
@@ -48,7 +54,7 @@ public class CommandExecutor {
 	        if(errorOutput.length() != 0) {
 	        	System.out.println("Shell Error#Here Printed Shell log");
 	        	System.out.println(errorOutput.toString());
-	        }
+	        }*/
 	        
 	    } catch (InterruptedException e) {
 			e.printStackTrace();
