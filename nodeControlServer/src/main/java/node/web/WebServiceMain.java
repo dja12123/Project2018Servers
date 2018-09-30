@@ -7,6 +7,7 @@ import fileIO.FileHandler;
 import java.util.logging.Logger;
 
 import fi.iki.elonen.NanoHTTPD;
+import fi.iki.elonen.NanoHTTPD.Response.IStatus;
 import fi.iki.elonen.util.ServerRunner;
 
 enum MIME_TYPE {
@@ -27,7 +28,7 @@ enum MIME_TYPE {
 public class WebServiceMain extends NanoHTTPD implements IServiceModule 
 {
 	private static final Logger LOG = LogWriter.createLogger(WebServiceMain.class, "WebServiceMain");
-	private static final int MAXIMUM_SIZE_OF_IMAGE = 1000000;
+	//private static final int MAXIMUM_SIZE_OF_IMAGE = 1000000;
 	public static final String rootDirectory = "/root/Project2018Servers/nodeControlServer/resources/www";
 	
 	public WebServiceMain() {
@@ -36,14 +37,16 @@ public class WebServiceMain extends NanoHTTPD implements IServiceModule
 	
 	public static void main(String[] args)
 	{
-		System.out.println("Hello!");
 		WebServiceMain main = new WebServiceMain();
 		main.startModule();
 	}
 	
 	private static Response serveImage(MIME_TYPE imageType, String path) {
-		return newFixedLengthResponse(NanoHTTPD.Response.Status.OK, imageType.toString(), 
-				FileHandler.getFileInputStream(path), MAXIMUM_SIZE_OF_IMAGE);
+		IStatus status = NanoHTTPD.Response.Status.OK;
+		String imageTypeStr = imageType.toString();
+		
+		return newFixedLengthResponse(status, imageTypeStr, 
+				FileHandler.getFileInputStream(path), -1);
 	}
 	
 	
