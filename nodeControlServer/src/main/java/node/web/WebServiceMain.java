@@ -37,7 +37,7 @@ public class WebServiceMain extends NanoHTTPD implements IServiceModule
 		//url이용해서 어떤 요청인지 구분 ->
 		//   refer:: https://github.com/Teaonly/android-eye/blob/master/src/teaonly/droideye/TeaServer.java
 		
-		String msg = FileHandler.readFileString("~/Project2018Servers/nodeControlServer/resources/www/index.html");
+		String msg = FileHandler.readFileString("/root/Project2018Servers/nodeControlServer/resources/www/index.html");
         System.out.println("Response Data Recieve...");
 		return newFixedLengthResponse(msg);
 	}
