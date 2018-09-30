@@ -18,14 +18,14 @@ public class FileHandler {
 			return null;
 		}
 
-		String fileReadString = "";
+		StringBuffer fileReadString = new StringBuffer();
 		String tempReadString = "";
 		
         try 
         {
 			while ((tempReadString = bufRead.readLine()) != null) 
 			{
-				fileReadString += tempReadString;
+				fileReadString.append(tempReadString);
 			}
 			
 			bufRead.close();
@@ -36,6 +36,6 @@ public class FileHandler {
 			return null;
 		}
 		
-		return fileReadString;
+		return fileReadString.toString();
 	}	
 }
