@@ -2,12 +2,8 @@ package node.web;
 
 import node.IServiceModule;
 import node.log.LogWriter;
+import fileIO.FileHandler;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
 import java.util.Map;
 import java.util.logging.Logger;
 
@@ -41,36 +37,7 @@ public class WebServiceMain extends NanoHTTPD implements IServiceModule
 		//url이용해서 어떤 요청인지 구분 ->
 		//   refer:: https://github.com/Teaonly/android-eye/blob/master/src/teaonly/droideye/TeaServer.java
 		
-		File readFile = new File("/home/pi/nanohttpd/www/index.html");
-		BufferedReader readBuffer = null;
-		try 
-		{
-			readBuffer = new BufferedReader(new FileReader(readFile));
-		} 
-		catch (FileNotFoundException e) 
-		{
-			e.printStackTrace();
-			return newFixedLengthResponse("");
-		}
-		
-		System.out.println("File Read Complete!");
-		String msg = "";
-		String temp = "";
-		
-        try 
-        {
-			while ((temp = readBuffer.readLine()) != null) 
-			{
-				msg += temp;
-			}
-			
-			readBuffer.close();
-        } 
-		catch (IOException e) 
-		{
-			e.printStackTrace();
-		}
-        
+		String msg = FileHandler.readFileString("/home/pi/nanohttpd/www/index.html");
         System.out.println("Response Data Recieve...");
 		return newFixedLengthResponse(msg);
 	}
