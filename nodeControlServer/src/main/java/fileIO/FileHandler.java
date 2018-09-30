@@ -25,7 +25,7 @@ public class FileHandler {
         {
 			while ((tempReadString = bufRead.readLine()) != null) 
 			{
-				fileReadString.append(tempReadString);
+				fileReadString.append(tempReadString + "\n");
 			}
 			
 			bufRead.close();
