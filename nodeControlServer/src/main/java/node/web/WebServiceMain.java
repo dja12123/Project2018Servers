@@ -55,10 +55,15 @@ public class WebServiceMain extends NanoHTTPD implements IServiceModule
 		
 		System.out.println("File Read Complete!");
 		String msg = "";
+		String temp = "";
 		
         try 
         {
-			while ((msg += readBuffer.readLine()) != null) {}
+			while ((temp = readBuffer.readLine()) != null) 
+			{
+				msg += temp;
+			}
+			
 			readBuffer.close();
         } 
 		catch (IOException e) 
