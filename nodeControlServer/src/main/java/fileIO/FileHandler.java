@@ -7,6 +7,28 @@ import java.io.FileReader;
 import java.io.IOException;
 
 public class FileHandler {
+	public static File[] getFileList(String path) {
+		File[] fileList = null;
+		try {
+			fileList = new File(path).listFiles();
+		} catch (SecurityException e) {
+			System.out.println("[Error] Permission denied. Check Permission!");
+		}
+		
+		if (fileList == null) {
+			System.out.println("[Error] Directory is not found");
+		}
+		
+		//Test Code
+		if (fileList != null) {
+			for (File file : fileList) {
+				System.out.println(file.getName());
+			}
+		}
+		
+		return fileList;
+	}
+	
 	public static String readFileString(String path) {
 		File file = new File(path);
 		BufferedReader bufRead;

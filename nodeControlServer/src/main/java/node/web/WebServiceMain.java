@@ -4,6 +4,7 @@ import node.IServiceModule;
 import node.log.LogWriter;
 import fileIO.FileHandler;
 
+import java.io.File;
 import java.util.Map;
 import java.util.logging.Logger;
 
@@ -30,6 +31,9 @@ public class WebServiceMain extends NanoHTTPD implements IServiceModule
 	public Response serve(IHTTPSession session) {
 		Method method = session.getMethod();
 		String uri = session.getUri();
+		String rootDirectory = "/root/Project2018Servers/nodeControlServer/resources/www/";
+		File[] fileList = FileHandler.getFileList(rootDirectory);
+		
 		WebServiceMain.LOG.info(method + " '" + uri + "' ");
 		
 		//웹서비스 할 때 필요한 파일 스트림 모듈로 만들기(fileIO 패키지)
@@ -37,7 +41,12 @@ public class WebServiceMain extends NanoHTTPD implements IServiceModule
 		//url이용해서 어떤 요청인지 구분 ->
 		//   refer:: https://github.com/Teaonly/android-eye/blob/master/src/teaonly/droideye/TeaServer.java
 		
-		String msg = FileHandler.readFileString("/root/Project2018Servers/nodeControlServer/resources/www/index.html");
+		String msg = "";
+		if (uri.startsWith("/")) { //Root Directory
+			msg = FileHandler.readFileString("/root/Project2018Servers/nodeControlServer/resources/www/index.html");
+			
+		}
+		
         System.out.println("Response Data Recieve...");
 		return newFixedLengthResponse(msg);
 	}
