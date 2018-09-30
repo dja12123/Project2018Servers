@@ -18,8 +18,8 @@ public class CommandExecutor {
 	public static final Logger cmdlogger = LogWriter.createLogger(CommandExecutor.class, "cmd");
 	
 	public static void executeCommands(ArrayList<String> cmd) throws IOException {
-		StringBuffer successOutput = new StringBuffer();
-		StringBuffer errorOutput = new StringBuffer();
+		//StringBuffer successOutput = new StringBuffer();
+		//StringBuffer errorOutput = new StringBuffer();
 		BufferedReader successBufferReader = null;
 		BufferedReader errorBufferReader = null;
 		String msg = null;

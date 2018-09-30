@@ -7,6 +7,7 @@ public class ZookeeperServerManager {
 	private ConcurrentHashMap<String, String> IpTable = new ConcurrentHashMap<String, String>(); 
 	
 	public boolean putData(String name, String ip) {
+		// 해쉬맵에 넣는대신 안에 데이터와 겹치는게 없으면 true 아니면 false
 		if(null == this.IpTable.put(name, ip))
 			return true;
 		else
