@@ -14,10 +14,11 @@ import javax.sql.rowset.RowSetProvider;
 import node.IServiceModule;
 import node.NodeControlCore;
 import node.db.DB_Handler;
+import node.log.LogWriter;
 
 public class DeviceInfo implements IServiceModule
 {
-	public static final Logger deviceInfoLogger = NodeControlCore.createLogger(DeviceInfo.class, "deviceInfo");
+	public static final Logger deviceInfoLogger = LogWriter.createLogger(DeviceInfo.class, "deviceInfo");
 	
 	private static final String INFO_TABLE_SCHEMA = 
 				"CREATE TABLE deviceInfo("

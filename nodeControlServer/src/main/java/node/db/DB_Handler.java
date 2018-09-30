@@ -22,6 +22,7 @@ import node.IServiceModule;
 import node.NodeControlCore;
 import node.util.tablebuilder.Row;
 import node.util.tablebuilder.StringTableBuilder;
+import node.log.LogWriter;
 
 /**
   * @FileName : DB_Handler.java
@@ -37,7 +38,7 @@ public class DB_Handler implements IServiceModule
 	private final String TABLE_SEARCH_QUERY = "select * from sqlite_master %s;";
 	private final String TABLE_CHECK_QUERY = "PRAGMA table_info(%s);";
 
-	public static final Logger databaseLogger = NodeControlCore.createLogger(DB_Handler.class, "db");
+	public static final Logger databaseLogger = LogWriter.createLogger(DB_Handler.class, "db");
 	
 	private static final String Variable_Property_Schema = 
 			"CREATE TABLE deviceInfo("

@@ -14,12 +14,13 @@ import node.IServiceModule;
 import node.NodeControlCore;
 import node.db.DB_Handler;
 import node.device.DeviceInfo;
+import node.log.LogWriter;
 
 public class InfoBroadcast implements Runnable, IServiceModule
 {
 	public static final String PROP_DELAY_INFOMSG = "delayInfoBroadcast";
 	
-	public static final Logger broadcastLogger = NodeControlCore.createLogger(DB_Handler.class, "broadcast");
+	public static final Logger broadcastLogger = LogWriter.createLogger(DB_Handler.class, "broadcast");
 	private static InetAddress broadcastIA;
 	
 	private final DeviceInfo deviceInfo;

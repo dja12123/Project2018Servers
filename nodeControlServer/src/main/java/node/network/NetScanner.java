@@ -12,11 +12,12 @@ import java.util.logging.Logger;
 import node.IServiceModule;
 import node.NodeControlCore;
 import node.db.DB_Handler;
+import node.log.LogWriter;
 import node.util.observer.Observable;
 
 public class NetScanner extends Observable<byte[]> implements IServiceModule, Runnable
 {
-	public static final Logger netScannerLogger = NodeControlCore.createLogger(NetScanner.class, "netScanner");
+	public static final Logger netScannerLogger = LogWriter.createLogger(NetScanner.class, "netScanner");
 	
 	private Thread worker = null;
 	private boolean isWork;

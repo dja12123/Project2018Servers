@@ -18,6 +18,7 @@ import org.dhcp4java.DHCPServlet;
 
 import node.IServiceModule;
 import node.NodeControlCore;
+import node.log.LogWriter;
 
 public class DHCPService extends DHCPServlet implements IServiceModule
 {
@@ -26,7 +27,7 @@ public class DHCPService extends DHCPServlet implements IServiceModule
 	
 	static
 	{
-		NodeControlCore.initLogger(dhcpLogger, "dhcp");
+		LogWriter.initLogger(dhcpLogger, "dhcp");
 	}
 	
 	public DHCPService()

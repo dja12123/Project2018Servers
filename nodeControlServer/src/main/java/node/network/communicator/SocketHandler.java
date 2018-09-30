@@ -15,11 +15,12 @@ import node.network.packet.Packet;
 import node.network.packet.PacketUtil;
 import node.IServiceModule;
 import node.NodeControlCore;
+import node.log.LogWriter;
 import node.network.NetworkManager;
 
 public class SocketHandler implements IServiceModule, Runnable
 {
-	public static final Logger netScannerLogger = NodeControlCore.createLogger(SocketHandler.class, "netScanner");
+	public static final Logger netScannerLogger = LogWriter.createLogger(SocketHandler.class, "netScanner");
 	private ExecutorService packetProcessService = Executors.newCachedThreadPool();
 	
 	private Thread worker = null;

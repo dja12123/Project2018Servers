@@ -11,7 +11,7 @@ import java.util.*;
 
 public class CommandExecutor {
 	//매개변수로 ArrayList<문자열> 타입으로 넘기면 bash명령이 실행됨
-	public void executeCommands(ArrayList<String> cmd) throws IOException {
+	public static void executeCommands(ArrayList<String> cmd) throws IOException {
 		StringBuffer successOutput = new StringBuffer();
 		StringBuffer errorOutput = new StringBuffer();
 		BufferedReader successBufferReader = null;
@@ -59,7 +59,7 @@ public class CommandExecutor {
 	}
 	
 	//쉘 명령을 임시파일에 저장
-	public File createTempScript(ArrayList<String> cmd) throws IOException {
+	public static File createTempScript(ArrayList<String> cmd) throws IOException {
 		Iterator<String> cmdit = cmd.iterator();
 		
 	    File tempScript = File.createTempFile("script", null);
