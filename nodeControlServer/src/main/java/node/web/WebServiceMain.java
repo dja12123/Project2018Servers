@@ -1,22 +1,34 @@
 package node.web;
 
 import node.IServiceModule;
+import node.log.LogWriter;
+import fileIO.FileHandler;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.Map;
 import java.util.logging.Logger;
 
 import fi.iki.elonen.NanoHTTPD;
 import fi.iki.elonen.util.ServerRunner;
 
+enum MIME_TYPE {
+	IMAGE_JPEG("image/jpeg");
+	
+	String typeString;
+	
+	MIME_TYPE(String typeString) {
+		this.typeString = typeString;
+	}
+	
+	@Override
+	public String toString() {
+		return typeString;
+	}
+}
+
 public class WebServiceMain extends NanoHTTPD implements IServiceModule 
 {
-	//NodeControlCore.createLogger를 이용
-	private static final Logger LOG = Logger.getLogger(WebServiceMain.class.getName());
+	private static final Logger LOG = LogWriter.createLogger(WebServiceMain.class, "WebServiceMain");
+	private static final int MAXIMUM_SIZE_OF_IMAGE = 1000000;
+	public static final String rootDirectory = "/root/Project2018Servers/nodeControlServer/resources/www";
 	
 	public WebServiceMain() {
 		super(80);
@@ -29,10 +41,17 @@ public class WebServiceMain extends NanoHTTPD implements IServiceModule
 		main.startModule();
 	}
 	
+	private static Response serveImage(MIME_TYPE imageType, String path) {
+		return newFixedLengthResponse(NanoHTTPD.Response.Status.OK, imageType.toString(), 
+				FileHandler.getFileInputStream(path), MAXIMUM_SIZE_OF_IMAGE);
+	}
+	
+	
 	@Override
 	public Response serve(IHTTPSession session) {
 		Method method = session.getMethod();
 		String uri = session.getUri();
+		
 		WebServiceMain.LOG.info(method + " '" + uri + "' ");
 		
 		//웹서비스 할 때 필요한 파일 스트림 모듈로 만들기(fileIO 패키지)
@@ -40,34 +59,16 @@ public class WebServiceMain extends NanoHTTPD implements IServiceModule
 		//url이용해서 어떤 요청인지 구분 ->
 		//   refer:: https://github.com/Teaonly/android-eye/blob/master/src/teaonly/droideye/TeaServer.java
 		
-		File readFile = new File("/home/pi/nanohttpd/www/index.html");
-		BufferedReader readBuffer = null;
-		try 
-		{
-			readBuffer = new BufferedReader(new FileReader(readFile));
-		} 
-		catch (FileNotFoundException e) 
-		{
-			e.printStackTrace();
-		}
-		
 		String msg = "";
-		
-        try 
-        {
-			while ((msg += readBuffer.readLine()) != null) {}
-			readBuffer.close();
-        } 
-		catch (IOException e) 
-		{
-			e.printStackTrace();
+		if (uri.startsWith("/")) { //Root Mapping
+			if (uri.contains(".jpg")) {
+				return WebServiceMain.serveImage(MIME_TYPE.IMAGE_JPEG, rootDirectory + uri);
+			}
+			msg = FileHandler.readFileString("/root/Project2018Servers/nodeControlServer/resources/www/index.html");
+			
 		}
-        catch (NullPointerException e1)
-        {
-        	e1.printStackTrace();
-        }
-
-        
+		
+        System.out.println("Response Data Recieve...");
 		return newFixedLengthResponse(msg);
 	}
 	

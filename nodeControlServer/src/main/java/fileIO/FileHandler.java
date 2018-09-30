@@ -2,6 +2,7 @@ package fileIO;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
@@ -60,5 +61,14 @@ public class FileHandler {
 		}
 		
 		return fileReadString.toString();
-	}	
+	}
+	
+	public static FileInputStream getFileInputStream(String path) {
+		try {
+			return new FileInputStream(path);
+		} catch (FileNotFoundException e) {
+			System.out.println("[Error] File is not found");
+			return null;
+		}
+	}
 }
