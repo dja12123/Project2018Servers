@@ -50,8 +50,10 @@ public class WebServiceMain extends NanoHTTPD implements IServiceModule
 		catch (FileNotFoundException e) 
 		{
 			e.printStackTrace();
+			return newFixedLengthResponse("");
 		}
 		
+		System.out.println("File Read Complete!");
 		String msg = "";
 		
         try 
@@ -63,12 +65,8 @@ public class WebServiceMain extends NanoHTTPD implements IServiceModule
 		{
 			e.printStackTrace();
 		}
-        catch (NullPointerException e1)
-        {
-        	e1.printStackTrace();
-        }
-
         
+        System.out.println("Response Data Recieve...");
 		return newFixedLengthResponse(msg);
 	}
 	
