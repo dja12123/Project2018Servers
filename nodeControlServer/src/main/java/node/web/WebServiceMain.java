@@ -1,6 +1,7 @@
 package node.web;
 
 import node.IServiceModule;
+import node.log.LogWriter;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -16,7 +17,7 @@ import fi.iki.elonen.util.ServerRunner;
 public class WebServiceMain extends NanoHTTPD implements IServiceModule 
 {
 	//NodeControlCore.createLogger를 이용
-	private static final Logger LOG = Logger.getLogger(WebServiceMain.class.getName());
+	private static final Logger LOG = LogWriter.createLogger(WebServiceMain.class, "WebServiceMain");
 	
 	public WebServiceMain() {
 		super(80);
