@@ -1,6 +1,10 @@
 package node.cluster.zookeeper;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+
+import node.bash.CommandExecutor;
 
 public class ZookeeperServerManager {
 
@@ -22,7 +26,19 @@ public class ZookeeperServerManager {
 	}
 	public void startZookeeper() {
 		//내부bash파일이용해서 실행시키는 방법 알아내기
+		try {
+			String path = ZookeeperServerManager.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+			String decodedPath = URLDecoder.decode(path, "UTF-8");
+			
+			System.out.println(decodedPath);
+			
+			System.out.println("Current Working Directory = " + System.getProperty("user.dir"));
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
+	
 	
 	
 }
