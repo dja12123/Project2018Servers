@@ -29,6 +29,17 @@ public class FileHandler {
 		
 		return fileList;
 	}
+    
+    public static File openFile(String filePath)
+    {
+        String dir = FileHandler.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+        String[] temp = dir.split("/");
+        dir = dir.substring(0,path.length() - temp[temp.length - 1].length());
+        dir += "extResource/";
+        File f = new File(dir + filePath);
+        
+        return f.exists() ? f : null;
+    }
 	
 	public static String readFileString(String path) {
 		File file = new File(path);

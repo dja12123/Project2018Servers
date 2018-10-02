@@ -165,35 +165,14 @@ public class DB_Handler implements IServiceModule
 		
 		//this.executeQuery("insert into ")
 	}
-	
+
 
 	private String getTableName(String rawQuery)
 	{
-		StringBuffer buffer = new StringBuffer(rawQuery.length());
-		boolean whiteSpace = false;
-		
-		for(char c : rawQuery.toCharArray())
-		{
-			if(c == ' ')
-			{
-				if(whiteSpace)
-					continue;
-				
-				buffer.append(c);
-				whiteSpace = true;
-				
-				continue;
-			}
-			buffer.append(c);
-			whiteSpace = false;
-		}
-		
-		rawQuery = buffer.toString();
+        rawQuery = rawQuery.replaceAll("\\s+", " ");
 		try
 		{
-			String temp = rawQuery.substring(0, rawQuery.indexOf("("));
-			
-			return temp.split(" ")[2];
+			return rawQuery.substring(0, rawQuery.indexOf("(")).split(" ")[2];
 		}
 		catch(IndexOutOfBoundsException e)
 		{
@@ -207,12 +186,9 @@ public class DB_Handler implements IServiceModule
 	{
 		try
 		{
-			String tableName = getTableName(query);
-			String option = String.format("where %s = '%s'","tbl_name",tableName);
-			CachedRowSet rs = query(String.format(TABLE_SEARCH_QUERY, option));
+			CachedRowSet rs = query(String.format(TABLE_SEARCH_QUERY, String.format("where %s = '%s'","tbl_name",getTableName(query))));
 			
-			int rowCount = rs.last() ? rs.getRow() : 0;
-			if(rowCount == 0)
+			if((rs.last() ? rs.getRow() : 0) == 0)
 				return false;
 		}
 		catch (SQLException e)
@@ -239,10 +215,8 @@ public class DB_Handler implements IServiceModule
 			int rowCount = rs.last() ? rs.getRow() : 0;
 			
 			String rawStruct = query.substring(query.indexOf("("), query.length());
-			
-			String newQuery = String.format("CREATE TABLE tmp_%s%s",tableName, rawStruct);
-			
-			executeQuery(newQuery);
+            
+			executeQuery(String.format("CREATE TABLE tmp_%s%s",tableName, rawStruct));
 			rs = query(String.format(TABLE_CHECK_QUERY,"tmp_" + tableName));
 			executeQuery(String.format("DROP TABLE tmp_%s;", tableName));
 			

@@ -2,19 +2,15 @@
 plugins 
 {
     id 'java'
-    id 'application'
 }
 
 //variables for gradle script
 ext 
 {
-  _javaVersion = '1.8'
-  _mainClassName = 'node.NodeControlCore'
+    _javaVersion = '1.8'
+    _mainClassName = 'node.NodeControlCore'
 }
 
-//set variables to proper options
-mainClassName = _mainClassName
- 
 sourceCompatibility = _javaVersion
 targetCompatibility = _javaVersion
 
@@ -30,10 +26,48 @@ dependencies
     compile project(':nodeControlServer')
 }
 
-//options for making jarFile
-jar 
+task moveres(type: Copy){
+    from "./nodeControlServer/extResource/"
+    into "${buildDir}/libs/extResource/"
+    
+    doLast
+    {
+        println "------------------------------------------------"
+        println "resource moved."
+        println "------------------------------------------------"
+    }
+}
+
+task buildtest(type: Jar, dependsOn: ':build'){
+    onlyIf
+    {
+        projects.hasProperty 'mainClass'
+        manifest
+        {
+            attributes 'Main-Class': mainClass
+        }
+        from 
+        {
+            configurations.compile.collect 
+            {
+                it.isDirectory() ? it : zipTree(it)
+            }
+        }
+    }
+    
+    doLast
+    {
+        println "------------------------------------------------"
+        println "making Jar file..."
+        println "mainClass is '" + mainClass + "'"
+        println "------------------------------------------------"
+    }
+}
+buildtest.dependsOn moveres
+
+jar
 {
-    manifest 
+    manifest
     {
         attributes 'Main-Class': _mainClassName
     }
