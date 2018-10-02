@@ -34,9 +34,9 @@ public class FileHandler {
     {
         String dir = FileHandler.class.getProtectionDomain().getCodeSource().getLocation().getPath();
         String[] temp = dir.split("/");
-        dir = dir.substring(0,path.length() - temp[temp.length - 1].length());
+        dir = dir.substring(0,filePath.length() - temp[temp.length - 1].length());
         dir += "extResource/";
-        File f = new File(dir + filePath);
+        File f = new File(dir + filePath);//fix
         
         return f.exists() ? f : null;
     }
