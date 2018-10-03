@@ -17,7 +17,7 @@ public class CommandExecutor {
 	//매개변수로 ArrayList<문자열> 타입으로 넘기면 bash명령이 실행됨
 	public static final Logger cmdlogger = LogWriter.createLogger(CommandExecutor.class, "cmd");
 	
-	public static void executeCommands(ArrayList<String> cmd) throws IOException {
+	public static void executeBash(ArrayList<String> cmd) throws Exception {
 		//StringBuffer successOutput = new StringBuffer();
 		//StringBuffer errorOutput = new StringBuffer();
 		BufferedReader successBufferReader = null;
@@ -56,12 +56,32 @@ public class CommandExecutor {
 	        	System.out.println(errorOutput.toString());
 	        }*/
 	        
-	    } catch (InterruptedException e) {
-			e.printStackTrace();
-		}
+	    }
 	    finally {
 	        tempScript.delete();
 	    }
+	}
+	
+	//명령을 mv -r /df /fd 하고 싶으면 매개변수로 ("mv", "-r", "/df", "/fd) 이런식으로 넘기면 명령줄 실행
+	public static void executeCommand(String... cmd) throws Exception {
+
+		BufferedReader successBufferReader = null;
+		BufferedReader errorBufferReader = null;
+		String msg = null;
+
+   
+        ProcessBuilder pb = new ProcessBuilder(cmd);
+        pb.inheritIO();
+        
+        Process process = pb.start();
+        successBufferReader = new BufferedReader(new InputStreamReader(process.getInputStream(), "UTF-8"));
+        while((msg = successBufferReader.readLine()) != null) {
+        	cmdlogger.log(Level.SEVERE, msg + System.getProperty("line.separator"));
+        }
+        errorBufferReader = new BufferedReader(new InputStreamReader(process.getErrorStream(), "UTF-8"));
+        while((msg = errorBufferReader.readLine()) != null) {
+        	cmdlogger.log(Level.SEVERE, msg + System.getProperty("line.separator"));
+        }
 	}
 	
 	//쉘 명령을 임시파일에 저장

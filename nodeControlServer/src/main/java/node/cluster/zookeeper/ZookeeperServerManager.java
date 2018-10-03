@@ -4,9 +4,10 @@ import java.net.URLDecoder;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
+import node.IServiceModule;
 import node.bash.CommandExecutor;
 
-public class ZookeeperServerManager {
+public class ZookeeperServerManager implements IServiceModule{
 
 	private ConcurrentHashMap<String, String> IpTable = new ConcurrentHashMap<String, String>(); 
 	
@@ -26,19 +27,42 @@ public class ZookeeperServerManager {
 	}
 	public void startZookeeper() {
 		//내부bash파일이용해서 실행시키는 방법 알아내기
+		String start_zkServer = System.getProperty("user.dir") + "resources/Shscript/start_zkServer.sh";
+		ArrayList<String> tempSh = new ArrayList<String>();
+		
+		tempSh.add(start_zkServer);
+		
 		try {
-			String path = ZookeeperServerManager.class.getProtectionDomain().getCodeSource().getLocation().getPath();
-			String decodedPath = URLDecoder.decode(path, "UTF-8");
-			
-			System.out.println(decodedPath);
-			
-			System.out.println("Current Working Directory = " + System.getProperty("user.dir"));
-		} catch (UnsupportedEncodingException e) {
+			CommandExecutor.executeBash(tempSh);
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
-	
+	public void stopZookeeper() {
+		//내부bash파일이용해서 실행시키는 방법 알아내기
+		String stop_zkServer = System.getProperty("user.dir") + "resources/Shscript/stop_zkServer.sh";
+		ArrayList<String> tempSh = new ArrayList<String>();
+		
+		tempSh.add(stop_zkServer);
+		
+		try {
+			CommandExecutor.executeBash(tempSh);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	@Override
+	public boolean startModule() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+	@Override
+	public void stopModule() {
+		// TODO Auto-generated method stub
+		
+	}
 	
 	
 }
