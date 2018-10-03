@@ -11,6 +11,8 @@ import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
 
+import node.cluster.spark.SparkManager;
+import node.cluster.zookeeper.ZookeeperServerManager;
 import node.db.DB_Handler;
 import node.device.DeviceInfo;
 import node.network.DHCPService;
@@ -32,12 +34,16 @@ public class NodeControlCore
 	private final DB_Handler dbHandler;
 	private final DHCPService dhcp;
 	private final DeviceInfo deviceInfo;
+	private final SparkManager sparkManager;
+	private final ZookeeperServerManager zookeeperServerManager;
 	
 	public NodeControlCore()
 	{
 		this.dbHandler = new DB_Handler();
 		this.dhcp = new DHCPService();
 		this.deviceInfo = new DeviceInfo(this.dbHandler);
+		this.sparkManager = new SparkManager();
+		this.zookeeperServerManager = new ZookeeperServerManager();
 		
 		this.startService();
 	}
@@ -66,6 +72,7 @@ public class NodeControlCore
 		{
 			if(!this.dbHandler.startModule()) throw new Exception("DB핸들러 로드 실패");
 			if(!this.deviceInfo.startModule()) throw new Exception("장치 정보 모듈 로드 실패");
+			if(!this.zookeeperServerManager.startModule()) throw new Exception("주키퍼 모듈 로드 실패");
 		}
 		catch(Exception e)
 		{

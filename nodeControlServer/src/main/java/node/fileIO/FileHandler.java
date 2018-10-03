@@ -4,82 +4,130 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
-public class FileHandler {
-	public static File[] getFileList(String path) {
-		File[] fileList = null;
-		try {
-			fileList = new File(path).listFiles();
-		} catch (SecurityException e) {
-			System.out.println("[Error] Permission denied. Check Permission!");
+import node.log.LogWriter;
+
+public class FileHandler
+{
+	public static final Logger fileLogger = LogWriter.createLogger(FileHandler.class, "file");
+	
+	public static File[] getFileList(String file)
+	{
+		return getFileList(getResourceFile(file));
+	}
+	
+	public static File[] getFileList(File file)
+	{
+		File[] fileList = file.listFiles();
+
+		if (fileList == null)
+		{
+			fileLogger.log(Level.SEVERE, "디렉토리를 찾을 수 없음");
 		}
-		
-		if (fileList == null) {
-			System.out.println("[Error] Directory is not found");
-		}
-		
-		//Test Code
-		if (fileList != null) {
-			for (File file : fileList) {
+
+		// Test Code
+		if (fileList != null)
+		{
+			for (File f : fileList)
+			{
 				System.out.println(file.getName());
 			}
 		}
-		
 		return fileList;
 	}
-    
-    public static File openFile(String filePath)
-    {
-        String dir = FileHandler.class.getProtectionDomain().getCodeSource().getLocation().getPath();
-        String[] temp = dir.split("/");
-        dir = dir.substring(0,filePath.length() - temp[temp.length - 1].length());
-        dir += "extResource/";
-        File f = new File(dir + filePath);//fix
-        
-        return f.exists() ? f : null;
-    }
+
+	public static File getResourceFile(String filePath)
+	{
+		String dir = FileHandler.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+		String[] temp = dir.split("/");
+		dir = dir.substring(0, filePath.length() - temp[temp.length - 1].length());
+		dir += "extResource/";
+		File f = new File(dir + filePath);// fix
+
+		return f.exists() ? f : null;
+	}
+
+	public static FileInputStream getInputStream(File file)
+	{
+		FileInputStream inputStream = null;
+		try
+		{
+			inputStream = new FileInputStream(file);
+		}
+		catch (FileNotFoundException e)
+		{
+			fileLogger.log(Level.SEVERE, "인풋 스트림을 가져올 수 없음", e);
+		}
+		return inputStream;
+	}
 	
-	public static String readFileString(String path) {
-		File file = new File(path);
+	public static FileInputStream getInputStream(String file)
+	{
+		return getInputStream(getResourceFile(file));
+	}
+	
+	public static FileOutputStream getOutputStream(File file)
+	{
+		FileOutputStream outputStream = null;
+		try
+		{
+			outputStream = new FileOutputStream(file);
+		}
+		catch (FileNotFoundException e)
+		{
+			fileLogger.log(Level.SEVERE, "아웃풋 스트림을 가져올 수 없음", e);
+		}
+		return outputStream;
+	}
+	
+	public static FileOutputStream getOutputStream(String file)
+	{
+		return getOutputStream(getResourceFile(file));
+	}
+
+	public static String readFileString(File file)
+	{
 		BufferedReader bufRead;
-		
-		try {
+
+		try
+		{
 			bufRead = new BufferedReader(new FileReader(file));
-		} catch (FileNotFoundException e) {
-			System.out.println("[Error] File is not found");
+		}
+		catch (FileNotFoundException e)
+		{
+			fileLogger.log(Level.SEVERE, "파일을 찾을 수 없음", e);
 			return null;
 		}
 
 		StringBuffer fileReadString = new StringBuffer();
 		String tempReadString = "";
-		
-        try 
-        {
-			while ((tempReadString = bufRead.readLine()) != null) 
+
+		try
+		{
+			while ((tempReadString = bufRead.readLine()) != null)
 			{
-				//System.out.println(tempReadString);
+				// System.out.println(tempReadString);
 				fileReadString.append(tempReadString + "\n");
 			}
-			
+
 			bufRead.close();
-        } 
-		catch (IOException e) 
+		}
+		catch (IOException e)
 		{
-			System.out.println("[Error] File Buffer Error. File is not found.");
+			fileLogger.log(Level.SEVERE, "파일 버퍼 오류: 파일을 찾을 수 없음", e);
 			return null;
 		}
-		
+
 		return fileReadString.toString();
 	}
 	
-	public static FileInputStream getFileInputStream(String path) {
-		try {
-			return new FileInputStream(path);
-		} catch (FileNotFoundException e) {
-			System.out.println("[Error] File is not found");
-			return null;
-		}
+	public static String readFileString(String file)
+	{
+		return readFileString(getResourceFile(file));
 	}
 }
