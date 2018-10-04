@@ -38,6 +38,22 @@ task moveres(type: Copy){
     }
 }
 
+task moveResult(type: Copy){
+    onlyIf
+    {
+        projects.hasProperty 'mainClass'
+        from "${buildDir}/libs/"
+        into "${buildDir}/libs/test/" + mainClass + "/"
+    }
+    doLast
+    {
+        println "------------------------------------------------"
+        println "build complete. output dir is :"
+        println "${buildDir}/libs/test/" + mainClass + "/"
+        println "------------------------------------------------"
+    }
+}
+
 task buildtest(type: Jar, dependsOn: ':build'){
     onlyIf
     {
@@ -63,7 +79,9 @@ task buildtest(type: Jar, dependsOn: ':build'){
         println "------------------------------------------------"
     }
 }
-buildtest.dependsOn moveres
+buildtest.finalizedBy moveres
+buildtest.finalizedBy moveResult
+build.finalizedBy moveres
 
 jar
 {
