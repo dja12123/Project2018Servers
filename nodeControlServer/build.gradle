@@ -4,16 +4,6 @@ plugins
     id 'java'
 }
 
-//variables for gradle script
-ext 
-{
-    _javaVersion = '1.8'
-    _mainClassName = 'node.NodeControlCore'
-}
-
-sourceCompatibility = _javaVersion
-targetCompatibility = _javaVersion
-
 repositories 
 {
     mavenCentral()
@@ -23,86 +13,16 @@ repositories
 //libs for this project
 dependencies 
 {
-    compile project(':nodeControlServer')
-}
-
-task moveres(type: Copy){
-    from "./nodeControlServer/extResource/"
-    into "${buildDir}/libs/extResource/"
+    compile project(':dhcp4java')
     
-    doLast
-    {
-        println "------------------------------------------------"
-        println "resource moved."
-        println "------------------------------------------------"
-    }
-}
-
-task moveResult(type: Copy){
-    onlyIf
-    {
-        projects.hasProperty 'mainClass'
-        from "${buildDir}/libs/"
-        into "${buildDir}/libs/test/" + mainClass + "/"
-    }
-    doLast
-    {
-        println "------------------------------------------------"
-        println "build complete. output dir is :"
-        println "${buildDir}/libs/test/" + mainClass + "/"
-        println "------------------------------------------------"
-    }
-}
-
-task buildtest(type: Jar, dependsOn: ':build'){
-    onlyIf
-    {
-        projects.hasProperty 'mainClass'
-        manifest
-        {
-            attributes 'Main-Class': mainClass
-        }
-        from 
-        {
-            configurations.compile.collect 
-            {
-                it.isDirectory() ? it : zipTree(it)
-            }
-        }
-    }
+    //compile ('com.pi4j:pi4j-core:1.1')
+    compile ('org.nanohttpd:nanohttpd:2.3.1')
     
-    doLast
-    {
-        println "------------------------------------------------"
-        println "making Jar file..."
-        println "mainClass is '" + mainClass + "'"
-        println "------------------------------------------------"
-    }
-}
-buildtest.finalizedBy moveres
-buildtest.finalizedBy moveResult
+    //https://mvnrepository.com/artifact/org.apache.spark/spark-core
+    //compile ('org.apache.spark:spark-core_2.11:2.3.2')
+    
+    // https://mvnrepository.com/artifact/org.apache.zookeeper/zookeeper
+    //compile ('org.apache.zookeeper:zookeeper:3.4.13')
 
-jar
-{
-    manifest
-    {
-        attributes 'Main-Class': _mainClassName
-    }
-    from 
-    {
-        configurations.compile.collect 
-        {
-            it.isDirectory() ? it : zipTree(it)
-        }
-    }
-}
-
-[compileJava, compileTestJava, javadoc]*.options*.encoding = 'UTF-8'
-tasks.withType(JavaCompile) 
-{
-    options.encoding = 'UTF-8'
-}
-javadoc 
-{
-    options.encoding = 'UTF-8'
+    compile fileTree(dir: 'lib', include: ['*.jar'])
 }
