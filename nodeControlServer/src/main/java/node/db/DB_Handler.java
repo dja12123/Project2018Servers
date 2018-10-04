@@ -68,6 +68,7 @@ public class DB_Handler implements IServiceModule
 		this.config = new SQLiteConfig();
 	}
 	
+	// 실행'만' 하는 쿼리(테이블 생성, 컬럼 삭제 등)
 	public boolean executeQuery(String query)
 	{
 		if(!this.isOpened) return false;
@@ -85,6 +86,7 @@ public class DB_Handler implements IServiceModule
 		return true;
 	}
 	
+	// 결과가 나오는 쿼리 (select문)
 	public CachedRowSet query(String query)
 	{
 		if(!this.isOpened)
