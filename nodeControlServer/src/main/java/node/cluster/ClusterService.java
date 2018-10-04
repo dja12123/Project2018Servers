@@ -1,15 +1,20 @@
 package node.cluster;
 
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.HashMap;
 
 import node.IServiceModule;
+import node.network.NetworkConnectEvent;
+import node.network.NetworkManager;
 
 public class ClusterService implements IServiceModule {
 	
-	private ConcurrentHashMap<String, String> ipTable = new ConcurrentHashMap<String, String>(); 
-	private NetworkConnectEventReceiver infoReceiver = new NetworkConnectEventReceiver();
-	private NodeInfoChangeEventSender infoSender = new NodeInfoChangeEventSender();
+	private HashMap<String, String> ipTable = null; 
+	private String masterName = null , masterIp = null;
+	public final NetworkConnectEventReceiver ncReceiver = new NetworkConnectEventReceiver();
+	public final NodeInfoChangeEventSender nicSender = new NodeInfoChangeEventSender();
+	public final NetworkManager networkManager;
 	
+	public ClusterService(NetworkManager networkManager) { this.networkManager = networkManager;	}
 	
 	public boolean putData(String name, String ip) {
 		// 해쉬맵에 넣는대신 안에 데이터와 겹치는게 없으면 true 아니면 false
@@ -29,9 +34,16 @@ public class ClusterService implements IServiceModule {
 	@Override
 	public boolean startModule() {
 		// TODO Auto-generated method stub
+		NetworkConnectEvent eventInfo = null;
 		
+		if((eventInfo = ncReceiver.getEvent()) == null) return false;
+		if(networkManager == null) return false;
 		
-		return false;
+		this.masterIp = eventInfo.dhcpIp;
+		this.masterName = eventInfo.dhcpName;
+		this.ipTable = (HashMap<String, String>) eventInfo.ipTable;
+		
+		return true;
 	}
 
 	@Override

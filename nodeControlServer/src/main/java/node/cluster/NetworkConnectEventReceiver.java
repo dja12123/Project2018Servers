@@ -6,7 +6,7 @@ import node.util.observer.Observer;
 
 public class NetworkConnectEventReceiver implements Observer<NetworkConnectEvent>{
 
-	private NetworkConnectEvent event;
+	private NetworkConnectEvent event = null;
 	
 	@Override
 	public void update(Observable<NetworkConnectEvent> object, NetworkConnectEvent data) {
@@ -15,6 +15,6 @@ public class NetworkConnectEventReceiver implements Observer<NetworkConnectEvent
 		
 		
 	}
-
+	public NetworkConnectEvent getEvent() {	return event;	}
 	
 }
