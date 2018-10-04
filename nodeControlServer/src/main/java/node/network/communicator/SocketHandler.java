@@ -6,6 +6,7 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.util.HashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Level;
@@ -13,6 +14,8 @@ import java.util.logging.Logger;
 
 import node.network.packet.Packet;
 import node.network.packet.PacketUtil;
+import node.util.observer.Observable;
+import node.util.observer.Observer;
 import node.IServiceModule;
 import node.NodeControlCore;
 import node.log.LogWriter;
@@ -21,6 +24,9 @@ import node.network.NetworkManager;
 public class SocketHandler implements IServiceModule, Runnable
 {
 	public static final Logger netScannerLogger = LogWriter.createLogger(SocketHandler.class, "netScanner");
+	
+	private HashMap<String, Observable<NetworkEvent>> observerMap;
+	
 	private ExecutorService packetProcessService = Executors.newCachedThreadPool();
 	
 	private Thread worker = null;
@@ -30,7 +36,49 @@ public class SocketHandler implements IServiceModule, Runnable
 	
 	public SocketHandler()
 	{
+		this.observerMap = new HashMap<String, Observable<NetworkEvent>>();
+	}
+	
+	public void addObserver(String key, Observer<NetworkEvent> observer)
+	{
+		Observable<NetworkEvent> ob = this.observerMap.getOrDefault(key, null);
+		if(ob == null)
+		{
+			ob = (new Observable<NetworkEvent>());
+			this.observerMap.put(key, ob);
+		}
 		
+		ob.addObserver(observer);
+	}
+	
+	public void removeObserver(String key, Observer<NetworkEvent> observer)
+	{
+		Observable<NetworkEvent> observable = this.observerMap.getOrDefault(key, null);
+		if(observable == null)
+		{
+			return;
+		}
+		observable.removeObserver(observer);
+		
+		if(observable.size() == 0)
+		{
+			this.observerMap.remove(key);
+		}
+	}
+	
+	public void removeObserver(Observer<NetworkEvent> observer)
+	{
+		Observable<NetworkEvent> observable;
+		for(String key : this.observerMap.keySet())
+		{
+			observable = this.observerMap.get(key);
+			observable.removeObserver(observer);
+			
+			if(observable.size() == 0)
+			{
+				this.observerMap.remove(key);
+			}
+		}
 	}
 
 	@Override
@@ -81,8 +129,13 @@ public class SocketHandler implements IServiceModule, Runnable
 			try
 			{
 				this.socket.receive(packet);
-				//PacketUtil.
-				this.packetProcessService.execute(new PacketProcess(packet));
+				if(!PacketUtil.isPacket(packetBuffer))
+				{
+					continue;
+				}
+				
+				PacketProcess process = new PacketProcess(packetBuffer);
+				this.packetProcessService.execute(process);
 			}
 			catch (IOException e)
 			{
@@ -99,16 +152,16 @@ public class SocketHandler implements IServiceModule, Runnable
 
 class PacketProcess implements Runnable
 {
+	private byte[] rawPacket;
 
-	public PacketProcess(DatagramPacket packet)
+	public PacketProcess(byte[] rawPakcet)
 	{
-		// TODO Auto-generated constructor stub
+		this.rawPacket = PacketUtil.clonePacketByte(rawPakcet);
 	}
 
 	@Override
 	public void run()
 	{
-		// TODO Auto-generated method stub
 		
 	}
 	
