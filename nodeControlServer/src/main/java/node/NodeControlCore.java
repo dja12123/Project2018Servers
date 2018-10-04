@@ -15,6 +15,7 @@ import node.cluster.ClusterService;
 import node.db.DB_Handler;
 import node.device.DeviceInfo;
 import node.network.DHCPService;
+import node.network.NetworkManager;
 import node.log.LogWriter;
 
 /**
@@ -31,6 +32,7 @@ public class NodeControlCore
 	private static final Properties properties = new Properties();
 	
 	private final DB_Handler dbHandler;
+	private final NetworkManager networkManager;
 	private final DHCPService dhcp;
 	private final DeviceInfo deviceInfo;
 	private final ClusterService clusterService;
@@ -38,9 +40,10 @@ public class NodeControlCore
 	public NodeControlCore()
 	{
 		this.dbHandler = new DB_Handler();
+		this.networkManager = new NetworkManager();
 		this.dhcp = new DHCPService();
 		this.deviceInfo = new DeviceInfo(this.dbHandler);
-		this.clusterService = new ClusterService();
+		this.clusterService = new ClusterService(networkManager);
 		
 		this.startService();
 	}
