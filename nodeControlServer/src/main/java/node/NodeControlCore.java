@@ -1,16 +1,9 @@
 package node;
 
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.util.Date;
 import java.util.Properties;
-import java.util.logging.ConsoleHandler;
 import java.util.logging.Level;
-import java.util.logging.LogRecord;
 import java.util.logging.Logger;
-import java.util.logging.SimpleFormatter;
-
 import node.cluster.ClusterService;
 import node.db.DB_Handler;
 import node.device.DeviceInfo;
