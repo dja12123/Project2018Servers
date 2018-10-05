@@ -12,14 +12,14 @@ import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import node.network.packet.Packet;
-import node.network.packet.PacketUtil;
-import node.util.observer.Observable;
-import node.util.observer.Observer;
 import node.IServiceModule;
 import node.NodeControlCore;
 import node.log.LogWriter;
 import node.network.NetworkManager;
+import node.network.packet.Packet;
+import node.network.packet.PacketUtil;
+import node.util.observer.Observable;
+import node.util.observer.Observer;
 
 public class SocketHandler implements IServiceModule, Runnable
 {
@@ -171,5 +171,4 @@ class PacketProcess implements Runnable
 			observable.notify();
 		}
 	}
-	
 }

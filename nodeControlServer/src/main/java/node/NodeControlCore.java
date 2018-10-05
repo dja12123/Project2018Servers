@@ -1,15 +1,16 @@
 package node;
 
-import java.io.IOException;
+import java.io.InputStream;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import node.cluster.ClusterService;
 import node.db.DB_Handler;
-import node.device.DeviceInfo;
+import node.device.DeviceInfoManager;
+import node.log.LogWriter;
 import node.network.DHCPService;
 import node.network.NetworkManager;
-import node.log.LogWriter;
 
 /**
   * @FileName : NodeControlCore.java
@@ -27,7 +28,7 @@ public class NodeControlCore
 	private final DB_Handler dbHandler;
 	private final NetworkManager networkManager;
 	private final DHCPService dhcp;
-	private final DeviceInfo deviceInfo;
+	private final DeviceInfoManager deviceInfoManager;
 	private final ClusterService clusterService;
 	
 	public NodeControlCore()
@@ -35,10 +36,8 @@ public class NodeControlCore
 		this.dbHandler = new DB_Handler();
 		this.networkManager = new NetworkManager();
 		this.dhcp = new DHCPService();
-		this.deviceInfo = new DeviceInfo(this.dbHandler);
+		this.deviceInfoManager = new DeviceInfoManager(this.dbHandler);
 		this.clusterService = new ClusterService(networkManager);
-		
-		this.startService();
 	}
     
     public static void main(String[] args) throws InterruptedException
@@ -49,14 +48,17 @@ public class NodeControlCore
 		
 		try
 		{
-			properties.load(NodeControlCore.class.getResourceAsStream("/config.properties"));
+			InputStream stream = NodeControlCore.class.getResourceAsStream("/config.properties");
+			properties.load(stream);
 		}
-		catch (IOException e)
+		catch (Exception e)
 		{
 			LogWriter.mainLogger.log(Level.SEVERE, "config 로드 실패", e);
+			return;
 		}
 		
 		NodeControlCore core = new NodeControlCore();
+		core.startService();
 	}
 	
 	private void startService()
@@ -64,7 +66,7 @@ public class NodeControlCore
 		try
 		{
 			if(!this.dbHandler.startModule()) throw new Exception("DB핸들러 로드 실패");
-			if(!this.deviceInfo.startModule()) throw new Exception("장치 정보 모듈 로드 실패");
+			if(!this.deviceInfoManager.startModule()) throw new Exception("장치 정보 모듈 로드 실패");
 			if(!this.clusterService.startModule()) throw new Exception("스파크 모듈 로드 실패");
 		}
 		catch(Exception e)
@@ -79,7 +81,7 @@ public class NodeControlCore
 	private void stopService()
 	{
 		this.dbHandler.stopModule();
-		this.deviceInfo.stopModule();
+		this.deviceInfoManager.stopModule();
 		LogWriter.mainLogger.log(Level.INFO, "서비스 중지");
 	}
 

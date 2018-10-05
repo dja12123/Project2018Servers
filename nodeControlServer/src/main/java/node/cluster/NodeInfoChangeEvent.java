@@ -1,14 +1,14 @@
 package node.cluster;
 
-import node.device.DeviceInfo;
+import node.device.Device;
 
 public class NodeInfoChangeEvent {
 	public static final int DEVICE_CONNECTED = 0;
 	public static final int DEVICE_DISCONNECTED = 1;
 	
-	public final DeviceInfo deviceInfo;
+	public final Device deviceInfo;
 	
-	public NodeInfoChangeEvent(DeviceInfo deviceInfo)
+	public NodeInfoChangeEvent(Device deviceInfo)
 	{
 		this.deviceInfo = deviceInfo;
 	}

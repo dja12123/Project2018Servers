@@ -13,7 +13,7 @@ import java.util.logging.Logger;
 import node.IServiceModule;
 import node.NodeControlCore;
 import node.db.DB_Handler;
-import node.device.DeviceInfo;
+import node.device.Device;
 import node.log.LogWriter;
 
 public class InfoBroadcast implements Runnable, IServiceModule
@@ -23,7 +23,7 @@ public class InfoBroadcast implements Runnable, IServiceModule
 	public static final Logger broadcastLogger = LogWriter.createLogger(DB_Handler.class, "broadcast");
 	private static InetAddress broadcastIA;
 	
-	private final DeviceInfo deviceInfo;
+	private final Device deviceInfo;
 	
 	private int broadCastDelay;
 	private Thread broadcastThread = null;
@@ -45,7 +45,7 @@ public class InfoBroadcast implements Runnable, IServiceModule
 		}
 	}
 	
-	public InfoBroadcast(DeviceInfo deviceInfo)
+	public InfoBroadcast(Device deviceInfo)
 	{
 		this.deviceInfo = deviceInfo;
 	}
