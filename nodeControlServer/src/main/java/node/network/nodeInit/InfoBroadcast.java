@@ -19,7 +19,7 @@ import node.network.NetworkManager;
 
 public class InfoBroadcast implements Runnable, IServiceModule
 {
-	public static final String PROP_DELAY_INFOMSG = "delayInfoBroadcast";
+	public static final String NODE_BROADCAST_MSG = "NodeBroadCast";
 	
 	public static final Logger broadcastLogger = LogWriter.createLogger(DB_Handler.class, "broadcast");
 	private static InetAddress broadcastIA;
@@ -95,7 +95,7 @@ public class InfoBroadcast implements Runnable, IServiceModule
 			return false;
 		}
 		
-		this.broadCastDelay = Integer.parseInt(NodeControlCore.getProp(PROP_DELAY_INFOMSG));
+		//this.broadCastDelay = Integer.parseInt(NodeControlCore.getProp(PROP_DELAY_INFOMSG));
 		
 		StringBuffer infoStringBuffer = new StringBuffer();
 		

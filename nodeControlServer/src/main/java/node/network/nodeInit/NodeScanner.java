@@ -11,18 +11,24 @@ public class NodeScanner implements INetworkObserver
 	private DB_Handler dbHandler;
 	private SocketHandler socketHandler;
 	
+	private static final String NODE_TABLE_SCHEMA = 
+			"CREATE TABLE nodeInfo("
+		+		"device_id varchar(36)"
+		+		")";
+	
 	NodeScanner(DB_Handler dbHandler, SocketHandler socketHandler)
 	{
 		this.dbHandler = dbHandler;
 		this.socketHandler = socketHandler;
-		
-		//this.socketHandler
+	
+		this.dbHandler.checkAndCreateTable(NODE_TABLE_SCHEMA);
+		this.socketHandler.addObserver(InfoBroadcast.NODE_BROADCAST_MSG, this);
 	}
 
 	@Override
 	public void update(Observable<NetworkEvent> object, NetworkEvent data)
 	{
-		
+		//data.inetAddr;
 		
 	}
 }
