@@ -285,7 +285,17 @@ public class DB_Handler implements IServiceModule
 		System.out.println(tb.build());
 	}
 	
-	public void checkAndCreateTable(String schema)
+    public void checkAndCreateTable(String schema)
+    {
+        if(!checkTable(schema) && !checkStruct(schema))
+        {
+            executeQuery(schema);
+            databaseLogger.log(Level.INFO, "테이블 생성("+schema+")");
+        }
+    }
+    
+    /*
+    public void checkAndCreateTable(String schema)
 	{
 		String nativeSQL = null;
 		try
@@ -311,6 +321,7 @@ public class DB_Handler implements IServiceModule
 			{
 				
 			}*/
+            /*
 			databaseLogger.log(Level.INFO, "테이블 생성("+schema+")");
 			this.executeQuery(schema);
 			return;
@@ -318,6 +329,7 @@ public class DB_Handler implements IServiceModule
 		String[][] result = toArray(rs);
 		databaseLogger.log(Level.INFO, "테이블 확인("+result[0][0]+")");
 	}
+    */
 	
 	public static boolean isExist(CachedRowSet rs, String key, int col)
 	{

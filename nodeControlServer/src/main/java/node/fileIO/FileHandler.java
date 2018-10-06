@@ -35,22 +35,22 @@ public class FileHandler
 		{
 			for (File f : fileList)
 			{
-				System.out.println(file.getName());
+				System.out.println(f.getName());
 			}
 		}
 		return fileList;
 	}
 
 	public static File getResourceFile(String filePath)
-	{
-		String dir = FileHandler.class.getProtectionDomain().getCodeSource().getLocation().getPath();
-		String[] temp = dir.split("/");
+	{        
+        StringBuffer dir = new StringBuffer(new File(FileHandler.class.getProtectionDomain().getCodeSource().getLocation().getPath()).getParentFile().getPath());
         
-		dir = dir.substring(0, dir.length() - temp[temp.length - 1].length());
-		dir += "extResource/" + filePath;
-		File f = new File(dir);
+        dir.append("/extResource/");
+        dir.append(filePath);
+        
+		File f = new File(dir.toString());
 
-		return f.exists() ? f : null;
+        return f.exists() ? f : null;
 	}
 
 	public static FileInputStream getInputStream(File file)
@@ -60,6 +60,10 @@ public class FileHandler
 		{
 			inputStream = new FileInputStream(file);
 		}
+        catch(NullPointerException e)
+        {
+            fileLogger.log(Level.SEVERE, "파일을 찾을 수 없음", e);
+        }
 		catch (FileNotFoundException e)
 		{
 			fileLogger.log(Level.SEVERE, "인풋 스트림을 가져올 수 없음", e);
