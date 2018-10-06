@@ -8,7 +8,6 @@ import java.util.logging.Logger;
 import node.cluster.ClusterService;
 import node.db.DB_Handler;
 import node.device.DeviceInfoManager;
-import node.fileIO.FileHandler;
 import node.log.LogWriter;
 import node.network.DHCPService;
 import node.network.NetworkManager;
@@ -49,8 +48,7 @@ public class NodeControlCore
 		
 		try
 		{
-			//InputStream stream = NodeControlCore.class.getResourceAsStream("/config.properties");
-            InputStream stream = FileHandler.getInputStream(FileHandler.getResourceFile("config.properties"));
+			InputStream stream = NodeControlCore.class.getResourceAsStream("/config.properties");
             
 			properties.load(stream);
 		}

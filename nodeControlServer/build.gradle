@@ -26,3 +26,18 @@ dependencies
 
     compile fileTree(dir: 'lib', include: ['*.jar'])
 }
+
+sourceSets 
+{
+    main 
+    {
+        java 
+        {
+            srcDirs = ['src/main/java']
+        }
+        resources 
+        {
+            srcDirs = ['resources']
+        }
+    }
+}
