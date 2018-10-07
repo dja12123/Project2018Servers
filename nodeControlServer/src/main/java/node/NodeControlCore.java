@@ -23,6 +23,8 @@ import node.network.NetworkManager;
 public class NodeControlCore
 {
 
+	public static final Logger mainLogger = LogWriter.createLogger(NodeControlCore.class, "main");// 메인 로거
+	
 	private static final Properties properties = new Properties();
 	
 	private final DB_Handler dbHandler;
@@ -51,7 +53,7 @@ public class NodeControlCore
 	{
 		Logger.getGlobal().setLevel(Level.FINER);
 		
-		LogWriter.mainLogger.log(Level.INFO, "서버 시작");
+		mainLogger.log(Level.INFO, "서버 시작");
 		
 		try
 		{
@@ -61,7 +63,7 @@ public class NodeControlCore
 		}
 		catch (Exception e)
 		{
-			LogWriter.mainLogger.log(Level.SEVERE, "config 로드 실패", e);
+			mainLogger.log(Level.SEVERE, "config 로드 실패", e);
 			return;
 		}
 	}
@@ -76,18 +78,18 @@ public class NodeControlCore
 		}
 		catch(Exception e)
 		{
-			LogWriter.mainLogger.log(Level.SEVERE, "서비스 시작중 오류", e);
+			mainLogger.log(Level.SEVERE, "서비스 시작중 오류", e);
 			this.stopService();
 			return;
 		}
-		LogWriter.mainLogger.log(Level.INFO, "서비스 시작 완료");
+		mainLogger.log(Level.INFO, "서비스 시작 완료");
 	}
 	
 	private void stopService()
 	{
 		this.dbHandler.stopModule();
 		this.deviceInfoManager.stopModule();
-		LogWriter.mainLogger.log(Level.INFO, "서비스 중지");
+		mainLogger.log(Level.INFO, "서비스 중지");
 	}
 
 	
