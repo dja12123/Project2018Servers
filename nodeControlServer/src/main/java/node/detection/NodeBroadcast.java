@@ -1,4 +1,4 @@
-package node.detection.workNodeService;
+package node.detection;
 
 import java.io.IOException;
 import java.net.DatagramPacket;

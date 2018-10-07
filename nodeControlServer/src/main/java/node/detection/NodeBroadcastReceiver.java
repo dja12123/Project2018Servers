@@ -1,4 +1,4 @@
-package node.detection.workNodeService;
+package node.detection;
 
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -7,6 +7,7 @@ import java.sql.PreparedStatement;
 import java.sql.Time;
 import java.util.logging.Level;
 
+import node.IServiceModule;
 import node.NodeControlCore;
 import node.db.DB_Handler;
 import node.network.NetworkManager;
@@ -15,7 +16,7 @@ import node.network.communicator.NetworkEvent;
 import node.network.communicator.SocketHandler;
 import node.util.observer.Observable;
 
-public class BroadcastNodeReceiver implements INetworkObserver
+public class NodeBroadcastReceiver implements IServiceModule, INetworkObserver
 {
 	private DB_Handler dbHandler;
 	private SocketHandler socketHandler;
@@ -29,7 +30,7 @@ public class BroadcastNodeReceiver implements INetworkObserver
 		dbHandler.startModule();
 		socketHandler.startModule();
 		
-		BroadcastNodeReceiver sc = new BroadcastNodeReceiver(dbHandler, socketHandler);
+		NodeBroadcastReceiver sc = new NodeBroadcastReceiver(dbHandler, socketHandler);
 	}
 	
 	private static final String NODE_TABLE_SCHEMA = 
@@ -38,7 +39,7 @@ public class BroadcastNodeReceiver implements INetworkObserver
 		+		"inetaddr varchar(15),"
 		+ 		"updateTime datetime)";
 	
-	public BroadcastNodeReceiver(DB_Handler dbHandler, SocketHandler socketHandler)
+	public NodeBroadcastReceiver(DB_Handler dbHandler, SocketHandler socketHandler)
 	{
 		this.dbHandler = dbHandler;
 		this.socketHandler = socketHandler;
@@ -64,11 +65,14 @@ public class BroadcastNodeReceiver implements INetworkObserver
 		}
 	}
 	
-	public void startModule()
+	@Override
+	public boolean startModule()
 	{
 		this.socketHandler.addObserver(NodeBroadcast.NODE_BROADCAST_MSG, this);
+		return true;
 	}
 	
+	@Override
 	public void stopModule()
 	{
 		this.socketHandler.removeObserver(this);

@@ -4,8 +4,8 @@ import java.util.logging.Logger;
 
 import node.IServiceModule;
 import node.db.DB_Handler;
-import node.detection.workNodeService.BroadcastNodeReceiver;
-import node.detection.workNodeService.NodeBroadcast;
+import node.detection.NodeBroadcastReceiver;
+import node.detection.NodeBroadcast;
 import node.device.Device;
 import node.log.LogWriter;
 import node.network.communicator.SocketHandler;
@@ -18,7 +18,7 @@ public class NodeDetectionService implements IServiceModule
 	private SocketHandler socketHandler;
 	
 	private NodeBroadcast infoBroadCast;
-	private BroadcastNodeReceiver nodeScanner;
+	private NodeBroadcastReceiver nodeScanner;
 	
 	private boolean isDHCPNode;
 	
@@ -28,7 +28,7 @@ public class NodeDetectionService implements IServiceModule
 		this.socketHandler = socketHandler;
 		
 		this.infoBroadCast = new NodeBroadcast(deviceInfo, this.socketHandler);
-		this.nodeScanner = new BroadcastNodeReceiver(this.dbHandler, this.socketHandler);
+		this.nodeScanner = new NodeBroadcastReceiver(this.dbHandler, this.socketHandler);
 		
 		this.isDHCPNode = false;
 	}
