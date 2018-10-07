@@ -15,6 +15,7 @@ import node.NodeControlCore;
 import node.db.DB_Handler;
 import node.device.Device;
 import node.log.LogWriter;
+import node.network.NetworkManager;
 
 public class InfoBroadcast implements Runnable, IServiceModule
 {

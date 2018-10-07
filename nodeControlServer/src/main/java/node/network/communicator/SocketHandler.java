@@ -121,6 +121,7 @@ public class SocketHandler implements IServiceModule, Runnable
 	@Override
 	public void run()
 	{
+		netScannerLogger.log(Level.INFO, "네트워크 수신 시작");
 		byte[] packetBuffer = new byte[PacketUtil.HEADER_SIZE + PacketUtil.MAX_SIZE_KEY + PacketUtil.MAX_SIZE_DATA];
 		DatagramPacket dgramPacket;
 		while(this.isWork)
