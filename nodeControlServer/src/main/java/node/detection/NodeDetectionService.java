@@ -4,13 +4,15 @@ import java.util.logging.Logger;
 
 import node.IServiceModule;
 import node.db.DB_Handler;
+import node.detection.workNodeService.BroadcastNodeReceiver;
+import node.detection.workNodeService.NodeBroadcast;
 import node.device.Device;
 import node.log.LogWriter;
 import node.network.communicator.SocketHandler;
 
-public class NodeInitService implements IServiceModule
+public class NodeDetectionService implements IServiceModule
 {
-	public static final Logger nodeInitLogger = LogWriter.createLogger(NodeInitService.class, "nodeInit");
+	public static final Logger nodeInitLogger = LogWriter.createLogger(NodeDetectionService.class, "nodeInit");
 	
 	private DB_Handler dbHandler;
 	private SocketHandler socketHandler;
@@ -20,7 +22,7 @@ public class NodeInitService implements IServiceModule
 	
 	private boolean isDHCPNode;
 	
-	NodeInitService(DB_Handler dbHandler, SocketHandler socketHandler, Device deviceInfo)
+	NodeDetectionService(DB_Handler dbHandler, SocketHandler socketHandler, Device deviceInfo)
 	{
 		this.dbHandler = dbHandler;
 		this.socketHandler = socketHandler;

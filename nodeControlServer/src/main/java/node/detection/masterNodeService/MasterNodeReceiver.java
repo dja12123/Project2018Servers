@@ -1,4 +1,4 @@
-package node.detection;
+package node.detection.masterNodeService;
 
 public class MasterNodeReceiver
 {

@@ -1,4 +1,4 @@
-package node.detection;
+package node.detection.workNodeService;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -13,6 +13,7 @@ import java.util.logging.Logger;
 import node.IServiceModule;
 import node.NodeControlCore;
 import node.db.DB_Handler;
+import node.detection.NodeDetectionService;
 import node.device.Device;
 import node.log.LogWriter;
 import node.network.NetworkManager;
@@ -59,7 +60,7 @@ public class NodeBroadcast implements Runnable, IServiceModule
 	@Override
 	public void run()
 	{
-		NodeInitService.nodeInitLogger.log(Level.INFO, "노드 알림 시작");
+		NodeDetectionService.nodeInitLogger.log(Level.INFO, "노드 알림 시작");
 		while(this.isRun)
 		{
 			try
@@ -87,7 +88,7 @@ public class NodeBroadcast implements Runnable, IServiceModule
 		}
 		catch (PacketBuildFailureException e)
 		{
-			NodeInitService.nodeInitLogger.log(Level.SEVERE, "브로드케스트 패킷 생성 오류", e);
+			NodeDetectionService.nodeInitLogger.log(Level.SEVERE, "브로드케스트 패킷 생성 오류", e);
 			return false;
 		}
 		

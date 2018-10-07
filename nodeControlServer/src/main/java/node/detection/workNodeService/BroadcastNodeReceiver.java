@@ -1,4 +1,4 @@
-package node.detection;
+package node.detection.workNodeService;
 
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -38,7 +38,7 @@ public class BroadcastNodeReceiver implements INetworkObserver
 		+		"inetaddr varchar(15),"
 		+ 		"updateTime datetime)";
 	
-	BroadcastNodeReceiver(DB_Handler dbHandler, SocketHandler socketHandler)
+	public BroadcastNodeReceiver(DB_Handler dbHandler, SocketHandler socketHandler)
 	{
 		this.dbHandler = dbHandler;
 		this.socketHandler = socketHandler;
