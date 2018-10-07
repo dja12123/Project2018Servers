@@ -2,6 +2,7 @@ package node.util.observer;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
 
 public class Observable<ObservedType>
 {
@@ -41,6 +42,14 @@ public class Observable<ObservedType>
 		for (Observer<ObservedType> obs : _observers)
 		{
 			obs.update(this, data);
+		}
+	}
+	
+	public void notifyObservers(ExecutorService pool, ObservedType data)
+	{
+		for (Observer<ObservedType> obs : _observers)
+		{
+			pool.submit(()->{obs.update(this, data);});
 		}
 	}
 }

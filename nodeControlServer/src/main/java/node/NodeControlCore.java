@@ -42,6 +42,13 @@ public class NodeControlCore
     
     public static void main(String[] args) throws InterruptedException
 	{
+    	init();
+		NodeControlCore core = new NodeControlCore();
+		core.startService();
+	}
+    
+    public static void init()
+	{
 		Logger.getGlobal().setLevel(Level.FINER);
 		
 		LogWriter.mainLogger.log(Level.INFO, "서버 시작");
@@ -57,9 +64,6 @@ public class NodeControlCore
 			LogWriter.mainLogger.log(Level.SEVERE, "config 로드 실패", e);
 			return;
 		}
-		
-		NodeControlCore core = new NodeControlCore();
-		core.startService();
 	}
 	
 	private void startService()

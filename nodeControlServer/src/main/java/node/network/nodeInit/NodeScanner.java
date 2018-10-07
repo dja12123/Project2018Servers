@@ -1,5 +1,10 @@
 package node.network.nodeInit;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.UUID;
+
+import node.NodeControlCore;
 import node.db.DB_Handler;
 import node.network.communicator.INetworkObserver;
 import node.network.communicator.NetworkEvent;
@@ -11,10 +16,25 @@ public class NodeScanner implements INetworkObserver
 	private DB_Handler dbHandler;
 	private SocketHandler socketHandler;
 	
+	public static void main(String[] args)
+	{
+		NodeControlCore.init();
+		DB_Handler dbHandler = new DB_Handler();
+		SocketHandler socketHandler = new SocketHandler();
+		
+		dbHandler.startModule();
+		socketHandler.startModule();
+		
+		NodeScanner sc = new NodeScanner(dbHandler, socketHandler);
+		
+		
+	}
+	
 	private static final String NODE_TABLE_SCHEMA = 
 			"CREATE TABLE nodeInfo("
-		+		"device_id varchar(36)"
-		+		")";
+		+		"uuid varchar(36),"
+		+		"inetaddr varchar(15),"
+		+ 		"updateTime datetime)";
 	
 	NodeScanner(DB_Handler dbHandler, SocketHandler socketHandler)
 	{
@@ -28,7 +48,12 @@ public class NodeScanner implements INetworkObserver
 	@Override
 	public void update(Observable<NetworkEvent> object, NetworkEvent data)
 	{
-		//data.inetAddr;
-		
+		if(data.key.equals(InfoBroadcast.NODE_BROADCAST_MSG))
+		{
+			String addr = data.inetAddr.getHostAddress();
+			String uuid = data.packet.getSender().toString();
+			
+			
+		}
 	}
-}
+}	

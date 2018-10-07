@@ -122,20 +122,29 @@ public class SocketHandler implements IServiceModule, Runnable
 	public void run()
 	{
 		byte[] packetBuffer = new byte[PacketUtil.HEADER_SIZE + PacketUtil.MAX_SIZE_KEY + PacketUtil.MAX_SIZE_DATA];
-		DatagramPacket packet;
+		DatagramPacket dgramPacket;
 		while(this.isWork)
 		{
-			packet = new DatagramPacket(packetBuffer, packetBuffer.length);
+			dgramPacket = new DatagramPacket(packetBuffer, packetBuffer.length);
 			try
 			{
-				this.socket.receive(packet);
+				this.socket.receive(dgramPacket);
 				if(!PacketUtil.isPacket(packetBuffer))
 				{
 					continue;
 				}
 				
-				PacketProcess process = new PacketProcess(packetBuffer, this.observerMap);
-				this.packetProcessService.execute(process);
+				Packet packetObj = new Packet(packetBuffer);
+				String eventKey = packetObj.getKey();
+				
+				Observable<NetworkEvent> observable = observerMap.getOrDefault(eventKey, null);
+				if(observable == null)
+				{
+					continue;
+				}
+				
+				NetworkEvent event = new NetworkEvent(eventKey, dgramPacket.getAddress(), packetObj);
+				observable.notifyObservers(packetProcessService, event);
 			}
 			catch (IOException e)
 			{
@@ -147,28 +156,5 @@ public class SocketHandler implements IServiceModule, Runnable
 	public void sendMessage(Packet packet)
 	{// 장치 테이블 조회후 날리기?
 		
-	}
-}
-
-class PacketProcess implements Runnable
-{
-	private byte[] rawPacket;
-	private HashMap<String, Observable<NetworkEvent>> observerMap;
-
-	public PacketProcess(byte[] rawPakcet, HashMap<String, Observable<NetworkEvent>> observerMap)
-	{
-		this.rawPacket = PacketUtil.clonePacketByte(rawPakcet);
-		this.observerMap = observerMap;
-	}
-
-	@Override
-	public void run()
-	{
-		Packet packet = new Packet(this.rawPacket);
-		Observable<NetworkEvent> observable = observerMap.getOrDefault(packet.getKey(), null);
-		if(observable != null)
-		{
-			observable.notify();
-		}
 	}
 }
