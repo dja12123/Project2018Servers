@@ -15,7 +15,9 @@ import node.log.LogWriter;
 public class FileHandler
 {
 	public static final Logger fileLogger = LogWriter.createLogger(FileHandler.class, "file");
-	
+	public static final String jarDir = new File(FileHandler.class.getProtectionDomain().getCodeSource().getLocation().getPath()).getParentFile().getPath() + "/";
+    
+    
 	public static File[] getFileList(String file)
 	{
 		return getFileList(getResourceFile(file));
@@ -43,9 +45,9 @@ public class FileHandler
 
 	public static File getResourceFile(String filePath)
 	{        
-        StringBuffer dir = new StringBuffer(new File(FileHandler.class.getProtectionDomain().getCodeSource().getLocation().getPath()).getParentFile().getPath());
+        StringBuffer dir = new StringBuffer(jarDir);
         
-        dir.append("/extResource/");
+        dir.append("extResource/");
         dir.append(filePath);
         
 		File f = new File(dir.toString());

@@ -23,6 +23,7 @@ import node.NodeControlCore;
 import node.util.tablebuilder.Row;
 import node.util.tablebuilder.StringTableBuilder;
 import node.log.LogWriter;
+import node.fileIO.FileHandler;
 
 /**
  * @FileName : DB_Handler.java
@@ -124,8 +125,7 @@ public class DB_Handler implements IServiceModule
 	{
 		if (this.isOpened)
 			this.stopModule();
-		String path = DB_Handler.class.getProtectionDomain().getCodeSource().getLocation().getPath()
-				+ NodeControlCore.getProp(PROP_DB_FILE);
+		String path = FileHandler.jarDir + NodeControlCore.getProp(PROP_DB_FILE);
 		databaseLogger.log(Level.INFO, "데이터베이스 열기 (" + path + ")");
 		try
 		{
@@ -295,7 +295,7 @@ public class DB_Handler implements IServiceModule
             if(!checkStruct(schema))
             {
                 String dropQuery = String.format("drop table %s", getTableName(schema));
-                query(dropQuery);
+                executeQuery(dropQuery);
                 databaseLogger.log(Level.INFO, "테이블 삭제(" + dropQuery + ")");
                 executeQuery(schema);
                 databaseLogger.log(Level.INFO, "테이블 재생성(" + schema + ")");
