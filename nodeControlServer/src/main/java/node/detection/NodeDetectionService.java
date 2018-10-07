@@ -4,8 +4,10 @@ import java.util.logging.Logger;
 
 import node.IServiceModule;
 import node.db.DB_Handler;
-import node.detection.NodeBroadcastReceiver;
-import node.detection.NodeBroadcast;
+import node.detection.initService.NodeBroadcast;
+import node.detection.initService.NodeBroadcastReceiver;
+import node.detection.masterNodeService.MasterNodeBroadcast;
+import node.detection.masterNodeService.MasterNodeReceiver;
 import node.device.Device;
 import node.log.LogWriter;
 import node.network.communicator.SocketHandler;
@@ -17,33 +19,41 @@ public class NodeDetectionService implements IServiceModule
 	private DB_Handler dbHandler;
 	private SocketHandler socketHandler;
 	
-	private NodeBroadcast infoBroadCast;
-	private NodeBroadcastReceiver nodeScanner;
+	private NodeBroadcast nodeBroadcast;
+	private NodeBroadcastReceiver nodeBroadcastReceiver;
+	private MasterNodeBroadcast masterNodeBroadcast;
+	private MasterNodeReceiver masterNodeReceiver;
 	
 	private boolean isDHCPNode;
 	
-	NodeDetectionService(DB_Handler dbHandler, SocketHandler socketHandler, Device deviceInfo)
+	public NodeDetectionService(DB_Handler dbHandler, SocketHandler socketHandler, Device deviceInfo)
 	{
 		this.dbHandler = dbHandler;
 		this.socketHandler = socketHandler;
 		
-		this.infoBroadCast = new NodeBroadcast(deviceInfo, this.socketHandler);
-		this.nodeScanner = new NodeBroadcastReceiver(this.dbHandler, this.socketHandler);
+		this.nodeBroadcast = new NodeBroadcast(deviceInfo, this.socketHandler);
+		this.nodeBroadcastReceiver = new NodeBroadcastReceiver(this.dbHandler, this.socketHandler);
+		this.masterNodeBroadcast = new MasterNodeBroadcast();
+		this.masterNodeReceiver = new MasterNodeReceiver();
+		
 		
 		this.isDHCPNode = false;
 	}
 	
 	private void startScan()
 	{
-		this.infoBroadCast.startModule();
-		this.nodeScanner.startModule();
+		this.nodeBroadcast.startModule();
+		this.nodeBroadcastReceiver.startModule();
+	
 	}
 
 	@Override
 	public boolean startModule()
 	{
 		
-		return false;
+		
+		
+		return true;
 	}
 
 	@Override
