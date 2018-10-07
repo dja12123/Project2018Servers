@@ -23,6 +23,7 @@ public class NodeScanner implements INetworkObserver
 		SocketHandler socketHandler = new SocketHandler();
 		
 		dbHandler.startModule();
+		//dbHandler.executeQuery("drop table nodeInfo");
 		socketHandler.startModule();
 		
 		NodeScanner sc = new NodeScanner(dbHandler, socketHandler);

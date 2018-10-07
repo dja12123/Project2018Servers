@@ -289,17 +289,15 @@ public class DB_Handler implements IServiceModule
 
 	public void checkAndCreateTable(String schema)
 	{
-        databaseLogger.log(Level.INFO, "테이블 확인시작(" + schema + ")");
+        databaseLogger.log(Level.INFO, "테이블 확인(" + schema + ")");
 		if (checkTable(schema))
 		{
             if(!checkStruct(schema))
             {
                 String dropQuery = String.format("drop table %s", getTableName(schema));
                 executeQuery(dropQuery);
-                databaseLogger.log(Level.INFO, "테이블 삭제(" + dropQuery + ")");
                 executeQuery(schema);
                 databaseLogger.log(Level.INFO, "테이블 재생성(" + schema + ")");
-                return;
             }
             return;
 		}
