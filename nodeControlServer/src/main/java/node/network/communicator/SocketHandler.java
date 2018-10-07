@@ -154,8 +154,8 @@ public class SocketHandler implements IServiceModule, Runnable
 		}
 	}
 	
-	public void sendMessage(Packet packet)
-	{// 장치 테이블 조회후 날리기?
+	public void sendMessage(InetAddress addr, Packet packet)
+	{
 		
 	}
 }

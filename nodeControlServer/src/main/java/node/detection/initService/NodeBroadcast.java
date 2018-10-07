@@ -36,7 +36,6 @@ public class NodeBroadcast implements Runnable, IServiceModule
 	private Thread broadcastThread = null;
 	private boolean isRun = false;
 	
-	private String infoString;
 	private Packet packet;
 	
 	static
@@ -68,7 +67,7 @@ public class NodeBroadcast implements Runnable, IServiceModule
 				Thread.sleep(this.broadCastDelay);
 			}
 			catch (InterruptedException e) {}
-			this.socketHandler.sendMessage(this.packet);
+			this.socketHandler.sendMessage(this.broadcastIA, packet);
 		}
 	}
 	
