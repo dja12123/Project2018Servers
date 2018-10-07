@@ -1,5 +1,6 @@
 package node.db;
 
+import java.io.File;
 import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -59,6 +60,13 @@ public class DB_Handler implements IServiceModule
 		{
 			databaseLogger.log(Level.SEVERE, "JDBC 로드 실패", e);
 		}
+	}
+	
+	public static void main(String[] args)
+	{
+		NodeControlCore.init();
+		DB_Handler db = new DB_Handler();
+		db.startModule();
 	}
 
 	public DB_Handler()
@@ -137,11 +145,11 @@ public class DB_Handler implements IServiceModule
 	{
 		if (this.isOpened)
 			this.stopModule();
-		String path = FileHandler.jarDir + NodeControlCore.getProp(PROP_DB_FILE);
-		databaseLogger.log(Level.INFO, "데이터베이스 열기 (" + path + ")");
+		File f = FileHandler.getResourceFile(NodeControlCore.getProp(PROP_DB_FILE));
+		databaseLogger.log(Level.INFO, "데이터베이스 열기 (" + f.toString() + ")");
 		try
 		{
-			this.connection = DriverManager.getConnection(JDBC.PREFIX + path, this.config.toProperties());
+			this.connection = DriverManager.getConnection(JDBC.PREFIX + f.toString(), this.config.toProperties());
 			this.connection.setAutoCommit(true);
 		}
 		catch (SQLException e)
