@@ -69,12 +69,18 @@ public class DB_Handler implements IServiceModule
 	// 실행'만' 하는 쿼리(테이블 생성, 컬럼 삭제 등)
 	public boolean executeQuery(String query)
 	{
+		return this.executeQuery(query, (PreparedStatement p)->{});
+	}
+	
+	public boolean executeQuery(String query, ISQLcallback callback)
+	{
 		if (!this.isOpened)
 			return false;
 		PreparedStatement prep = null;
 		try
 		{
 			prep = this.connection.prepareStatement(query);
+			callback.callback(prep);
 			prep.execute();
 		}
 		catch (SQLException e)
@@ -88,6 +94,11 @@ public class DB_Handler implements IServiceModule
 	// 결과가 나오는 쿼리 (select문)
 	public CachedRowSet query(String query)
 	{
+		return this.query(query, (PreparedStatement p)->{});
+	}
+	
+	public CachedRowSet query(String query, ISQLcallback callback)
+	{
 		if (!this.isOpened)
 		{
 			databaseLogger.log(Level.SEVERE, "세션 닫힘");
@@ -100,6 +111,7 @@ public class DB_Handler implements IServiceModule
 		try
 		{
 			prep = this.connection.prepareStatement(query);
+			callback.callback(prep);
 			rs = prep.executeQuery();
 		}
 		catch (SQLException e)

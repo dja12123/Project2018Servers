@@ -2,6 +2,7 @@ package node.network.nodeInit;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.sql.PreparedStatement;
 import java.util.UUID;
 
 import node.NodeControlCore;
@@ -23,7 +24,6 @@ public class NodeScanner implements INetworkObserver
 		SocketHandler socketHandler = new SocketHandler();
 		
 		dbHandler.startModule();
-		//dbHandler.executeQuery("drop table nodeInfo");
 		socketHandler.startModule();
 		
 		NodeScanner sc = new NodeScanner(dbHandler, socketHandler);
@@ -32,7 +32,7 @@ public class NodeScanner implements INetworkObserver
 	}
 	
 	private static final String NODE_TABLE_SCHEMA = 
-			"CREATE TABLE nodeInfo("
+			"CREATE TABLE node_info("
 		+		"uuid varchar(36),"
 		+		"inetaddr varchar(15),"
 		+ 		"updateTime datetime)";
@@ -54,6 +54,9 @@ public class NodeScanner implements INetworkObserver
 			String addr = data.inetAddr.getHostAddress();
 			String uuid = data.packet.getSender().toString();
 			
+			this.dbHandler.executeQuery("insert into node_info", (PreparedStatement prep)->{
+				
+			});
 			
 		}
 	}
