@@ -1,4 +1,4 @@
-package node.network.nodeInit;
+package node.detection;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -16,25 +16,27 @@ import node.db.DB_Handler;
 import node.device.Device;
 import node.log.LogWriter;
 import node.network.NetworkManager;
+import node.network.communicator.SocketHandler;
+import node.network.packet.Packet;
+import node.network.packet.PacketBuildFailureException;
+import node.network.packet.PacketBuilder;
 
-public class InfoBroadcast implements Runnable, IServiceModule
+public class NodeBroadcast implements Runnable, IServiceModule
 {
 	public static final String PROP_DELAY_INFOMSG = "delayInfoBroadcast";
-	
-	public static final Logger broadcastLogger = LogWriter.createLogger(DB_Handler.class, "broadcast");
-
 	public static final String NODE_BROADCAST_MSG = "infoBroadcast";
+	
 	private static InetAddress broadcastIA;
 	
 	private final Device deviceInfo;
+	private final SocketHandler socketHandler;
 	
 	private int broadCastDelay;
 	private Thread broadcastThread = null;
 	private boolean isRun = false;
-	private DatagramSocket dgramSocket = null;
 	
 	private String infoString;
-	private DatagramPacket packet;
+	private Packet packet;
 	
 	static
 	{
@@ -48,15 +50,16 @@ public class InfoBroadcast implements Runnable, IServiceModule
 		}
 	}
 	
-	public InfoBroadcast(Device deviceInfo)
+	public NodeBroadcast(Device deviceInfo, SocketHandler socketHandler)
 	{
 		this.deviceInfo = deviceInfo;
+		this.socketHandler = socketHandler;
 	}
 
 	@Override
 	public void run()
 	{
-		broadcastLogger.log(Level.INFO, "노드 알림 시작");
+		NodeInitService.nodeInitLogger.log(Level.INFO, "노드 알림 시작");
 		while(this.isRun)
 		{
 			try
@@ -64,22 +67,8 @@ public class InfoBroadcast implements Runnable, IServiceModule
 				Thread.sleep(this.broadCastDelay);
 			}
 			catch (InterruptedException e) {}
-			try
-			{
-				this.dgramSocket.send(packet);
-			}
-			catch (IOException e)
-			{
-				broadcastLogger.log(Level.SEVERE, "패킷 전송 오류");
-			}
+			this.socketHandler.sendMessage(this.packet);
 		}
-	}
-	
-	private void broadCastInfo()
-	{
-		byte[] infoMessage = this.infoString.getBytes();
-	
-		
 	}
 	
 	public boolean startModule()
@@ -87,24 +76,22 @@ public class InfoBroadcast implements Runnable, IServiceModule
 		if(this.isRun) this.stopModule();
 		this.isRun = true;
 		
+		PacketBuilder builder = new PacketBuilder();
+		
 		try
 		{
-			this.dgramSocket = new DatagramSocket();
+			builder.setSender(this.deviceInfo.uuid);
+			builder.setBroadCast();
+			builder.setKey(NODE_BROADCAST_MSG);
+			this.packet = builder.createPacket();
 		}
-		catch (SocketException e)
+		catch (PacketBuildFailureException e)
 		{
-			broadcastLogger.log(Level.SEVERE, "소캣 생성 오류", e);
+			NodeInitService.nodeInitLogger.log(Level.SEVERE, "브로드케스트 패킷 생성 오류", e);
 			return false;
 		}
 		
 		this.broadCastDelay = Integer.parseInt(NodeControlCore.getProp(PROP_DELAY_INFOMSG));
-		
-		StringBuffer infoStringBuffer = new StringBuffer();
-		
-		
-		byte[] infoMessage = this.infoString.getBytes();
-		int port = Integer.valueOf(NodeControlCore.getProp(NetworkManager.PROP_INFOBROADCAST_PORT));
-		this.packet = new DatagramPacket(infoMessage, infoMessage.length, broadcastIA, port);
 		
 		this.broadcastThread = new Thread(this);
 		this.broadcastThread.start();

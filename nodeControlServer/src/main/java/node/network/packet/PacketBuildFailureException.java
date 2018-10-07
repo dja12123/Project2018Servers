@@ -8,7 +8,7 @@ package node.network.packet;
   * @변경이력 :
   * @프로그램 설명 : 패킷 빌드 실패 예외
   */
-class PacketBuildFailureException extends Exception
+public class PacketBuildFailureException extends Exception
 {
 	public PacketBuildFailureException(String msg)
 	{

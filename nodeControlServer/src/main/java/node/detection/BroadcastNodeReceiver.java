@@ -1,15 +1,21 @@
-package node.network.nodeInit;
+package node.detection;
 
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.SocketException;
 import java.sql.PreparedStatement;
 import java.sql.Time;
+import java.util.logging.Level;
+
 import node.NodeControlCore;
 import node.db.DB_Handler;
+import node.network.NetworkManager;
 import node.network.communicator.INetworkObserver;
 import node.network.communicator.NetworkEvent;
 import node.network.communicator.SocketHandler;
 import node.util.observer.Observable;
 
-public class NodeScanner implements INetworkObserver
+public class BroadcastNodeReceiver implements INetworkObserver
 {
 	private DB_Handler dbHandler;
 	private SocketHandler socketHandler;
@@ -23,7 +29,7 @@ public class NodeScanner implements INetworkObserver
 		dbHandler.startModule();
 		socketHandler.startModule();
 		
-		NodeScanner sc = new NodeScanner(dbHandler, socketHandler);
+		BroadcastNodeReceiver sc = new BroadcastNodeReceiver(dbHandler, socketHandler);
 	}
 	
 	private static final String NODE_TABLE_SCHEMA = 
@@ -32,19 +38,18 @@ public class NodeScanner implements INetworkObserver
 		+		"inetaddr varchar(15),"
 		+ 		"updateTime datetime)";
 	
-	NodeScanner(DB_Handler dbHandler, SocketHandler socketHandler)
+	BroadcastNodeReceiver(DB_Handler dbHandler, SocketHandler socketHandler)
 	{
 		this.dbHandler = dbHandler;
 		this.socketHandler = socketHandler;
 	
 		this.dbHandler.checkAndCreateTable(NODE_TABLE_SCHEMA);
-		this.socketHandler.addObserver(InfoBroadcast.NODE_BROADCAST_MSG, this);
 	}
 
 	@Override
 	public void update(Observable<NetworkEvent> object, NetworkEvent data)
 	{
-		if(data.key.equals(InfoBroadcast.NODE_BROADCAST_MSG))
+		if(data.key.equals(NodeBroadcast.NODE_BROADCAST_MSG))
 		{
 			String addr = data.inetAddr.getHostAddress();
 			String uuid = data.packet.getSender().toString();
@@ -59,7 +64,12 @@ public class NodeScanner implements INetworkObserver
 		}
 	}
 	
-	public void stopScan()
+	public void startModule()
+	{
+		this.socketHandler.addObserver(NodeBroadcast.NODE_BROADCAST_MSG, this);
+	}
+	
+	public void stopModule()
 	{
 		this.socketHandler.removeObserver(this);
 	}
