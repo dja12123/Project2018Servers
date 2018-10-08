@@ -4,6 +4,8 @@ import node.bash.BashSet;
 
 public class ZookeeperServerManager {
 	private int isMaster;
+	private int zookeeperPort;
+	
 	
 	public ZookeeperServerManager(int isMaster) {
 		this.isMaster = isMaster;

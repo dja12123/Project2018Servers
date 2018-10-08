@@ -37,7 +37,6 @@ public class ClusterService implements IServiceModule {
 	public void delRow(String key) {
 		ipTable.remove(key);
 	}
-	
 	@Override
 	public boolean startModule() {
 		// TODO Auto-generated method stub
