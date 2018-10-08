@@ -14,7 +14,7 @@ import java.util.logging.Logger;
 import node.log.LogWriter;
 
 public class CommandExecutor {
-	//매개변수로 ArrayList<문자열> 타입으로 넘기면 bash명령이 실행됨
+	//매개변수로 ArrayList<문자열> 타입으로 넘기면 bash명령이 한줄씩 실행됨
 	public static final Logger cmdlogger = LogWriter.createLogger(CommandExecutor.class, "cmd");
 	
 	public static void executeBash(ArrayList<String> cmd) throws Exception {
@@ -33,11 +33,11 @@ public class CommandExecutor {
 	        Process process = pb.start();
 	        successBufferReader = new BufferedReader(new InputStreamReader(process.getInputStream(), "UTF-8"));
 	        while((msg = successBufferReader.readLine()) != null) {
-	        	cmdlogger.log(Level.SEVERE, msg + System.getProperty("line.separator"));
+	        	cmdlogger.log(Level.INFO, msg + System.getProperty("line.separator"));
 	        }
 	        errorBufferReader = new BufferedReader(new InputStreamReader(process.getErrorStream(), "UTF-8"));
 	        while((msg = errorBufferReader.readLine()) != null) {
-	        	cmdlogger.log(Level.SEVERE, msg + System.getProperty("line.separator"));
+	        	cmdlogger.log(Level.INFO, msg + System.getProperty("line.separator"));
 	        }
 	        
 	        process.waitFor();
@@ -76,11 +76,11 @@ public class CommandExecutor {
         Process process = pb.start();
         successBufferReader = new BufferedReader(new InputStreamReader(process.getInputStream(), "UTF-8"));
         while((msg = successBufferReader.readLine()) != null) {
-        	cmdlogger.log(Level.SEVERE, msg + System.getProperty("line.separator"));
+        	cmdlogger.log(Level.INFO, msg + System.getProperty("line.separator"));
         }
         errorBufferReader = new BufferedReader(new InputStreamReader(process.getErrorStream(), "UTF-8"));
         while((msg = errorBufferReader.readLine()) != null) {
-        	cmdlogger.log(Level.SEVERE, msg + System.getProperty("line.separator"));
+        	cmdlogger.log(Level.INFO, msg + System.getProperty("line.separator"));
         }
 	}
 	

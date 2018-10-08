@@ -137,4 +137,5 @@ public class FileHandler
 	{
 		return readFileString(getResourceFile(file));
 	}
+	
 }
