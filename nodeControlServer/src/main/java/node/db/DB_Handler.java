@@ -7,6 +7,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.logging.Level;
@@ -76,7 +77,20 @@ public class DB_Handler implements IServiceModule
 	// 실행'만' 하는 쿼리(테이블 생성, 컬럼 삭제 등)
 	public boolean executeQuery(String query)
 	{
-		return this.executeQuery(query, (PreparedStatement p)->{});
+		if (!this.isOpened)
+			return false;
+		Statement stmt = null;
+		try
+		{
+			stmt = this.connection.createStatement();
+			stmt.executeQuery(query);
+		}
+		catch (SQLException e)
+		{
+			databaseLogger.log(Level.SEVERE, "질의 실패(" + query + ")", e);
+			return false;
+		}
+		return true;
 	}
 	
 	public boolean executeQuery(String query, ISQLcallback callback)
@@ -88,7 +102,7 @@ public class DB_Handler implements IServiceModule
 		{
 			prep = this.connection.prepareStatement(query);
 			callback.callback(prep);
-			prep.execute();
+			prep.close();
 		}
 		catch (SQLException e)
 		{
@@ -101,25 +115,19 @@ public class DB_Handler implements IServiceModule
 	// 결과가 나오는 쿼리 (select문)
 	public CachedRowSet query(String query)
 	{
-		return this.query(query, (PreparedStatement p)->{});
-	}
-	
-	public CachedRowSet query(String query, ISQLcallback callback)
-	{
 		if (!this.isOpened)
 		{
 			databaseLogger.log(Level.SEVERE, "세션 닫힘");
 			return null;
 		}
 		CachedRowSet crs = null;
-		PreparedStatement prep = null;
+		Statement stmt = null;
 		ResultSet rs = null;
 
 		try
 		{
-			prep = this.connection.prepareStatement(query);
-			callback.callback(prep);
-			rs = prep.executeQuery();
+			stmt = this.connection.createStatement();
+			rs = stmt.executeQuery(query);
 		}
 		catch (SQLException e)
 		{
