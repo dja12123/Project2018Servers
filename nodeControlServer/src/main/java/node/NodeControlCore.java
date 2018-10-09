@@ -75,6 +75,8 @@ public class NodeControlCore
 			if(!this.dbHandler.startModule()) throw new Exception("DB핸들러 로드 실패");
 			if(!this.deviceInfoManager.startModule()) throw new Exception("장치 정보 모듈 로드 실패");
 			if(!this.clusterService.startModule()) throw new Exception("스파크 모듈 로드 실패");
+			
+			this.dbHandler.getInstaller().complete();
 		}
 		catch(Exception e)
 		{

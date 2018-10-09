@@ -50,9 +50,7 @@ public class FileHandler
         dir.append("extResource/");
         dir.append(filePath);
         
-		File f = new File(dir.toString());
-
-        return f.exists() ? f : null;
+		return new File(dir.toString());
 	}
 
 	public static FileInputStream getInputStream(File file)
@@ -62,10 +60,6 @@ public class FileHandler
 		{
 			inputStream = new FileInputStream(file);
 		}
-        catch(NullPointerException e)
-        {
-            fileLogger.log(Level.SEVERE, "파일을 찾을 수 없음", e);
-        }
 		catch (FileNotFoundException e)
 		{
 			fileLogger.log(Level.SEVERE, "인풋 스트림을 가져올 수 없음", e);

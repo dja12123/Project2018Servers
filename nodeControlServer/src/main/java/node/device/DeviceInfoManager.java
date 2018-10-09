@@ -48,7 +48,7 @@ public class DeviceInfoManager extends Observable<DeviceStateChangeEvent> implem
 	@Override
 	public boolean startModule()
 	{
-		this.dbHandler.checkAndCreateTable(INFO_TABLE_SCHEMA);
+		this.dbHandler.getInstaller().checkAndCreateTable(INFO_TABLE_SCHEMA);
 		return true;
 	}
 

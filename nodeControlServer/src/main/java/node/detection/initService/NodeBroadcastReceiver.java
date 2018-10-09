@@ -44,7 +44,7 @@ public class NodeBroadcastReceiver implements IServiceModule, INetworkObserver
 		this.dbHandler = dbHandler;
 		this.socketHandler = socketHandler;
 	
-		this.dbHandler.checkAndCreateTable(NODE_TABLE_SCHEMA);
+		this.dbHandler.getInstaller().checkAndCreateTable(NODE_TABLE_SCHEMA);
 	}
 
 	@Override
