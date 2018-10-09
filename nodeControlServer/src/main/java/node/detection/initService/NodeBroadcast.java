@@ -24,7 +24,7 @@ import node.network.packet.PacketBuilder;
 
 public class NodeBroadcast implements Runnable, IServiceModule
 {
-	public static final String PROP_DELAY_INFOMSG = "delayInfoBroadcast";
+	public static final String PROP_DELAY_INFOMSG = "delayInitBroadcast";
 	public static final String NODE_INIT_BROADCAST_MSG = "infoBroadcast";
 	
 	private static InetAddress broadcastIA;
@@ -73,7 +73,7 @@ public class NodeBroadcast implements Runnable, IServiceModule
 	
 	public boolean startModule()
 	{
-		if(this.isRun) this.stopModule();
+		if(this.isRun) return true;
 		this.isRun = true;
 		
 		PacketBuilder builder = new PacketBuilder();

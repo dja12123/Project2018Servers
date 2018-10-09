@@ -93,14 +93,13 @@ public class DB_Handler implements IServiceModule
 		try
 		{
 			stmt = this.connection.createStatement();
-			stmt.executeUpdate(query);
+			return stmt.execute(query);
 		}
 		catch (SQLException e)
 		{
 			databaseLogger.log(Level.SEVERE, "질의 실패(" + query + ")", e);
 			return false;
 		}
-		return true;
 	}
 
 	public boolean executeQuery(String query, ISQLcallback callback)
