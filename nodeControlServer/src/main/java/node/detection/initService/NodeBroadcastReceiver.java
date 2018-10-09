@@ -50,7 +50,7 @@ public class NodeBroadcastReceiver implements IServiceModule, INetworkObserver
 	@Override
 	public void update(Observable<NetworkEvent> object, NetworkEvent data)
 	{
-		if(data.key.equals(NodeBroadcast.NODE_BROADCAST_MSG))
+		if(data.key.equals(NodeBroadcast.NODE_INIT_BROADCAST_MSG))
 		{
 			String addr = data.inetAddr.getHostAddress();
 			String uuid = data.packet.getSender().toString();
@@ -68,7 +68,7 @@ public class NodeBroadcastReceiver implements IServiceModule, INetworkObserver
 	@Override
 	public boolean startModule()
 	{
-		this.socketHandler.addObserver(NodeBroadcast.NODE_BROADCAST_MSG, this);
+		this.socketHandler.addObserver(NodeBroadcast.NODE_INIT_BROADCAST_MSG, this);
 		return true;
 	}
 	

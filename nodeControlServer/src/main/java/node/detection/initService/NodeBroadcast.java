@@ -25,7 +25,7 @@ import node.network.packet.PacketBuilder;
 public class NodeBroadcast implements Runnable, IServiceModule
 {
 	public static final String PROP_DELAY_INFOMSG = "delayInfoBroadcast";
-	public static final String NODE_BROADCAST_MSG = "infoBroadcast";
+	public static final String NODE_INIT_BROADCAST_MSG = "infoBroadcast";
 	
 	private static InetAddress broadcastIA;
 	
@@ -82,7 +82,7 @@ public class NodeBroadcast implements Runnable, IServiceModule
 		{
 			builder.setSender(this.deviceInfo.uuid);
 			builder.setBroadCast();
-			builder.setKey(NODE_BROADCAST_MSG);
+			builder.setKey(NODE_INIT_BROADCAST_MSG);
 			this.packet = builder.createPacket();
 		}
 		catch (PacketBuildFailureException e)
