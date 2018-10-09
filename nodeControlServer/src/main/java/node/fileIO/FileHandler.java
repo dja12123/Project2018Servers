@@ -7,9 +7,11 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import node.NodeControlCore;
 import node.log.LogWriter;
 
 public class FileHandler
@@ -20,7 +22,7 @@ public class FileHandler
     
 	public static File[] getFileList(String file)
 	{
-		return getFileList(getResourceFile(file));
+		return getFileList(getExtResourceFile(file));
 	}
 	
 	public static File[] getFileList(File file)
@@ -43,7 +45,7 @@ public class FileHandler
 		return fileList;
 	}
 
-	public static File getResourceFile(String filePath)
+	public static File getExtResourceFile(String filePath)
 	{        
         StringBuffer dir = new StringBuffer(jarDir);
         
@@ -51,6 +53,11 @@ public class FileHandler
         dir.append(filePath);
         
 		return new File(dir.toString());
+	}
+	
+	public static InputStream getResourceAsStream(String path)
+	{
+		return FileHandler.class.getResourceAsStream(path);
 	}
 
 	public static FileInputStream getInputStream(File file)
@@ -69,7 +76,7 @@ public class FileHandler
 	
 	public static FileInputStream getInputStream(String file)
 	{
-		return getInputStream(getResourceFile(file));
+		return getInputStream(getExtResourceFile(file));
 	}
 	
 	public static FileOutputStream getOutputStream(File file)
@@ -88,7 +95,7 @@ public class FileHandler
 	
 	public static FileOutputStream getOutputStream(String file)
 	{
-		return getOutputStream(getResourceFile(file));
+		return getOutputStream(getExtResourceFile(file));
 	}
 
 	public static String readFileString(File file)
@@ -129,7 +136,7 @@ public class FileHandler
 	
 	public static String readFileString(String file)
 	{
-		return readFileString(getResourceFile(file));
+		return readFileString(getExtResourceFile(file));
 	}
 	
 }

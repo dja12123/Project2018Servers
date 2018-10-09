@@ -166,7 +166,7 @@ public class DB_Handler implements IServiceModule
 	{
 		if (this.isOpened) return true;
 		
-		File f = FileHandler.getResourceFile(NodeControlCore.getProp(PROP_DB_FILE));
+		File f = FileHandler.getExtResourceFile(NodeControlCore.getProp(PROP_DB_FILE));
 		databaseLogger.log(Level.INFO, "데이터베이스 열기 (" + f.toString() + ")");
 		try
 		{
