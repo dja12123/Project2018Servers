@@ -8,7 +8,6 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -21,6 +20,7 @@ import org.sqlite.SQLiteConfig;
 
 import node.IServiceModule;
 import node.NodeControlCore;
+import node.db.DB_Installer;
 import node.util.tablebuilder.Row;
 import node.util.tablebuilder.StringTableBuilder;
 import node.log.LogWriter;
@@ -37,8 +37,6 @@ import node.fileIO.FileHandler;
 public class DB_Handler implements IServiceModule
 {
 	public static final String PROP_DB_FILE = "databaseFile";
-	private final String TABLE_SEARCH_QUERY = "select * from sqlite_master %s;";
-	private final String TABLE_CHECK_QUERY = "PRAGMA table_info(%s);";
 
 	public static final Logger databaseLogger = LogWriter.createLogger(DB_Handler.class, "db");
 
@@ -67,6 +65,16 @@ public class DB_Handler implements IServiceModule
 		NodeControlCore.init();
 		DB_Handler db = new DB_Handler();
 		db.startModule();
+        
+        db.executeQuery(Variable_Property_Schema);
+        printResultSet(db.query("select * from sqlite_master;"));
+        
+        DB_Installer installer = new DB_Installer(db);
+        
+        installer.checkAndCreateTable(Variable_Property_Schema);
+        
+        installer.complete();
+        printResultSet(db.query("select * from sqlite_master;"));
 	}
 
 	public DB_Handler()
@@ -83,7 +91,7 @@ public class DB_Handler implements IServiceModule
 		try
 		{
 			stmt = this.connection.createStatement();
-			stmt.executeQuery(query);
+			stmt.executeUpdate(query);
 		}
 		catch (SQLException e)
 		{
@@ -166,7 +174,7 @@ public class DB_Handler implements IServiceModule
 		}
 
 		this.isOpened = true;
-		this.checkAndCreateTable(Variable_Property_Schema);
+		//this.checkAndCreateTable(Variable_Property_Schema);
 		return true;
 	}
 
@@ -193,92 +201,6 @@ public class DB_Handler implements IServiceModule
 		String module = classPath.toString();
 
 		// this.executeQuery("insert into ")
-	}
-
-	private String getTableName(String rawQuery)
-	{
-		rawQuery = rawQuery.replaceAll("\\s+", " ");
-		try
-		{
-			return rawQuery.substring(0, rawQuery.indexOf("(")).split(" ")[2];
-		}
-		catch (IndexOutOfBoundsException e)
-		{
-			e.printStackTrace();
-		}
-
-		return "";
-	}
-
-	private boolean checkTable(String query)
-	{
-		try
-		{
-			CachedRowSet rs = query(String.format(TABLE_SEARCH_QUERY,
-					String.format("where %s = '%s'", "tbl_name", getTableName(query))));
-
-			if ((rs.last() ? rs.getRow() : 0) == 0)
-				return false;
-		}
-		catch (SQLException e)
-		{
-			// err message HERE!
-		}
-
-		return true;
-	}
-
-	private boolean checkStruct(String query)
-	{
-		try
-		{
-			String tableName = getTableName(query);
-			CachedRowSet rs = query(String.format(TABLE_CHECK_QUERY, tableName));
-			HashMap<String, String> dic = new HashMap<>();
-
-			while (rs.next())
-			{
-				dic.put(rs.getString(2).toLowerCase(),
-						String.format("%s,%d,%d", rs.getString(3), rs.getInt(4), rs.getInt(6)));
-			}
-
-			int rowCount = rs.last() ? rs.getRow() : 0;
-
-			String rawStruct = query.substring(query.indexOf("("), query.length());
-
-			executeQuery(String.format("CREATE TABLE tmp_%s%s", tableName, rawStruct));
-			rs = query(String.format(TABLE_CHECK_QUERY, "tmp_" + tableName));
-			executeQuery(String.format("DROP TABLE tmp_%s;", tableName));
-
-			if (rowCount != (rs.last() ? rs.getRow() : 0))
-				return false;
-
-			rs.beforeFirst();
-			while (rs.next())
-			{
-				String key = rs.getString(2).toLowerCase();
-				if (dic.containsKey(key))
-				{
-					String dest = dic.get(key);
-
-					String[] temp = dest.split(",");
-
-					String type = temp[0];
-					int notNull = Integer.valueOf(temp[1]);
-					int pk = Integer.valueOf(temp[2]);
-
-					if (!(type.equals(rs.getString(3)) && notNull == rs.getInt(4) && pk == rs.getInt(6)))
-						return false;
-				}
-				else
-					return false;
-			}
-		}
-		catch (SQLException e)
-		{
-			// err message HERE!
-		}
-		return true;
 	}
 
 	public static void printResultSet(CachedRowSet rs)
@@ -313,47 +235,6 @@ public class DB_Handler implements IServiceModule
 		}
 		System.out.println(tb.build());
 	}
-
-	public void checkAndCreateTable(String schema)
-	{
-        databaseLogger.log(Level.INFO, "테이블 확인(" + schema + ")");
-		if (checkTable(schema))
-		{
-            if(!checkStruct(schema))
-            {
-                String dropQuery = String.format("drop table %s", getTableName(schema));
-                executeQuery(dropQuery);
-                executeQuery(schema);
-                databaseLogger.log(Level.INFO, "테이블 재생성(" + schema + ")");
-            }
-            return;
-		}
-        
-        executeQuery(schema);
-        databaseLogger.log(Level.INFO, "테이블 생성(" + schema + ")");
-	}
-
-	/*
-	 * public void checkAndCreateTable(String schema) { String nativeSQL = null; try
-	 * { nativeSQL = this.connection.nativeSQL(schema); } catch (SQLException e) {
-	 * // TODO Auto-generated catch block e.printStackTrace(); } String str =
-	 * nativeSQL.toString(); System.out.println(str);
-	 * 
-	 * 
-	 * CachedRowSet rs; rs =
-	 * this.query("select tbl_name from sqlite_master where lower(sql) = lower('"
-	 * +schema+"')"); if(rs.size() == 0) { System.out.println("Helo");
-	 * //asdasdsadsaddsasdadsa
-	 * /*if(this.query("select tbl_name from sqlite_master where tbl_name = lower("+
-	 * +")")) {
-	 * 
-	 * }
-	 */
-	/*
-	 * databaseLogger.log(Level.INFO, "테이블 생성("+schema+")");
-	 * this.executeQuery(schema); return; } String[][] result = toArray(rs);
-	 * databaseLogger.log(Level.INFO, "테이블 확인("+result[0][0]+")"); }
-	 */
 
 	public static boolean isExist(CachedRowSet rs, String key, int col)
 	{
