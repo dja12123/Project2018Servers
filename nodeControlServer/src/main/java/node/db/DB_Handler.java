@@ -66,7 +66,8 @@ public class DB_Handler implements IServiceModule
 		NodeControlCore.init();
 		DB_Handler db = new DB_Handler();
 		db.startModule();
-
+    
+        System.out.println(db.isOpened);
 		db.executeQuery(Variable_Property_Schema);
 		printResultSet(db.query("select * from sqlite_master;"));
 
@@ -178,10 +179,10 @@ public class DB_Handler implements IServiceModule
 			databaseLogger.log(Level.SEVERE, "데이터베이스 열기 실패", e);
 			return false;
 		}
-		
-		this.installer = new DB_Installer(this);
-
+        
 		this.isOpened = true;
+		this.installer = new DB_Installer(this);
+		
 		// this.checkAndCreateTable(Variable_Property_Schema);
 		return true;
 	}

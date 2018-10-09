@@ -22,7 +22,7 @@ public class DB_Installer
     
     DB_Installer(DB_Handler instance)
     {
-        this.instance = instance; 
+        this.instance = instance;
         getDBTableList();
     }
     
@@ -37,18 +37,10 @@ public class DB_Installer
             {
                 _LtableName.add(rs.getString(3));
             }
-            
-            int x = _LtableName.size();
-            String[] appArray = new String[x];
-            _LtableName.toArray(appArray);
-            
-            for(String var : appArray)
-                System.out.println(var);
-
         }
-        catch(Exception e)
+        catch(SQLException e)
         {
-            
+            e.printStackTrace();
         }
     }
     
