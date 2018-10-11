@@ -1,10 +1,16 @@
 package node.network;
 
+import java.util.logging.Logger;
+
 import node.IServiceModule;
+import node.db.DB_Handler;
+import node.log.LogWriter;
 import node.network.communicator.SocketHandler;
 
 public class NetworkManager implements IServiceModule
 {
+	public static final Logger networkLogger = LogWriter.createLogger(NetworkManager.class, "network");
+	
 	public static final String PROP_INFOBROADCAST_PORT = "infoBroadcastPort";
 	
 	public final SocketHandler socketHandler;

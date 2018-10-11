@@ -9,7 +9,7 @@ public class Device
 	private InetAddress inetAddr;
 	//private String deviceName;
 	
-	private Device(UUID uuid)
+	public Device(UUID uuid)
 	{
 		this.uuid = uuid;
 		this.inetAddr = null;

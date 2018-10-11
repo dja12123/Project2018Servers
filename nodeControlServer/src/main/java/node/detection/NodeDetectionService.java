@@ -9,14 +9,16 @@ import node.detection.initService.NodeBroadcastReceiver;
 import node.detection.masterNodeService.MasterNodeBroadcast;
 import node.detection.masterNodeService.MasterNodeReceiver;
 import node.device.Device;
+import node.device.DeviceInfoManager;
 import node.log.LogWriter;
 import node.network.communicator.SocketHandler;
 
 public class NodeDetectionService implements IServiceModule
 {
-	public static final Logger nodeInitLogger = LogWriter.createLogger(NodeDetectionService.class, "nodeInit");
+	public static final Logger nodeDetectionLogger = LogWriter.createLogger(NodeDetectionService.class, "nodeDetection");
 	
 	private DB_Handler dbHandler;
+	private DeviceInfoManager deviceInfoManager;
 	private SocketHandler socketHandler;
 	
 	private NodeBroadcast nodeBroadcast;
@@ -25,15 +27,19 @@ public class NodeDetectionService implements IServiceModule
 	private MasterNodeReceiver masterNodeReceiver;
 	
 	private boolean isDHCPNode;
+
 	
-	public NodeDetectionService(DB_Handler dbHandler, SocketHandler socketHandler, Device deviceInfo)
+	
+	public NodeDetectionService(DB_Handler dbHandler, DeviceInfoManager deviceInfoManager, SocketHandler socketHandler)
 	{
 		this.dbHandler = dbHandler;
 		this.socketHandler = socketHandler;
+		this.deviceInfoManager = deviceInfoManager;
+		this.deviceInfoManager = deviceInfoManager;
 		
-		this.nodeBroadcast = new NodeBroadcast(deviceInfo, this.socketHandler);
+		this.nodeBroadcast = new NodeBroadcast(this.deviceInfoManager, this.socketHandler);
 		this.nodeBroadcastReceiver = new NodeBroadcastReceiver(this.dbHandler, this.socketHandler);
-		this.masterNodeBroadcast = new MasterNodeBroadcast(this.dbHandler, this.socketHandler);
+		this.masterNodeBroadcast = new MasterNodeBroadcast(this.dbHandler, this.deviceInfoManager, this.socketHandler);
 		this.masterNodeReceiver = new MasterNodeReceiver();
 		
 		

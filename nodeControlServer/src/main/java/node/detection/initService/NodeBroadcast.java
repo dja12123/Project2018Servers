@@ -15,21 +15,21 @@ import node.NodeControlCore;
 import node.db.DB_Handler;
 import node.detection.NodeDetectionService;
 import node.device.Device;
+import node.device.DeviceInfoManager;
 import node.log.LogWriter;
 import node.network.NetworkManager;
 import node.network.communicator.SocketHandler;
 import node.network.packet.Packet;
 import node.network.packet.PacketBuildFailureException;
 import node.network.packet.PacketBuilder;
+import node.network.packet.PacketUtil;
 
 public class NodeBroadcast implements Runnable, IServiceModule
 {
 	public static final String PROP_DELAY_INFOMSG = "delayInitBroadcast";
 	public static final String NODE_INIT_BROADCAST_MSG = "infoBroadcast";
 	
-	private static InetAddress broadcastIA;
-	
-	private final Device deviceInfo;
+	private final DeviceInfoManager deviceInfoManager;
 	private final SocketHandler socketHandler;
 	
 	private int broadCastDelay;
@@ -38,28 +38,16 @@ public class NodeBroadcast implements Runnable, IServiceModule
 	
 	private Packet packet;
 	
-	static
+	public NodeBroadcast(DeviceInfoManager deviceInfoManager, SocketHandler socketHandler)
 	{
-		try
-		{
-			broadcastIA = InetAddress.getByName("255.255.255.255");
-		}
-		catch (UnknownHostException e)
-		{
-			e.printStackTrace();
-		}
-	}
-	
-	public NodeBroadcast(Device deviceInfo, SocketHandler socketHandler)
-	{
-		this.deviceInfo = deviceInfo;
+		this.deviceInfoManager = deviceInfoManager;
 		this.socketHandler = socketHandler;
 	}
 
 	@Override
 	public void run()
 	{
-		NodeDetectionService.nodeInitLogger.log(Level.INFO, "노드 알림 시작");
+		NodeDetectionService.nodeDetectionLogger.log(Level.INFO, "노드 알림 시작");
 		while(this.isRun)
 		{
 			try
@@ -67,7 +55,7 @@ public class NodeBroadcast implements Runnable, IServiceModule
 				Thread.sleep(this.broadCastDelay);
 			}
 			catch (InterruptedException e) {}
-			this.socketHandler.sendMessage(this.broadcastIA, packet);
+			this.socketHandler.sendMessage(PacketUtil.broadcastIA(), packet);
 		}
 	}
 	
@@ -80,14 +68,14 @@ public class NodeBroadcast implements Runnable, IServiceModule
 		
 		try
 		{
-			builder.setSender(this.deviceInfo.uuid);
+			builder.setSender(this.deviceInfoManager.getMyDevice().uuid);
 			builder.setBroadCast();
 			builder.setKey(NODE_INIT_BROADCAST_MSG);
 			this.packet = builder.createPacket();
 		}
 		catch (PacketBuildFailureException e)
 		{
-			NodeDetectionService.nodeInitLogger.log(Level.SEVERE, "브로드케스트 패킷 생성 오류", e);
+			NodeDetectionService.nodeDetectionLogger.log(Level.SEVERE, "브로드케스트 패킷 생성 오류", e);
 			return false;
 		}
 		

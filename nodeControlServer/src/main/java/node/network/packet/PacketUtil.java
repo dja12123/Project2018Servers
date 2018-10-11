@@ -1,5 +1,7 @@
 package node.network.packet;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.UUID;
@@ -18,6 +20,8 @@ public class PacketUtil
 	// 메직넘버(C507mh)
 	public static final byte[] BROADCAST_RECEIVER = new byte[]
 			{-0x7F, -0x7F, -0x7F, -0x7F, -0x7F, -0x7F, -0x7F, -0x7F, -0x7F, -0x7F, -0x7F, -0x7F, -0x7F, -0x7F, -0x7F, -0x7F};
+	
+	private static InetAddress BROADCAST_IA;
 	
 	public static final int HEADER_SIZE = 48;
 	public static final int ADDR_SIZE = 16;
@@ -41,6 +45,26 @@ public class PacketUtil
 	public static final int OPT_ISBROADCAST = 1;
 	public static final int OPT_HASDATA = 2;
 	public static final int OPT_ISSTRINGDATA = 3;
+	
+	public static final String DPROTO_SEP_ROW = ",";
+	public static final String DPROTO_SEP_COL = "/\n";
+	
+	static
+	{
+		try
+		{
+			BROADCAST_IA = InetAddress.getByName("255.255.255.255");
+		}
+		catch (UnknownHostException e)
+		{
+			e.printStackTrace();
+		}
+	}
+	
+	public static InetAddress broadcastIA()
+	{
+		return BROADCAST_IA;
+	}
 	
 	public static String printPacket(byte[] rawPacket)
 	{

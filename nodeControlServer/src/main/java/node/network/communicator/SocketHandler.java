@@ -23,8 +23,6 @@ import node.util.observer.Observer;
 
 public class SocketHandler implements IServiceModule, Runnable
 {
-	public static final Logger netScannerLogger = LogWriter.createLogger(SocketHandler.class, "netScanner");
-	
 	private HashMap<String, Observable<NetworkEvent>> observerMap;
 	
 	private ExecutorService packetProcessService = Executors.newCachedThreadPool();
@@ -33,6 +31,8 @@ public class SocketHandler implements IServiceModule, Runnable
 	private boolean isWork;
 	
 	private DatagramSocket socket;
+
+	private int port;
 	
 	public SocketHandler()
 	{
@@ -93,13 +93,13 @@ public class SocketHandler implements IServiceModule, Runnable
 		
 		try
 		{
-			int port = Integer.parseInt(NodeControlCore.getProp(NetworkManager.PROP_INFOBROADCAST_PORT));
-			InetAddress addr = InetAddress.getByName("0.0.0.0");
-			this.socket = new DatagramSocket(port, addr);
+			this.port = Integer.parseInt(NodeControlCore.getProp(NetworkManager.PROP_INFOBROADCAST_PORT));
+
+			this.socket = new DatagramSocket();
 		}
-		catch (SocketException | UnknownHostException e)
+		catch (SocketException e)
 		{
-			netScannerLogger.log(Level.SEVERE, "소켓 열기 실패", e);
+			NetworkManager.networkLogger.log(Level.SEVERE, "소켓 열기 실패", e);
 			return false;
 		}
 		
@@ -121,7 +121,7 @@ public class SocketHandler implements IServiceModule, Runnable
 	@Override
 	public void run()
 	{
-		netScannerLogger.log(Level.INFO, "네트워크 수신 시작");
+		NetworkManager.networkLogger.log(Level.INFO, "네트워크 수신 시작");
 		byte[] packetBuffer = new byte[PacketUtil.HEADER_SIZE + PacketUtil.MAX_SIZE_KEY + PacketUtil.MAX_SIZE_DATA];
 		DatagramPacket dgramPacket;
 		while(this.isWork)
@@ -149,13 +149,23 @@ public class SocketHandler implements IServiceModule, Runnable
 			}
 			catch (IOException e)
 			{
-				netScannerLogger.log(Level.SEVERE, "수신 실패", e);
+				NetworkManager.networkLogger.log(Level.SEVERE, "수신 실패", e);
 			}
 		}
 	}
 	
 	public void sendMessage(InetAddress addr, Packet packet)
 	{
-		
+		byte[] rawPacket = packet.getDataByte();
+		DatagramPacket dgramPacket = new DatagramPacket(rawPacket, rawPacket.length, addr, port);
+		System.out.println("ping");
+		try
+		{
+			socket.send(dgramPacket);
+		}
+		catch (IOException e)
+		{
+			NetworkManager.networkLogger.log(Level.SEVERE, "패킷 전송 실패", e);
+		}
 	}
 }

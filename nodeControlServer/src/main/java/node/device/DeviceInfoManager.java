@@ -7,6 +7,8 @@ import java.util.logging.Logger;
 import node.IServiceModule;
 import node.db.DB_Handler;
 import node.log.LogWriter;
+import node.network.packet.PacketBuilder;
+import node.network.packet.PacketUtil;
 import node.util.observer.Observable;
 
 public class DeviceInfoManager extends Observable<DeviceStateChangeEvent> implements IServiceModule
@@ -14,10 +16,12 @@ public class DeviceInfoManager extends Observable<DeviceStateChangeEvent> implem
 	public static final Logger deviceInfoLogger = LogWriter.createLogger(DeviceInfoManager.class, "deviceInfo");
 	
 	private static final String INFO_TABLE_SCHEMA = 
-			"CREATE TABLE deviceInfo("
-		+		"device_id varchar(36)"
+			"CREATE TABLE device_info("
+		+		"uuid varchar(36),"
+		+		"inet_addr varchar(15)"
 		+		")";
 	
+	private Device myDevice;
 	private DB_Handler dbHandler;
 	private HashMap<UUID, Device> deviceMap;
 	
@@ -48,7 +52,9 @@ public class DeviceInfoManager extends Observable<DeviceStateChangeEvent> implem
 	@Override
 	public boolean startModule()
 	{
+		this.myDevice = new Device(UUID.randomUUID());//TODO 디비에서 긁어올것
 		this.dbHandler.getInstaller().checkAndCreateTable(INFO_TABLE_SCHEMA);
+		
 		return true;
 	}
 
@@ -57,6 +63,18 @@ public class DeviceInfoManager extends Observable<DeviceStateChangeEvent> implem
 	{
 		// TODO Auto-generated method stub
 		
+	}
+	
+	public String[][] getDeviceIPTable()
+	{
+		String[][] queryArr = DB_Handler.toArray(this.dbHandler.query("select uuid, inet_addr from device_info"));
+		return queryArr;
+	}
+
+	public Device getMyDevice()
+	{
+		// TODO Auto-generated method stub
+		return this.myDevice;
 	}
 
 }
