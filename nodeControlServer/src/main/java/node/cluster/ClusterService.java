@@ -1,8 +1,9 @@
 package node.cluster;
 
-import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 import node.IServiceModule;
 import node.db.DB_Handler;
@@ -12,8 +13,9 @@ import node.network.NetworkManager;
 
 public class ClusterService implements IServiceModule {
 	
-	private HashMap<String, String> ipTable = null; 
 	private boolean isMaster = false;
+	private String masterIp;
+	private boolean connectState;
 	
 	public final NetworkStateChangeEventReceiver nscEventReceiver = new NetworkStateChangeEventReceiver();
 	public final NodeInfoChangeEventSender nicEventSender = new NodeInfoChangeEventSender();
@@ -23,19 +25,18 @@ public class ClusterService implements IServiceModule {
 	
 	public ClusterService(NetworkManager networkManager) { this.networkManager = networkManager;	}
 	
-	public boolean putData(String name, String ip) {
-		// 해쉬맵에 넣는대신 안에 데이터와 겹치는게 없으면 true 아니면 false
-		if(null == this.ipTable.put(name, ip))
-			return true;
-		else
+	public boolean cmpMaster() {
+		try {
+			if(masterIp.equals(InetAddress.getLocalHost().getHostAddress())) {
+				return true;
+			}else {
+				return false;
+			}
+		}catch(UnknownHostException e) {
+			e.printStackTrace();
 			return false;
-	}
-	public String getData(String name) {
-		return this.ipTable.get(name);
-	}
-	
-	public void delRow(String key) {
-		ipTable.remove(key);
+		}
+		
 	}
 	@Override
 	public boolean startModule() {
@@ -52,7 +53,8 @@ public class ClusterService implements IServiceModule {
 		}
 		 
 		this.isMaster = eventInfo.isDHCP;
-		this.ipTable = (HashMap<String, String>) eventInfo.ipTable;
+		this.masterIp = eventInfo.DHCPIp;
+		this.connectState = eventInfo.state;
 		
 		return true;
 	}
