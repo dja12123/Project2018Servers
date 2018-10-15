@@ -24,6 +24,7 @@ public class SparkManager {
 	public void stopSparkMaster() {
 		BashSet.execSh(BashSet.stop_spkMaster);
 	}
+	//option example spark://worker-11:7077 -m 512M -c 2
 	public void startSparkWorker(String option) {
 		BashSet.execSh(BashSet.start_spkWorker, option);
 	}
