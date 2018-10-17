@@ -7,18 +7,21 @@ import node.NodeControlCore;
 import node.db.DB_Handler;
 import node.detection.NodeDetectionService;
 import node.device.DeviceInfoManager;
+import node.network.NetworkUtil;
+import node.network.communicator.NetworkEvent;
 import node.network.communicator.SocketHandler;
 import node.network.packet.Packet;
 import node.network.packet.PacketBuildFailureException;
 import node.network.packet.PacketBuilder;
 import node.network.packet.PacketUtil;
+import node.util.observer.Observable;
+import node.util.observer.Observer;
 
 public class MasterNodeBroadcast implements IServiceModule, Runnable
 {
 	public static final String PROP_DELAY_MASTER_MSG = "delayMasterNodeBroadcast";
 	public static final String KPROTO_MASTER_BROADCAST = "masterNodeBroadcast";
 	
-	private DB_Handler dbHandler;
 	private DeviceInfoManager deviceInfoManager;
 	private SocketHandler socketHandler;
 	private boolean isRun;
@@ -34,15 +37,24 @@ public class MasterNodeBroadcast implements IServiceModule, Runnable
 		infoManager.startModule();
 		SocketHandler sock = new SocketHandler();
 		sock.startModule();
-		MasterNodeBroadcast inst = new MasterNodeBroadcast(db, infoManager, sock);
+		MasterNodeBroadcast inst = new MasterNodeBroadcast(infoManager, sock);
 		inst.startModule();
+		
+		sock.addObserver(KPROTO_MASTER_BROADCAST, new Observer<NetworkEvent>()
+		{
+			@Override
+			public void update(Observable<NetworkEvent> object, NetworkEvent data)
+			{
+				System.out.println(data.packet.toString());
+				
+			}
+		});
 		
 		db.getInstaller().complete();
 	}
 	
-	public MasterNodeBroadcast(DB_Handler dbHandler, DeviceInfoManager deviceInfoManager, SocketHandler socketHandler)
+	public MasterNodeBroadcast(DeviceInfoManager deviceInfoManager, SocketHandler socketHandler)
 	{
-		this.dbHandler = dbHandler;
 		this.deviceInfoManager = deviceInfoManager;
 		this.socketHandler = socketHandler;
 	}
@@ -75,6 +87,8 @@ public class MasterNodeBroadcast implements IServiceModule, Runnable
 		PacketBuilder packetBuilder;
 		String[][] queryArr;
 		Packet packet;
+		
+		NodeDetectionService.nodeDetectionLogger.log(Level.INFO, "마스터 브로드캐스트 간격: " + this.broadCastDelay);
 		
 		while(this.isRun)
 		{
@@ -112,7 +126,8 @@ public class MasterNodeBroadcast implements IServiceModule, Runnable
 			}
 			
 			
-			this.socketHandler.sendMessage(PacketUtil.broadcastIA(), packet);
+			this.socketHandler.sendMessage(NetworkUtil.broadcastIA(), packet);
+			
 		}
 		
 	}

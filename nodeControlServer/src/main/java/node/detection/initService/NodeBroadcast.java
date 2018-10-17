@@ -1,28 +1,17 @@
 package node.detection.initService;
 
-import java.io.IOException;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.InetAddress;
-import java.net.SocketAddress;
-import java.net.SocketException;
-import java.net.UnknownHostException;
 import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import node.IServiceModule;
 import node.NodeControlCore;
 import node.db.DB_Handler;
 import node.detection.NodeDetectionService;
-import node.device.Device;
+import node.detection.masterNodeService.MasterNodeBroadcast;
 import node.device.DeviceInfoManager;
-import node.log.LogWriter;
-import node.network.NetworkManager;
+import node.network.NetworkUtil;
 import node.network.communicator.SocketHandler;
 import node.network.packet.Packet;
 import node.network.packet.PacketBuildFailureException;
 import node.network.packet.PacketBuilder;
-import node.network.packet.PacketUtil;
 
 public class NodeBroadcast implements Runnable, IServiceModule
 {
@@ -37,6 +26,19 @@ public class NodeBroadcast implements Runnable, IServiceModule
 	private boolean isRun = false;
 	
 	private Packet packet;
+	
+	public static void main(String[] args)
+	{
+		NodeControlCore.init();
+		DB_Handler db = new DB_Handler();
+		db.startModule();
+		DeviceInfoManager infoManager = new DeviceInfoManager(db);
+		infoManager.startModule();
+		SocketHandler sock = new SocketHandler();
+		sock.startModule();
+		NodeBroadcast inst = new NodeBroadcast(infoManager, sock);
+		inst.startModule();
+	}
 	
 	public NodeBroadcast(DeviceInfoManager deviceInfoManager, SocketHandler socketHandler)
 	{
@@ -55,7 +57,7 @@ public class NodeBroadcast implements Runnable, IServiceModule
 				Thread.sleep(this.broadCastDelay);
 			}
 			catch (InterruptedException e) {}
-			this.socketHandler.sendMessage(PacketUtil.broadcastIA(), packet);
+			this.socketHandler.sendMessage(NetworkUtil.broadcastIA(), packet);
 		}
 	}
 	

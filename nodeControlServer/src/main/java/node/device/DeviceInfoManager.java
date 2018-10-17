@@ -25,7 +25,6 @@ public class DeviceInfoManager extends Observable<DeviceStateChangeEvent> implem
 	private DB_Handler dbHandler;
 	private HashMap<UUID, Device> deviceMap;
 	
-	
 	public DeviceInfoManager(DB_Handler dbhandler)
 	{
 		this.dbHandler = dbhandler;

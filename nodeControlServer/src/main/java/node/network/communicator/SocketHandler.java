@@ -16,13 +16,14 @@ import node.IServiceModule;
 import node.NodeControlCore;
 import node.log.LogWriter;
 import node.network.NetworkManager;
+import node.network.NetworkUtil;
 import node.network.packet.Packet;
 import node.network.packet.PacketUtil;
 import node.util.observer.Observable;
 import node.util.observer.Observer;
 
 public class SocketHandler implements IServiceModule, Runnable
-{
+{	
 	private HashMap<String, Observable<NetworkEvent>> observerMap;
 	
 	private ExecutorService packetProcessService = Executors.newCachedThreadPool();
@@ -95,7 +96,11 @@ public class SocketHandler implements IServiceModule, Runnable
 		{
 			this.port = Integer.parseInt(NodeControlCore.getProp(NetworkManager.PROP_INFOBROADCAST_PORT));
 
-			this.socket = new DatagramSocket();
+			String interfaceStr = NodeControlCore.getProp(NetworkManager.PROP_SOCKET_INTERFACE);
+			NetworkUtil.getNetworkInterface(interfaceStr);
+			//this.socket = new DatagramSocket(NetworkManager.PROP_SOCKET_INTERFACE)
+			this.socket = new DatagramSocket(this.port);
+			this.socket.setBroadcast(true);
 		}
 		catch (SocketException e)
 		{
@@ -124,6 +129,7 @@ public class SocketHandler implements IServiceModule, Runnable
 		NetworkManager.networkLogger.log(Level.INFO, "네트워크 수신 시작");
 		byte[] packetBuffer = new byte[PacketUtil.HEADER_SIZE + PacketUtil.MAX_SIZE_KEY + PacketUtil.MAX_SIZE_DATA];
 		DatagramPacket dgramPacket;
+		
 		while(this.isWork)
 		{
 			dgramPacket = new DatagramPacket(packetBuffer, packetBuffer.length);
@@ -156,9 +162,8 @@ public class SocketHandler implements IServiceModule, Runnable
 	
 	public void sendMessage(InetAddress addr, Packet packet)
 	{
-		byte[] rawPacket = packet.getDataByte();
+		byte[] rawPacket = packet.getNativeArr();
 		DatagramPacket dgramPacket = new DatagramPacket(rawPacket, rawPacket.length, addr, port);
-		System.out.println("ping");
 		try
 		{
 			socket.send(dgramPacket);

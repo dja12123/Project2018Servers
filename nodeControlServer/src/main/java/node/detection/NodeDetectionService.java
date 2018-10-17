@@ -39,7 +39,7 @@ public class NodeDetectionService implements IServiceModule
 		
 		this.nodeBroadcast = new NodeBroadcast(this.deviceInfoManager, this.socketHandler);
 		this.nodeBroadcastReceiver = new NodeBroadcastReceiver(this.dbHandler, this.socketHandler);
-		this.masterNodeBroadcast = new MasterNodeBroadcast(this.dbHandler, this.deviceInfoManager, this.socketHandler);
+		this.masterNodeBroadcast = new MasterNodeBroadcast(this.deviceInfoManager, this.socketHandler);
 		this.masterNodeReceiver = new MasterNodeReceiver();
 		
 		

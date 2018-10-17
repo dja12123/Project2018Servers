@@ -12,6 +12,7 @@ public class NetworkManager implements IServiceModule
 	public static final Logger networkLogger = LogWriter.createLogger(NetworkManager.class, "network");
 	
 	public static final String PROP_INFOBROADCAST_PORT = "infoBroadcastPort";
+	public static final String PROP_SOCKET_INTERFACE = "networkSocketInterface";
 	
 	public final SocketHandler socketHandler;
 	
