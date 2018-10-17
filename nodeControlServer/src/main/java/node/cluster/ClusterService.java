@@ -42,7 +42,6 @@ public class ClusterService implements IServiceModule {
 	public boolean startModule() {
 		// TODO Auto-generated method stub
 		NetworkStateChangeEvent eventInfo = null;
-		
 		if((eventInfo = nscEventReceiver.getEvent()) == null) {
 			clusterLogger.log(Level.SEVERE, "Not Given Network State Change Event", new Exception("Not Given Network State Change Event"));
 			return false;

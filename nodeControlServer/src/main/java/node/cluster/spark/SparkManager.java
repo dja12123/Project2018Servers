@@ -3,6 +3,7 @@ package node.cluster.spark;
 import java.util.HashMap;
 
 import node.bash.BashSet;
+import node.cluster.ClusterService;
 
 public class SparkManager {
 	private int sparkWorkerInstances;
@@ -12,14 +13,13 @@ public class SparkManager {
 	private String sparkWorkerMemory;
 	private String sparkDeployRecoveryMode;
 	private String sparkDeployZookeeperUrl;
-	private HashMap<String, String> ipTable;
+	private ClusterService mainModule;
 	
-	public SparkManager(HashMap<String, String> ipTable) {
-		this.ipTable = ipTable;
-		
+	public SparkManager(ClusterService mainModule) {
+		this.mainModule = mainModule;
 	}
-	public void startSparkMaster(String option) {
-		BashSet.execSh(BashSet.start_spkMaster, option);
+	public void startSparkMaster() {
+		BashSet.execSh(BashSet.start_spkMaster);
 	}
 	public void stopSparkMaster() {
 		BashSet.execSh(BashSet.stop_spkMaster);
@@ -37,7 +37,7 @@ public class SparkManager {
 	}
 	
 	
-	public static void instSpark() {
+	public void instSpark() {
 		BashSet.execSh(BashSet.install_spark);
 	}
 }
