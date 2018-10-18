@@ -7,6 +7,7 @@ import java.util.logging.Logger;
 
 import node.cluster.ClusterService;
 import node.db.DB_Handler;
+import node.detection.NodeDetectionService;
 import node.device.DeviceInfoManager;
 import node.fileIO.FileHandler;
 import node.log.LogWriter;
@@ -32,6 +33,7 @@ public class NodeControlCore
 	private final NetworkManager networkManager;
 	private final DHCPService dhcp;
 	private final DeviceInfoManager deviceInfoManager;
+	private final NodeDetectionService nodeDetectionService;
 	private final ClusterService clusterService;
 	
 	public NodeControlCore()
@@ -40,7 +42,8 @@ public class NodeControlCore
 		this.networkManager = new NetworkManager();
 		this.dhcp = new DHCPService();
 		this.deviceInfoManager = new DeviceInfoManager(this.dbHandler);
-		this.clusterService = new ClusterService();
+		this.nodeDetectionService = new NodeDetectionService(this.dbHandler, this.deviceInfoManager, this.networkManager.socketHandler);
+		this.clusterService = new ClusterService(this.nodeDetectionService);
 	}
     
     public static void main(String[] args) throws InterruptedException
