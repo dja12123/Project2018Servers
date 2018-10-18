@@ -40,7 +40,7 @@ public class NodeControlCore
 		this.networkManager = new NetworkManager();
 		this.dhcp = new DHCPService();
 		this.deviceInfoManager = new DeviceInfoManager(this.dbHandler);
-		this.clusterService = new ClusterService(networkManager);
+		this.clusterService = new ClusterService();
 	}
     
     public static void main(String[] args) throws InterruptedException
