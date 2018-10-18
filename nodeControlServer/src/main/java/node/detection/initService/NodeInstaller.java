@@ -2,11 +2,13 @@ package node.detection.initService;
 
 import java.sql.PreparedStatement;
 import java.sql.Time;
+import java.util.Random;
 import java.util.logging.Level;
 
 import node.IServiceModule;
 import node.NodeControlCore;
 import node.db.DB_Handler;
+import node.detection.NodeDetectionService;
 import node.detection.masterNodeService.MasterNodeBroadcast;
 import node.device.DeviceInfoManager;
 import node.network.NetworkManager;
@@ -15,25 +17,14 @@ import node.network.communicator.SocketHandler;
 import node.util.observer.Observable;
 import node.util.observer.Observer;
 
-public class NodeBroadcastReceiver implements IServiceModule, Observer<NetworkEvent>
+public class NodeInstaller implements IServiceModule, Runnable, Observer<NetworkEvent>
 {
-	private DeviceInfoManager deviceInfoManager;
+	private static final int DEFAULT_WAIT_TIME = 5000;
+	private static final int RANDOM_WAIT_TIME = 5000;
 	private SocketHandler socketHandler;
-	
-	public static void main(String[] args)
-	{
-		NodeControlCore.init();
-		DB_Handler db = new DB_Handler();
-		db.startModule();
-		DeviceInfoManager infoManager = new DeviceInfoManager(db);
-		infoManager.startModule();
-		SocketHandler sock = new SocketHandler();
-		sock.startModule();
-		NodeBroadcastReceiver inst = new NodeBroadcastReceiver(infoManager, sock);
-		NodeBroadcast binst = new NodeBroadcast(infoManager, sock);
-		inst.startModule();
-		binst.startModule();
-	}
+	private Thread waitThread;
+	private NodeDetectionService nodeDetectionService;
+	private NetworkEvent masterNodeData;
 	
 	private static final String NODE_TABLE_SCHEMA = 
 			"CREATE TABLE node_info("
@@ -41,12 +32,12 @@ public class NodeBroadcastReceiver implements IServiceModule, Observer<NetworkEv
 		+		"inetaddr varchar(15),"
 		+ 		"updateTime datetime)";
 	
-	public NodeBroadcastReceiver(DeviceInfoManager deviceInfoManager, SocketHandler socketHandler)
+	public NodeInstaller(NodeDetectionService nodeDetectionService, SocketHandler socketHandler)
 	{
-		this.deviceInfoManager = deviceInfoManager;
+		this.nodeDetectionService = nodeDetectionService;
 		this.socketHandler = socketHandler;
-	
 		//this.dbHandler.getInstaller().checkAndCreateTable(NODE_TABLE_SCHEMA);
+		
 	}
 
 	@Override
@@ -58,9 +49,8 @@ public class NodeBroadcastReceiver implements IServiceModule, Observer<NetworkEv
 		
 		if(data.key.equals(MasterNodeBroadcast.KPROTO_MASTER_BROADCAST))
 		{
-			
-			
-			System.out.println(data.packet.toString());
+			this.masterNodeData = data;
+			this.waitThread.interrupt();
 		}
 	}
 	
@@ -68,6 +58,8 @@ public class NodeBroadcastReceiver implements IServiceModule, Observer<NetworkEv
 	public boolean startModule()
 	{
 		NetworkManager.networkLogger.log(Level.INFO, "노드 알림 수신 시작");
+		this.waitThread = new Thread(this);
+		this.waitThread.start();
 		this.socketHandler.addObserver(NodeBroadcast.NODE_INIT_BROADCAST_MSG, this);
 		return true;
 	}
@@ -76,5 +68,32 @@ public class NodeBroadcastReceiver implements IServiceModule, Observer<NetworkEv
 	public void stopModule()
 	{
 		this.socketHandler.removeObserver(this);
+	}
+
+	@Override
+	public void run()
+	{
+		try
+		{
+			Thread.sleep(DEFAULT_WAIT_TIME);
+		}
+		catch (InterruptedException e)
+		{
+			//마스터 노드 감지
+			this.nodeDetectionService.masterNodeDetection(this.masterNodeData);
+			return;
+		}
+		
+		int randomWaitTime = new Random(RANDOM_WAIT_TIME).nextInt();
+		try
+		{
+			Thread.sleep(randomWaitTime);
+		}
+		catch (InterruptedException e)
+		{
+			this.nodeDetectionService.masterNodeDetection(this.masterNodeData);
+			return;
+		}
+		this.nodeDetectionService.myMasterNode();
 	}
 }	

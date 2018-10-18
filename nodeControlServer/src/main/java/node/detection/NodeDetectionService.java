@@ -5,11 +5,12 @@ import java.util.logging.Logger;
 import node.IServiceModule;
 import node.db.DB_Handler;
 import node.detection.initService.NodeBroadcast;
-import node.detection.initService.NodeBroadcastReceiver;
+import node.detection.initService.NodeInstaller;
 import node.detection.masterNodeService.MasterNodeBroadcast;
 import node.detection.masterNodeService.MasterNodeReceiver;
 import node.device.DeviceInfoManager;
 import node.log.LogWriter;
+import node.network.communicator.NetworkEvent;
 import node.network.communicator.SocketHandler;
 import node.util.observer.Observable;
 
@@ -22,7 +23,7 @@ public class NodeDetectionService extends Observable<NetworkStateChangeEvent> im
 	private SocketHandler socketHandler;
 	
 	private NodeBroadcast nodeBroadcast;
-	private NodeBroadcastReceiver nodeBroadcastReceiver;
+	private NodeInstaller nodeInstaller;
 	private MasterNodeBroadcast masterNodeBroadcast;
 	private MasterNodeReceiver masterNodeReceiver;
 	
@@ -35,25 +36,34 @@ public class NodeDetectionService extends Observable<NetworkStateChangeEvent> im
 		this.deviceInfoManager = deviceInfoManager;
 
 		this.nodeBroadcast = new NodeBroadcast(this.deviceInfoManager, this.socketHandler);
-		this.nodeBroadcastReceiver = new NodeBroadcastReceiver(this.deviceInfoManager, this.socketHandler);
+		this.nodeInstaller = new NodeInstaller(this, this.socketHandler);
 		this.masterNodeBroadcast = new MasterNodeBroadcast(this.deviceInfoManager, this.socketHandler);
+		
 		this.masterNodeReceiver = new MasterNodeReceiver();
+		
 		
 		this.isDHCPNode = false;
 	}
 	
 	private void startScan()
 	{
-		this.nodeBroadcast.startModule();
-		this.nodeBroadcastReceiver.startModule();
+		
 	
+	}
+	
+	public void masterNodeDetection(NetworkEvent masterNodeData)
+	{
+		
+	}
+	
+	public void myMasterNode()
+	{
+		
 	}
 
 	@Override
 	public boolean startModule()
 	{
-		
-		
 		
 		return true;
 	}
