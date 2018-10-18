@@ -10,12 +10,12 @@ import node.db.DB_Handler;
 import node.detection.masterNodeService.MasterNodeBroadcast;
 import node.device.DeviceInfoManager;
 import node.network.NetworkManager;
-import node.network.communicator.INetworkObserver;
 import node.network.communicator.NetworkEvent;
 import node.network.communicator.SocketHandler;
 import node.util.observer.Observable;
+import node.util.observer.Observer;
 
-public class NodeBroadcastReceiver implements IServiceModule, INetworkObserver
+public class NodeBroadcastReceiver implements IServiceModule, Observer<NetworkEvent>
 {
 	private DeviceInfoManager deviceInfoManager;
 	private SocketHandler socketHandler;

@@ -8,12 +8,12 @@ import node.detection.initService.NodeBroadcast;
 import node.detection.initService.NodeBroadcastReceiver;
 import node.detection.masterNodeService.MasterNodeBroadcast;
 import node.detection.masterNodeService.MasterNodeReceiver;
-import node.device.Device;
 import node.device.DeviceInfoManager;
 import node.log.LogWriter;
 import node.network.communicator.SocketHandler;
+import node.util.observer.Observable;
 
-public class NodeDetectionService implements IServiceModule
+public class NodeDetectionService extends Observable<NetworkStateChangeEvent> implements IServiceModule
 {
 	public static final Logger nodeDetectionLogger = LogWriter.createLogger(NodeDetectionService.class, "nodeDetection");
 	
@@ -38,7 +38,6 @@ public class NodeDetectionService implements IServiceModule
 		this.nodeBroadcastReceiver = new NodeBroadcastReceiver(this.deviceInfoManager, this.socketHandler);
 		this.masterNodeBroadcast = new MasterNodeBroadcast(this.deviceInfoManager, this.socketHandler);
 		this.masterNodeReceiver = new MasterNodeReceiver();
-		
 		
 		this.isDHCPNode = false;
 	}
