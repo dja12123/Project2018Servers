@@ -28,7 +28,7 @@ public class DB_Installer
 
 	private void getDBTableList()
 	{
-		CachedRowSet rs = instance.query(String.format(TABLE_SEARCH_QUERY, ""));
+		CachedRowSet rs = instance.query(String.format(TABLE_SEARCH_QUERY, "where type = 'table'"));
 		try
 		{
 			rs.beforeFirst();
@@ -158,8 +158,8 @@ public class DB_Installer
 
 		for (String var : appArray)
 		{
-			databaseLogger.log(Level.INFO, "테이블 삭제:", var);
-			instance.executeQuery(String.format("DROP TABLE IF EXISTS " + var));
+			databaseLogger.log(Level.INFO, String.format("테이블 삭제: %s", var));
+			instance.executeQuery(String.format("DROP TABLE IF EXISTS %s", var));
 		}
 
 		databaseLogger.log(Level.INFO, "DB모듈 초기화 완료.");
