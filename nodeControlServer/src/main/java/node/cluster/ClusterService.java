@@ -10,6 +10,7 @@ import node.cluster.spark.SparkManager;
 import node.db.DB_Handler;
 import node.log.LogWriter;
 import node.detection.NetworkStateChangeEvent;
+import node.detection.NodeDetectionService;
 import node.network.NetworkManager;
 
 public class ClusterService implements IServiceModule, Runnable {
@@ -24,13 +25,19 @@ public class ClusterService implements IServiceModule, Runnable {
 	public final NetworkStateChangeEventReceiver nscEventReceiver = new NetworkStateChangeEventReceiver(this);
 	public final NodeInfoChangeEventSender nicEventSender = new NodeInfoChangeEventSender();
 	public final SparkManager sparkManager = new SparkManager(this);
+	public final NodeDetectionService nds;
 	
 	public static final Logger clusterLogger = LogWriter.createLogger(ClusterService.class, "cluster");
 	
-	public ClusterService() {
+	public ClusterService(NodeDetectionService nds) {
 		this.isMaster = false;
 		this.instFlag = SPARK_NOT_INSTALLED;
 		this.connectState = NetworkStateChangeEvent.STATE_FAIL;
+		this.nds = nds;
+		this.nds.addObserver(nscEventReceiver);
+		
+		instSpark();
+		
 	}
 	public void instSpark() {
 		sparkManager.instSpark();
@@ -70,6 +77,7 @@ public class ClusterService implements IServiceModule, Runnable {
 			
 			return false;
 		}
+		
 		
 		return true;
 	}
