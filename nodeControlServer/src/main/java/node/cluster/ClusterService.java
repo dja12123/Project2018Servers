@@ -24,7 +24,7 @@ public class ClusterService implements IServiceModule, Runnable {
 	
 	public final NetworkStateChangeEventReceiver nscEventReceiver = new NetworkStateChangeEventReceiver(this);
 	public final NodeInfoChangeEventSender nicEventSender = new NodeInfoChangeEventSender();
-	public final SparkManager sparkManager = new SparkManager(this);
+	public final SparkManager sparkManager = new SparkManager();
 	public final NodeDetectionService nds;
 	
 	public static final Logger clusterLogger = LogWriter.createLogger(ClusterService.class, "cluster");
@@ -34,10 +34,8 @@ public class ClusterService implements IServiceModule, Runnable {
 		this.instFlag = SPARK_NOT_INSTALLED;
 		this.connectState = NetworkStateChangeEvent.STATE_FAIL;
 		this.nds = nds;
-		this.nds.addObserver(nscEventReceiver);
 		
 		instSpark();
-		
 	}
 	public void instSpark() {
 		sparkManager.instSpark();
@@ -78,7 +76,10 @@ public class ClusterService implements IServiceModule, Runnable {
 			return false;
 		}
 		
-		
+		if(isMaster == true)	{
+			sparkManager.startSparkMaster();
+		}
+		sparkManager.startSparkWorker("");
 		return true;
 	}
 	
@@ -86,7 +87,7 @@ public class ClusterService implements IServiceModule, Runnable {
 	@Override
 	public boolean startModule() {		//객체 초기화 생성및 쓰레드 초기화 생성
 		// TODO Auto-generated method stub
-		
+		this.nds.addObserver(nscEventReceiver);
 		
 		return true;
 	}

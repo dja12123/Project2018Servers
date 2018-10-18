@@ -13,10 +13,8 @@ public class SparkManager {
 	private String sparkWorkerMemory;
 	private String sparkDeployRecoveryMode;
 	private String sparkDeployZookeeperUrl;
-	private ClusterService mainModule;
 	
-	public SparkManager(ClusterService mainModule) {
-		this.mainModule = mainModule;
+	public SparkManager() {
 	}
 	public void startSparkMaster() {
 		BashSet.execSh(BashSet.start_spkMaster);
