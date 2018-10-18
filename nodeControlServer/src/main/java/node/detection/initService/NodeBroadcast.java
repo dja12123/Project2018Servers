@@ -8,10 +8,13 @@ import node.detection.NodeDetectionService;
 import node.detection.masterNodeService.MasterNodeBroadcast;
 import node.device.DeviceInfoManager;
 import node.network.NetworkUtil;
+import node.network.communicator.NetworkEvent;
 import node.network.communicator.SocketHandler;
 import node.network.packet.Packet;
 import node.network.packet.PacketBuildFailureException;
 import node.network.packet.PacketBuilder;
+import node.util.observer.Observable;
+import node.util.observer.Observer;
 
 public class NodeBroadcast implements Runnable, IServiceModule
 {
@@ -38,6 +41,15 @@ public class NodeBroadcast implements Runnable, IServiceModule
 		sock.startModule();
 		NodeBroadcast inst = new NodeBroadcast(infoManager, sock);
 		inst.startModule();
+		
+		sock.addObserver(NODE_INIT_BROADCAST_MSG, new Observer<NetworkEvent>()
+		{
+			@Override
+			public void update(Observable<NetworkEvent> object, NetworkEvent data)
+			{
+				System.out.println(data.packet.toString());
+			}
+		});
 	}
 	
 	public NodeBroadcast(DeviceInfoManager deviceInfoManager, SocketHandler socketHandler)

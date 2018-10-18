@@ -14,6 +14,7 @@ import node.util.observer.Observable;
 public class DeviceInfoManager extends Observable<DeviceStateChangeEvent> implements IServiceModule
 {
 	public static final Logger deviceInfoLogger = LogWriter.createLogger(DeviceInfoManager.class, "deviceInfo");
+	public static final String VP_MYDEVICE_INFO = "myuuid";
 	
 	private static final String INFO_TABLE_SCHEMA = 
 			"CREATE TABLE device_info("
@@ -53,6 +54,20 @@ public class DeviceInfoManager extends Observable<DeviceStateChangeEvent> implem
 	{
 		this.myDevice = new Device(UUID.randomUUID());//TODO 디비에서 긁어올것
 		this.dbHandler.getInstaller().checkAndCreateTable(INFO_TABLE_SCHEMA);
+		String uidStr = this.dbHandler.getVariableProperty(this.getClass(), VP_MYDEVICE_INFO);
+		UUID myUUID;
+		
+		if(uidStr == null)
+		{
+			myUUID = UUID.randomUUID();
+			uidStr = myUUID.toString();
+			this.dbHandler.setVariableProperty(this.getClass(), VP_MYDEVICE_INFO, uidStr);
+		}
+		else
+		{
+			myUUID = UUID.fromString(uidStr);
+		}
+		this.myDevice = new Device(myUUID);
 		
 		return true;
 	}

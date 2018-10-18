@@ -28,17 +28,14 @@ public class NodeDetectionService implements IServiceModule
 	
 	private boolean isDHCPNode;
 
-	
-	
 	public NodeDetectionService(DB_Handler dbHandler, DeviceInfoManager deviceInfoManager, SocketHandler socketHandler)
 	{
 		this.dbHandler = dbHandler;
 		this.socketHandler = socketHandler;
 		this.deviceInfoManager = deviceInfoManager;
-		this.deviceInfoManager = deviceInfoManager;
-		
+
 		this.nodeBroadcast = new NodeBroadcast(this.deviceInfoManager, this.socketHandler);
-		this.nodeBroadcastReceiver = new NodeBroadcastReceiver(this.dbHandler, this.socketHandler);
+		this.nodeBroadcastReceiver = new NodeBroadcastReceiver(this.deviceInfoManager, this.socketHandler);
 		this.masterNodeBroadcast = new MasterNodeBroadcast(this.deviceInfoManager, this.socketHandler);
 		this.masterNodeReceiver = new MasterNodeReceiver();
 		

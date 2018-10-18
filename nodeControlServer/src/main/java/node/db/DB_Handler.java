@@ -72,6 +72,10 @@ public class DB_Handler implements IServiceModule
 		db.startModule();
 		db.installer.complete();
 		printResultSet(db.query("select * from sqlite_master;"));
+		
+		db.setVariableProperty(DB_Handler.class, "test", "test");
+		String str = db.getVariableProperty(DB_Handler.class, "test");
+		System.out.println(str);
 	}
 
 	public DB_Handler()
@@ -202,17 +206,19 @@ public class DB_Handler implements IServiceModule
 	public void setVariableProperty(Class<?> classPath, String key, String value)
 	{
 		String module = classPath.toString();
-		this.executeQuery("insert into variable_property values("+module+","+key+","+value+");");
+
+		this.executeQuery(String.format("insert into variable_property values('%s','%s','%s')", module, key, value));
 	}
 	
-	public String getVariableProperty(Class<?> classPath, String key, String value)
+	public String getVariableProperty(Class<?> classPath, String key)
 	{
 		String module = classPath.toString();
-		CachedRowSet set = this.query("select value from variable_property where module = "+module+" and "+key+";");
+		CachedRowSet set = this.query(String.format("select value from variable_property where module='%s' and key='%s'", module, key));
 		if(set.size() == 0)
 			return null;
 		try
 		{
+			set.next();
 			return set.getString(1);
 		}
 		catch (SQLException e)

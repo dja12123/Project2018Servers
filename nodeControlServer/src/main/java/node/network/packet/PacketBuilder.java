@@ -156,7 +156,7 @@ public class PacketBuilder
 		else
 			buffer.put(PacketUtil.BROADCAST_RECEIVER);
 		buffer.put(this.key);
-		buffer.put(this.data);
+		if(this.data != null) buffer.put(this.data);
 		buffer.put(PacketUtil.MAGIC_NO_END);
 		
 		Packet createdPacket = new Packet(buffer.array());
