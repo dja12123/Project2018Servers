@@ -9,7 +9,7 @@ import node.IServiceModule;
 import node.cluster.spark.SparkManager;
 import node.db.DB_Handler;
 import node.log.LogWriter;
-import node.network.NetworkStateChangeEvent;
+import node.detection.NetworkStateChangeEvent;
 import node.network.NetworkManager;
 
 public class ClusterService implements IServiceModule, Runnable {

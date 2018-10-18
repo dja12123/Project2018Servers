@@ -6,9 +6,9 @@ public class NetworkStateChangeEvent {
 	
 	public final boolean isDHCP;
 	public final String DHCPIp;
-	public final boolean state;
+	public final int state;
 	
-	public NetworkStateChangeEvent(String DHCPIp, boolean isDHCP, boolean what) {
+	public NetworkStateChangeEvent(String DHCPIp, boolean isDHCP, int what) {
 		this.DHCPIp = DHCPIp;
 		this.isDHCP = isDHCP;
 		this.state = what;

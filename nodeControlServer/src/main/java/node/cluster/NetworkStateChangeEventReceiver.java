@@ -1,6 +1,6 @@
 package node.cluster;
 
-import node.network.NetworkStateChangeEvent;
+import node.detection.NetworkStateChangeEvent;
 import node.util.observer.Observable;
 import node.util.observer.Observer;
 
