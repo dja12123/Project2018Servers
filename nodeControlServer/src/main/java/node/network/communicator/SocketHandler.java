@@ -26,8 +26,6 @@ public class SocketHandler implements IServiceModule, Runnable
 {	
 	private HashMap<String, Observable<NetworkEvent>> observerMap;
 	
-	private ExecutorService packetProcessService = Executors.newCachedThreadPool();
-	
 	private Thread worker = null;
 	private boolean isWork;
 	
@@ -151,7 +149,7 @@ public class SocketHandler implements IServiceModule, Runnable
 				}
 				
 				NetworkEvent event = new NetworkEvent(eventKey, dgramPacket.getAddress(), packetObj);
-				observable.notifyObservers(packetProcessService, event);
+				observable.notifyObservers(NodeControlCore.mainThreadPool, event);
 			}
 			catch (IOException e)
 			{

@@ -43,9 +43,9 @@ public class NodeInstaller implements IServiceModule, Runnable, Observer<Network
 	@Override
 	public void update(Observable<NetworkEvent> object, NetworkEvent data)
 	{
-		String addr = data.inetAddr.getHostAddress();
-		String uuid = data.packet.getSender().toString();
-		Time time = new Time(System.currentTimeMillis());
+		//String addr = data.inetAddr.getHostAddress();
+		//String uuid = data.packet.getSender().toString();
+		//Time time = new Time(System.currentTimeMillis());
 		
 		if(data.key.equals(MasterNodeBroadcast.KPROTO_MASTER_BROADCAST))
 		{

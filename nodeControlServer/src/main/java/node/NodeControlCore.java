@@ -2,6 +2,8 @@ package node;
 
 import java.io.InputStream;
 import java.util.Properties;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -26,6 +28,8 @@ public class NodeControlCore
 {
 
 	public static final Logger mainLogger = LogWriter.createLogger(NodeControlCore.class, "main");// 메인 로거
+	
+	public static final ExecutorService mainThreadPool = Executors.newCachedThreadPool();
 	
 	private static final Properties properties = new Properties();
 	
