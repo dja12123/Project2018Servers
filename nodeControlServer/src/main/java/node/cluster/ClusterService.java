@@ -77,9 +77,9 @@ public class ClusterService implements IServiceModule, Runnable {
 		}
 		
 		if(isMaster == true)	{
-			sparkManager.startSparkMaster();
+			sparkManager.startSparkMaster(masterIp, "");
 		}
-		sparkManager.startSparkWorker("");
+		sparkManager.startSparkWorker(masterIp, "");
 		return true;
 	}
 	
