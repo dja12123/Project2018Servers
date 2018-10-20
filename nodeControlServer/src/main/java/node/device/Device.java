@@ -8,24 +8,16 @@ import java.util.UUID;
 public class Device
 {
 	public final UUID uuid;
-	private InetAddress inetAddr;
-	private Date updateTime;
+	InetAddress inetAddr;
+	Date updateTime;
+	boolean dhcpNode;
 	//private String deviceName;
 	
 	Device(UUID uuid)
 	{
 		this.uuid = uuid;
 		this.inetAddr = null;
-	}
-	
-	void setInetAddr(InetAddress inetAddr)
-	{
-		this.inetAddr = inetAddr;
-	}
-	
-	void updateTime()
-	{
-		this.updateTime = new Date(System.currentTimeMillis());
+		this.dhcpNode = false;
 	}
 	
 	public InetAddress getInetAddr()
@@ -36,5 +28,10 @@ public class Device
 	public Date getUpdateTime()
 	{// 장치가 최종적으로 확인된 시간을 가지고옵니다.
 		return this.updateTime;
+	}
+	
+	public boolean isDHCPNode()
+	{
+		return this.dhcpNode;
 	}
 }

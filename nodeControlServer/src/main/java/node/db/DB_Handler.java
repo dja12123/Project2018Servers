@@ -69,12 +69,14 @@ public class DB_Handler implements IServiceModule
 	{
 		NodeControlCore.init();
 		DB_Handler db = new DB_Handler();
-		db.startModule();
-		db.installer.complete();
 		printResultSet(db.query("select * from sqlite_master;"));
+		db.startModule();
+		
+		db.installer.complete();
+		
 		
 		db.setVariableProperty(DB_Handler.class, "test", "test");
-		String str = db.getVariableProperty(DB_Handler.class, "test");
+		String str = db.getOrSetDefaultVariableProperty(DB_Handler.class, "test", "test");
 		System.out.println(str);
 	}
 
@@ -181,7 +183,7 @@ public class DB_Handler implements IServiceModule
 		this.isOpened = true;
 		this.installer = new DB_Installer(this);
 		
-		this.installer.checkAndCreateTable(Variable_Property_Schema);
+		//this.installer.checkAndCreateTable(Variable_Property_Schema);
 		return true;
 	}
 
@@ -206,16 +208,27 @@ public class DB_Handler implements IServiceModule
 	public void setVariableProperty(Class<?> classPath, String key, String value)
 	{
 		String module = classPath.toString();
-
-		this.executeQuery(String.format("insert into variable_property values('%s','%s','%s')", module, key, value));
+		CachedRowSet set = this.query(String.format("select module, key from variable_property where module='%s' and key='%s'", module, key));
+		if(set.size() == 0)
+		{
+			this.executeQuery(String.format("insert into variable_property values('%s','%s','%s')", module, key, value));
+		}
+		else
+		{
+			this.executeQuery(String.format("update variable_property set value='%s' where module='%s' and key='%s'", value, module, key));
+		}
+		
 	}
 	
-	public String getVariableProperty(Class<?> classPath, String key)
+	public String getOrSetDefaultVariableProperty(Class<?> classPath, String key, String defaultValue)
 	{
 		String module = classPath.toString();
 		CachedRowSet set = this.query(String.format("select value from variable_property where module='%s' and key='%s'", module, key));
 		if(set.size() == 0)
-			return null;
+		{
+			this.executeQuery(String.format("insert into variable_property values('%s','%s','%s')", module, key, defaultValue));
+			return defaultValue;
+		}
 		try
 		{
 			set.next();
