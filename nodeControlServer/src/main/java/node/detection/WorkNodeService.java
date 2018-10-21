@@ -5,7 +5,6 @@ import java.net.UnknownHostException;
 import java.util.UUID;
 import java.util.logging.Level;
 
-import javafx.scene.control.Tab;
 import node.IServiceModule;
 import node.NodeControlCore;
 import node.db.DB_Handler;
@@ -27,14 +26,12 @@ public class WorkNodeService implements Runnable
 	public static final String KPROTO_NODE_INFO_MSG = "workNodeAlert";
 	
 	private final DeviceInfoManager deviceInfoManager;
-	private final IDeviceStateUpdater deviceStateUpdater; 
 	private final SocketHandler socketHandler;
 	
 	private int broadCastDelay;
 	private Thread broadcastThread = null;
 	private boolean isRun = false;
 	
-	private Packet packet;
 	private Device dhcpDevice;
 	
 	/*public static void main(String[] args)
@@ -58,10 +55,9 @@ public class WorkNodeService implements Runnable
 		});
 	}*/
 	
-	public WorkNodeService(DeviceInfoManager deviceInfoManager, IDeviceStateUpdater deviceStateUpdater, SocketHandler socketHandler)
+	public WorkNodeService(DeviceInfoManager deviceInfoManager, SocketHandler socketHandler)
 	{
 		this.deviceInfoManager = deviceInfoManager;
-		this.deviceStateUpdater = deviceStateUpdater;
 		this.socketHandler = socketHandler;
 	}
 
@@ -71,12 +67,28 @@ public class WorkNodeService implements Runnable
 		NodeDetectionService.nodeDetectionLogger.log(Level.INFO, "노드 알림 시작");
 		while(this.isRun)
 		{
+			PacketBuilder builder = new PacketBuilder();
+			
+			Packet packet;
+			try
+			{
+				builder.setSender(this.deviceInfoManager.getMyDevice().uuid);
+				builder.setReceiver(this.dhcpDevice.uuid);
+				builder.setKey(KPROTO_NODE_INFO_MSG);
+				packet = builder.createPacket();
+			}
+			catch (PacketBuildFailureException e)
+			{
+				NodeDetectionService.nodeDetectionLogger.log(Level.SEVERE, "마스터노드에게 알리는 패킷 생성중 오류.", e);
+				return;
+			}
+			this.socketHandler.sendMessage(this.dhcpDevice.getInetAddr(), packet);
 			try
 			{
 				Thread.sleep(this.broadCastDelay);
 			}
+			
 			catch (InterruptedException e) {}
-			this.socketHandler.sendMessage(this.dhcpDevice.getInetAddr(), packet);
 		}
 	}
 	
@@ -98,25 +110,10 @@ public class WorkNodeService implements Runnable
 				taskIsDhcp = true;
 			}
 			
-			this.deviceStateUpdater.updateDevice(taskUID, taskAddr, taskIsDhcp);
+			this.deviceInfoManager.updateDevice(taskUID, taskAddr, taskIsDhcp);
 		}
 		
 		this.dhcpDevice = this.deviceInfoManager.getDevice(masterNodePacket.getSender());
-		
-		PacketBuilder builder = new PacketBuilder();
-		
-		try
-		{
-			builder.setSender(this.deviceInfoManager.getMyDevice().uuid);
-			builder.setBroadCast();
-			builder.setKey(KPROTO_NODE_INFO_MSG);
-			this.packet = builder.createPacket();
-		}
-		catch (PacketBuildFailureException e)
-		{
-			NodeDetectionService.nodeDetectionLogger.log(Level.SEVERE, "브로드케스트 패킷 생성 오류", e);
-			return;
-		}
 		
 		this.broadCastDelay = Integer.parseInt(NodeControlCore.getProp(PROP_DELAY_INFOMSG));
 		
