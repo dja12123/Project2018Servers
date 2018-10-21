@@ -1,11 +1,10 @@
-package node.detection.masterNodeService;
+package node.detection;
 
 import java.util.logging.Level;
 
 import node.IServiceModule;
 import node.NodeControlCore;
 import node.db.DB_Handler;
-import node.detection.NodeDetectionService;
 import node.device.DeviceInfoManager;
 import node.network.NetworkUtil;
 import node.network.communicator.NetworkEvent;
@@ -17,8 +16,8 @@ import node.network.packet.PacketUtil;
 import node.util.observer.Observable;
 import node.util.observer.Observer;
 
-public class MasterNodeBroadcast implements IServiceModule, Runnable
-{
+public class MasterNodeService implements Runnable, IServiceModule
+{	
 	public static final String PROP_DELAY_MASTER_MSG = "delayMasterNodeBroadcast";
 	public static final String KPROTO_MASTER_BROADCAST = "masterNodeBroadcast";
 	
@@ -28,7 +27,7 @@ public class MasterNodeBroadcast implements IServiceModule, Runnable
 	private Thread broadcastThread;
 	private int broadCastDelay;
 	
-	public static void main(String[] args)
+	/*public static void main(String[] args)
 	{
 		NodeControlCore.init();
 		DB_Handler db = new DB_Handler();
@@ -51,9 +50,9 @@ public class MasterNodeBroadcast implements IServiceModule, Runnable
 		});
 		
 		db.getInstaller().complete();
-	}
+	}*/
 	
-	public MasterNodeBroadcast(DeviceInfoManager deviceInfoManager, SocketHandler socketHandler)
+	public MasterNodeService(DeviceInfoManager deviceInfoManager, SocketHandler socketHandler)
 	{
 		this.deviceInfoManager = deviceInfoManager;
 		this.socketHandler = socketHandler;
@@ -105,9 +104,9 @@ public class MasterNodeBroadcast implements IServiceModule, Runnable
 			for(int i = 0; i < queryArr.length; ++i)
 			{
 				msgBuffer.append(queryArr[0]);
-				msgBuffer.append(PacketUtil.DPROTO_SEP_ROW);
-				msgBuffer.append(queryArr[1]);
 				msgBuffer.append(PacketUtil.DPROTO_SEP_COL);
+				msgBuffer.append(queryArr[1]);
+				msgBuffer.append(PacketUtil.DPROTO_SEP_ROW);
 			}
 			
 			try
@@ -131,5 +130,4 @@ public class MasterNodeBroadcast implements IServiceModule, Runnable
 		}
 		
 	}
-
 }

@@ -1,23 +1,15 @@
-package node.detection.initService;
+package node.detection;
 
-import java.sql.PreparedStatement;
-import java.sql.Time;
 import java.util.Random;
 import java.util.logging.Level;
 
-import node.IServiceModule;
-import node.NodeControlCore;
-import node.db.DB_Handler;
-import node.detection.NodeDetectionService;
-import node.detection.masterNodeService.MasterNodeBroadcast;
-import node.device.DeviceInfoManager;
 import node.network.NetworkManager;
 import node.network.communicator.NetworkEvent;
 import node.network.communicator.SocketHandler;
 import node.util.observer.Observable;
 import node.util.observer.Observer;
 
-public class NodeInstaller implements IServiceModule, Runnable, Observer<NetworkEvent>
+public class NodeInstaller implements Runnable, Observer<NetworkEvent>
 {
 	private static final int DEFAULT_WAIT_TIME = 5000;
 	private static final int RANDOM_WAIT_TIME = 5000;
@@ -25,13 +17,7 @@ public class NodeInstaller implements IServiceModule, Runnable, Observer<Network
 	private Thread waitThread;
 	private NodeDetectionService nodeDetectionService;
 	private NetworkEvent masterNodeData;
-	
-	private static final String NODE_TABLE_SCHEMA = 
-			"CREATE TABLE node_info("
-		+		"uuid varchar(36) primary key,"
-		+		"inetaddr varchar(15),"
-		+ 		"updateTime datetime)";
-	
+
 	public NodeInstaller(NodeDetectionService nodeDetectionService, SocketHandler socketHandler)
 	{
 		this.nodeDetectionService = nodeDetectionService;
@@ -47,25 +33,22 @@ public class NodeInstaller implements IServiceModule, Runnable, Observer<Network
 		//String uuid = data.packet.getSender().toString();
 		//Time time = new Time(System.currentTimeMillis());
 		
-		if(data.key.equals(MasterNodeBroadcast.KPROTO_MASTER_BROADCAST))
+		if(data.key.equals(MasterNodeService.KPROTO_MASTER_BROADCAST))
 		{
 			this.masterNodeData = data;
 			this.waitThread.interrupt();
 		}
 	}
 	
-	@Override
-	public boolean startModule()
+	public void start()
 	{
 		NetworkManager.networkLogger.log(Level.INFO, "노드 알림 수신 시작");
 		this.waitThread = new Thread(this);
 		this.waitThread.start();
-		this.socketHandler.addObserver(NodeBroadcast.NODE_INIT_BROADCAST_MSG, this);
-		return true;
+		this.socketHandler.addObserver(MasterNodeService.KPROTO_MASTER_BROADCAST, this);
 	}
 	
-	@Override
-	public void stopModule()
+	public void stop()
 	{
 		this.socketHandler.removeObserver(this);
 	}
@@ -81,6 +64,7 @@ public class NodeInstaller implements IServiceModule, Runnable, Observer<Network
 		{
 			//마스터 노드 감지
 			this.nodeDetectionService.masterNodeDetection(this.masterNodeData);
+			this.stop();
 			return;
 		}
 		
@@ -92,8 +76,10 @@ public class NodeInstaller implements IServiceModule, Runnable, Observer<Network
 		catch (InterruptedException e)
 		{
 			this.nodeDetectionService.masterNodeDetection(this.masterNodeData);
+			this.stop();
 			return;
 		}
 		this.nodeDetectionService.myMasterNode();
+		this.stop();
 	}
 }	

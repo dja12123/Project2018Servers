@@ -47,8 +47,8 @@ public class PacketUtil
 	public static final int OPT_HASDATA = 2;
 	public static final int OPT_ISSTRINGDATA = 3;
 	
-	public static final String DPROTO_SEP_ROW = ",";
-	public static final String DPROTO_SEP_COL = "/\n";
+	public static final String DPROTO_SEP_COL = ",";
+	public static final String DPROTO_SEP_ROW = "/\n";
 	
 	public static boolean checkOption(short optionArea, int option)
 	{
@@ -113,6 +113,21 @@ public class PacketUtil
 			}
 		}
 		return true;
+	}
+	
+	public static String[][] getDataArray(Packet packet)
+	{
+		if(!packet.isStringData()) return null;
+		
+		String fullData = packet.getDataString();
+		String[] rowArr = fullData.split(DPROTO_SEP_ROW);
+		String[][] returnArr = new String[rowArr.length][];
+		for(int i = 0; i < rowArr.length; ++i)
+		{
+			String[] colArr = rowArr[i].split(DPROTO_SEP_COL);
+			returnArr[i] = colArr;
+		}
+		return returnArr;
 	}
 	
 	public static byte[] clonePacketByte(byte[] packetBuffer)
