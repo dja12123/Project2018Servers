@@ -64,6 +64,7 @@ public class SparkManager {
 	
 	
 	public void instSpark() {
+		confSpark();
 		BashSet.execSh(BashSet.install_spark, sparkHome);
 	}
 }

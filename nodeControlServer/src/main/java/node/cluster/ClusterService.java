@@ -13,7 +13,7 @@ import node.detection.NetworkStateChangeEvent;
 import node.detection.NodeDetectionService;
 import node.network.NetworkManager;
 
-public class ClusterService implements IServiceModule, Runnable {
+public class ClusterService implements IServiceModule {
 	public static final int SPARK_INSTALLED = 0;
 	public static final int SPARK_NOT_INSTALLED = 1;
 	
@@ -34,6 +34,7 @@ public class ClusterService implements IServiceModule, Runnable {
 		this.instFlag = SPARK_NOT_INSTALLED;
 		this.connectState = NetworkStateChangeEvent.STATE_FAIL;
 		this.nds = nds;
+		this.masterIp = null;
 		
 		instSpark();
 	}
@@ -60,6 +61,10 @@ public class ClusterService implements IServiceModule, Runnable {
 		if((eventInfo = nscEventReceiver.getEvent()) == null) {
 			clusterLogger.log(Level.SEVERE, "Not Given Network State Change Event", new Exception("Not Given Network State Change Event"));
 			return false;
+		}
+		if(masterIp != null && !masterIp.equals(eventInfo.DHCPIp)) {	//마스터가 아니였다가 마스터가 될때 마스터프로세스를 종료시켜준다.(잔존 프로세스 제거)
+			sparkManager.stopSparkMaster();
+			sparkManager.stopSparkWorker();
 		}
 		this.isMaster = eventInfo.isDHCP;
 		this.masterIp = eventInfo.DHCPIp;
@@ -94,12 +99,6 @@ public class ClusterService implements IServiceModule, Runnable {
 
 	@Override
 	public void stopModule() {		//스타트 모듈에서 생성된 객체들을 다시 종료시키는곳.
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void run() {
 		// TODO Auto-generated method stub
 		
 	}
