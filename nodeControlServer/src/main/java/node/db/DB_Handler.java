@@ -69,15 +69,15 @@ public class DB_Handler implements IServiceModule
 	{
 		NodeControlCore.init();
 		DB_Handler db = new DB_Handler();
-		printResultSet(db.query("select * from sqlite_master;"));
+		//printResultSet(db.query("select * from sqlite_master;"));
 		db.startModule();
 		
-		db.installer.complete();
+		//db.installer.complete();
 		
 		
-		db.setVariableProperty(DB_Handler.class, "test", "test");
-		String str = db.getOrSetDefaultVariableProperty(DB_Handler.class, "test", "test");
-		System.out.println(str);
+		//db.setVariableProperty(DB_Handler.class, "test", "test");
+		//String str = db.getOrSetDefaultVariableProperty(DB_Handler.class, "test", "test");
+		//System.out.println(str);
 	}
 
 	public DB_Handler()
@@ -184,6 +184,9 @@ public class DB_Handler implements IServiceModule
 		this.installer = new DB_Installer(this);
 		
 		//this.installer.checkAndCreateTable(Variable_Property_Schema);
+        
+        this.installer.complete();
+        
 		return true;
 	}
 
