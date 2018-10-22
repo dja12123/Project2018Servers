@@ -19,10 +19,17 @@ import node.network.communicator.SocketHandler;
 import node.network.packet.Packet;
 import node.network.packet.PacketUtil;
 import node.util.observer.Observable;
+import node.util.observer.Observer;
 
-public class NodeDetectionService extends Observable<NetworkStateChangeEvent> implements IServiceModule
+public class NodeDetectionService extends Observable<NetworkStateChangeEvent> implements IServiceModule, Observer<DeviceStateChangeEvent>
 {// 마스터 노드 변경 관련 서비스.
 	public static final Logger nodeDetectionLogger = LogWriter.createLogger(NodeDetectionService.class, "nodeDetection");
+	
+	public static final int STATE_INIT = 0;
+	public static final int STATE_WORKNODE = 1;
+	public static final int STATE_MASTERNODE = 2;
+	
+	private int state;
 	
 	private DB_Handler dbHandler;
 	private DeviceInfoManager deviceInfoManager;
@@ -33,8 +40,6 @@ public class NodeDetectionService extends Observable<NetworkStateChangeEvent> im
 	private WorkNodeService workNodeService;
 	private MasterNodeService masterNodeService;
 	
-	private boolean isDHCPNode;
-
 	public NodeDetectionService(DB_Handler dbHandler, DeviceInfoManager deviceInfoManager, SocketHandler socketHandler)
 	{
 		this.dbHandler = dbHandler;
@@ -72,5 +77,12 @@ public class NodeDetectionService extends Observable<NetworkStateChangeEvent> im
 	public void stopModule()
 	{
 
+	}
+
+	@Override
+	public void update(Observable<DeviceStateChangeEvent> object, DeviceStateChangeEvent data)
+	{
+		
+		
 	}
 }
