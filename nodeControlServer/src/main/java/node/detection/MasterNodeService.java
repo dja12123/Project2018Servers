@@ -4,17 +4,13 @@ import java.util.logging.Level;
 
 import node.IServiceModule;
 import node.NodeControlCore;
-import node.db.DB_Handler;
 import node.device.DeviceInfoManager;
 import node.network.NetworkUtil;
-import node.network.communicator.NetworkEvent;
 import node.network.communicator.SocketHandler;
 import node.network.packet.Packet;
 import node.network.packet.PacketBuildFailureException;
 import node.network.packet.PacketBuilder;
 import node.network.packet.PacketUtil;
-import node.util.observer.Observable;
-import node.util.observer.Observer;
 
 public class MasterNodeService implements Runnable, IServiceModule
 {	
