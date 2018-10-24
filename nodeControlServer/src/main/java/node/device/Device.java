@@ -1,7 +1,6 @@
 package node.device;
 
 import java.net.InetAddress;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.UUID;
 
@@ -33,5 +32,16 @@ public class Device
 	public boolean isDHCPNode()
 	{
 		return this.dhcpNode;
+	}
+	
+	@Override
+	public boolean equals(Object obj)
+	{
+		if(!(obj instanceof Device)) return false;
+		
+		Device compDevice = (Device)obj;
+		
+		if(!compDevice.uuid.equals(this.uuid)) return false;
+		return true;
 	}
 }

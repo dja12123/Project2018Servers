@@ -2,7 +2,6 @@ package node.detection;
 
 import java.util.logging.Level;
 
-import node.IServiceModule;
 import node.NodeControlCore;
 import node.device.DeviceInfoManager;
 import node.network.NetworkUtil;
@@ -12,7 +11,7 @@ import node.network.packet.PacketBuildFailureException;
 import node.network.packet.PacketBuilder;
 import node.network.packet.PacketUtil;
 
-public class MasterNodeService implements Runnable, IServiceModule
+public class MasterNodeService implements Runnable
 {	
 	public static final String PROP_DELAY_MASTER_MSG = "delayMasterNodeBroadcast";
 	public static final String KPROTO_MASTER_BROADCAST = "masterNodeBroadcast";
@@ -54,20 +53,18 @@ public class MasterNodeService implements Runnable, IServiceModule
 		this.socketHandler = socketHandler;
 	}
 
-	@Override
-	public boolean startModule()
+	public void start()
 	{
-		if(this.isRun) return true;
+		if(this.isRun) return;
 		this.isRun = true;
 		
 		this.broadCastDelay = Integer.parseInt(NodeControlCore.getProp(PROP_DELAY_MASTER_MSG));
 		this.broadcastThread = new Thread(this);
 		this.broadcastThread.start();
-		return true;
+		return;
 	}
 
-	@Override
-	public void stopModule()
+	public void stop()
 	{
 		if(!this.isRun) return;
 		this.isRun = false;

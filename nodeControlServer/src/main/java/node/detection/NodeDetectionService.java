@@ -1,23 +1,15 @@
 package node.detection;
 
-import java.net.InetAddress;
-import java.util.Date;
-import java.util.LinkedList;
-import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import node.IServiceModule;
-import node.NodeControlCore;
 import node.db.DB_Handler;
-import node.device.Device;
 import node.device.DeviceInfoManager;
 import node.device.DeviceStateChangeEvent;
 import node.log.LogWriter;
 import node.network.communicator.NetworkEvent;
 import node.network.communicator.SocketHandler;
-import node.network.packet.Packet;
-import node.network.packet.PacketUtil;
 import node.util.observer.Observable;
 import node.util.observer.Observer;
 
@@ -51,17 +43,31 @@ public class NodeDetectionService extends Observable<NetworkStateChangeEvent> im
 		this.workNodeService = new WorkNodeService(this.deviceInfoManager, this.socketHandler);
 		this.masterNodeService = new MasterNodeService(this.deviceInfoManager, this.socketHandler);
 		
-		this.isDHCPNode = false;
+		this.nodeInit();
 	}
 	
-	public void masterNodeDetection(NetworkEvent masterNodeEvent)
+	private void nodeInit()
 	{
+		this.state = STATE_INIT;
+		this.masterNodeService.stop();
+		this.workNodeService.stop();
+		this.nodeInstaller.start();
+	}
+	
+	public void workNodeSelectionCallback(NetworkEvent masterNodeEvent)
+	{
+		this.state = STATE_WORKNODE;
+		this.nodeInstaller.stop();
+		this.masterNodeService.stop();
 		this.workNodeService.start(masterNodeEvent.packet);
 	}
 	
-	public void myMasterNode()
+	public void masterNodeSelectionCallback()
 	{
-		
+		this.state = STATE_MASTERNODE;
+		this.nodeInstaller.stop();
+		this.workNodeService.stop();
+		this.masterNodeService.start();
 	}
 
 	@Override
@@ -76,12 +82,18 @@ public class NodeDetectionService extends Observable<NetworkStateChangeEvent> im
 	@Override
 	public void stopModule()
 	{
-
+		this.nodeInstaller.stop();
+		this.workNodeService.stop();
+		this.masterNodeService.stop();
 	}
 
 	@Override
 	public void update(Observable<DeviceStateChangeEvent> object, DeviceStateChangeEvent data)
 	{
+		if(this.state == STATE_WORKNODE)
+		{
+			data.device.equals(this.workNodeService.getDhcpDevice());
+		}
 		
 		
 	}

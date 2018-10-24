@@ -63,7 +63,7 @@ public class NodeInstaller implements Runnable, Observer<NetworkEvent>
 		catch (InterruptedException e)
 		{
 			//마스터 노드 감지
-			this.nodeDetectionService.masterNodeDetection(this.masterNodeData);
+			this.nodeDetectionService.workNodeSelectionCallback(this.masterNodeData);
 			this.stop();
 			return;
 		}
@@ -75,11 +75,11 @@ public class NodeInstaller implements Runnable, Observer<NetworkEvent>
 		}
 		catch (InterruptedException e)
 		{
-			this.nodeDetectionService.masterNodeDetection(this.masterNodeData);
+			this.nodeDetectionService.workNodeSelectionCallback(this.masterNodeData);
 			this.stop();
 			return;
 		}
-		this.nodeDetectionService.myMasterNode();
+		this.nodeDetectionService.masterNodeSelectionCallback();
 		this.stop();
 	}
 }	
