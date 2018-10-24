@@ -7,6 +7,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -75,9 +76,11 @@ public class DeviceInfoManager extends Observable<DeviceStateChangeEvent> implem
 		return this.deviceMap.containsKey(uuid);
 	}
 	
-	public Collection<Device> getDevices()
+	public Device[] getDevices()
 	{
-		return this.deviceMap.values();
+		Device[] deviceArr = new Device[this.deviceMap.size()];
+		this.deviceMap.values().toArray(deviceArr);
+		return deviceArr;
 	}
 	
 	@Override
@@ -114,7 +117,7 @@ public class DeviceInfoManager extends Observable<DeviceStateChangeEvent> implem
 		return this.myDevice;
 	}
 	
-	public synchronized void updateDevice(UUID uuid, InetAddress inetAddr, boolean isDHCP)
+	public synchronized void updateDevice(UUID uuid, InetAddress inetAddr, boolean isMasterNode)
 	{// 장치 정보관리 모듈과 연결해줌.
 	 // 장치 정보가 수정되었을 때.
 		Device device = this.deviceMap.getOrDefault(uuid, null);
@@ -134,9 +137,16 @@ public class DeviceInfoManager extends Observable<DeviceStateChangeEvent> implem
 				device.inetAddr = inetAddr;
 			}
 			
-			if(device.dhcpNode != isDHCP)
+			if(device.masterNode != isMasterNode)
 			{
-				changeState = changeState | DeviceStateChangeEvent.CHANGE_DHCPNODE;
+				if(device.masterNode)
+				{
+					changeState = changeState | DeviceStateChangeEvent.IS_MASTER_NODE;
+				}
+				else
+				{
+					changeState = changeState | DeviceStateChangeEvent.IS_NOT_MASTER_NODE;
+				}
 			}
 			
 			if(changeState != 0)

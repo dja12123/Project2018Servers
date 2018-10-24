@@ -92,8 +92,27 @@ public class NodeDetectionService extends Observable<NetworkStateChangeEvent> im
 	{
 		if(this.state == STATE_WORKNODE)
 		{
-			data.device.equals(this.workNodeService.getDhcpDevice());
+			if(data.getState(DeviceStateChangeEvent.CONNECT_NEW_DEVICE))
+			{
+				if(data.device.isMasterNode())
+				{// 한 네트워크 세그먼트 상에서 내 마스터 노드가 아닌 다른 마스터 노드가 감지될때.
+					
+					
+				}
+				
+			}
+			if(data.getState(DeviceStateChangeEvent.DISCONNECT_DEVICE))
+			{
+				if(data.device.equals(this.workNodeService.getMasterNode()))
+				{// 마스터 노드가 사망했을때.
+					this.nodeInit();
+					
+					
+				}
+			}
 		}
+		
+		
 		
 		
 	}

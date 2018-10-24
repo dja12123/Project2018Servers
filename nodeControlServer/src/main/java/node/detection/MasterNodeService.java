@@ -58,6 +58,8 @@ public class MasterNodeService implements Runnable
 		if(this.isRun) return;
 		this.isRun = true;
 		
+		//this.socketHandler.;
+		
 		this.broadCastDelay = Integer.parseInt(NodeControlCore.getProp(PROP_DELAY_MASTER_MSG));
 		this.broadcastThread = new Thread(this);
 		this.broadcastThread.start();

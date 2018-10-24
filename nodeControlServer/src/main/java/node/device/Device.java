@@ -9,14 +9,14 @@ public class Device
 	public final UUID uuid;
 	InetAddress inetAddr;
 	Date updateTime;
-	boolean dhcpNode;
+	boolean masterNode;
 	//private String deviceName;
 	
 	Device(UUID uuid)
 	{
 		this.uuid = uuid;
 		this.inetAddr = null;
-		this.dhcpNode = false;
+		this.masterNode = false;
 	}
 	
 	public InetAddress getInetAddr()
@@ -29,9 +29,9 @@ public class Device
 		return this.updateTime;
 	}
 	
-	public boolean isDHCPNode()
+	public boolean isMasterNode()
 	{
-		return this.dhcpNode;
+		return this.masterNode;
 	}
 	
 	@Override
