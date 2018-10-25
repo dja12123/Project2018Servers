@@ -53,6 +53,7 @@ public class NetworkManager implements IServiceModule
 	{
 		ArrayList<String> command = new ArrayList<String>();
 		String iface = NodeControlCore.getProp(PROP_INTERFACE);
+		System.out.println("interface: " + iface);
 		
 		byte[] myAddrByte = inetAddress.getAddress();
 		myAddrByte[3] = 1;
