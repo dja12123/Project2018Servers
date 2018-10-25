@@ -67,11 +67,13 @@ public class NetworkManager implements IServiceModule
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		System.out.println(gatewayAddr);
 		command.add(String.format("ifdown %s", iface));
 		command.add(String.format("ip addr flush dev %s", iface));
 		command.add(String.format("ip addr change dev %s %s/24", iface, inetAddress.getHostAddress()));
 		command.add(String.format("ip route add default via %s", gatewayAddr));
 		command.add(String.format("ifup %s", iface));
+		System.out.println("end");
 		
 		synchronized (this.socketHandler)
 		{
