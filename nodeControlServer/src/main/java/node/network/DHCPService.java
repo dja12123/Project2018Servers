@@ -23,7 +23,7 @@ import node.log.LogWriter;
 public class DHCPService extends DHCPServlet implements IServiceModule
 {
 	public static final Logger dhcpLogger = DHCPCoreServer.logger;
-	public static final String PROP_INTERFACE = "dhcpInterface";
+
 	
 	static
 	{
@@ -53,7 +53,7 @@ public class DHCPService extends DHCPServlet implements IServiceModule
 	public boolean startModule()
 	{
 		dhcpLogger.log(Level.INFO, "DHCP 로드");
-		String loadInterface = NodeControlCore.getProp(PROP_INTERFACE).toString();
+		String loadInterface = NodeControlCore.getProp(NetworkManager.PROP_INTERFACE).toString();
 		dhcpLogger.log(Level.INFO, "네트워크 인터페이스 선택: " + loadInterface);
 		NetworkInterface network = NetworkUtil.getNetworkInterface(loadInterface);
 		InetAddress inetAddress = NetworkUtil.getInterface4Addr(network);

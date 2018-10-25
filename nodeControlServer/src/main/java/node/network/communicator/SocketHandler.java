@@ -22,7 +22,7 @@ import node.network.packet.PacketUtil;
 import node.util.observer.Observable;
 import node.util.observer.Observer;
 
-public class SocketHandler implements IServiceModule, Runnable
+public class SocketHandler implements Runnable
 {	
 	private HashMap<String, Observable<NetworkEvent>> observerMap;
 	
@@ -80,10 +80,9 @@ public class SocketHandler implements IServiceModule, Runnable
 		}
 	}
 
-	@Override
-	public boolean startModule()
+	public void start()
 	{
-		if(this.isWork) return true;
+		if(this.isWork) return;
 		
 		if(this.worker == null || !this.worker.isAlive())
 		{
@@ -94,7 +93,7 @@ public class SocketHandler implements IServiceModule, Runnable
 		{
 			this.port = Integer.parseInt(NodeControlCore.getProp(NetworkManager.PROP_INFOBROADCAST_PORT));
 
-			String interfaceStr = NodeControlCore.getProp(NetworkManager.PROP_SOCKET_INTERFACE);
+			String interfaceStr = NodeControlCore.getProp(NetworkManager.PROP_INTERFACE);
 			NetworkUtil.getNetworkInterface(interfaceStr);
 			//this.socket = new DatagramSocket(NetworkManager.PROP_SOCKET_INTERFACE)
 			this.socket = new DatagramSocket(this.port);
@@ -103,16 +102,15 @@ public class SocketHandler implements IServiceModule, Runnable
 		catch (SocketException e)
 		{
 			NetworkManager.networkLogger.log(Level.SEVERE, "소켓 열기 실패", e);
-			return false;
+			return;
 		}
 		
 		this.isWork = true;
 		this.worker.start();
-		return true;
+		return;
 	}
 
-	@Override
-	public void stopModule()
+	public void stop()
 	{
 		if(!this.isWork) return;
 		
@@ -164,7 +162,10 @@ public class SocketHandler implements IServiceModule, Runnable
 		DatagramPacket dgramPacket = new DatagramPacket(rawPacket, rawPacket.length, addr, port);
 		try
 		{
-			socket.send(dgramPacket);
+			synchronized (this)
+			{
+				this.socket.send(dgramPacket);
+			}
 		}
 		catch (IOException e)
 		{
