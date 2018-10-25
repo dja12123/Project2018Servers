@@ -46,7 +46,7 @@ public class NetworkManager implements IServiceModule
 		NodeControlCore.init();
 		NetworkManager networkManager = new NetworkManager();
 		networkManager.startModule();
-		networkManager.setInetAddr(InetAddress.getByName("192.168.0.88"));
+		networkManager.setInetAddr(InetAddress.getByName("192.168.0.99"));
 	}
 	
 	public void setInetAddr(InetAddress inetAddress)
