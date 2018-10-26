@@ -101,7 +101,7 @@ public class WorkNodeService implements Runnable
 		}
 		if(this.isRun) return;
 		this.networkManager.socketHandler.addObserver(WorkNodeService.KPROTO_NODE_INFO_MSG, this.networkObserverFunc);
-		this.isRun = true;
+		this.deviceInfoManager.addObserver(this.deviceStateObserverFunc);
 		
 		this.processFromMasterNodePacket(nodeInfoProtocol);
 		
@@ -109,6 +109,7 @@ public class WorkNodeService implements Runnable
 		
 		this.broadCastDelay = Integer.parseInt(NodeControlCore.getProp(PROP_DELAY_INFOMSG));
 		
+		this.isRun = true;
 		this.broadcastThread = new Thread(this);
 		this.broadcastThread.start();
 		return;
@@ -118,6 +119,7 @@ public class WorkNodeService implements Runnable
 	{
 		if(!this.isRun) return;
 		this.networkManager.socketHandler.removeObserver(this.networkObserverFunc);
+		this.deviceInfoManager.removeObserver(this.deviceStateObserverFunc);
 		this.isRun = false;
 		this.broadcastThread.interrupt();
 	}
