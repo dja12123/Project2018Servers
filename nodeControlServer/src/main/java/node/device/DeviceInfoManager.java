@@ -18,6 +18,7 @@ import node.IServiceModule;
 import node.NodeControlCore;
 import node.db.DB_Handler;
 import node.log.LogWriter;
+import node.network.NetworkManager;
 import node.network.packet.PacketBuilder;
 import node.network.packet.PacketUtil;
 import node.util.observer.Observable;
@@ -45,7 +46,7 @@ public class DeviceInfoManager extends Observable<DeviceStateChangeEvent> implem
 	private Thread manageThread;
 	private boolean isRun;
 	
-	public static void main(String[] args)
+	/*public static void main(String[] args)
 	{
 		NodeControlCore.init();
 		DB_Handler db = new DB_Handler();
@@ -58,7 +59,7 @@ public class DeviceInfoManager extends Observable<DeviceStateChangeEvent> implem
 		String prop = db.getOrSetDefaultVariableProperty(DB_Handler.class, "test", "1");
 		db.setVariableProperty(DB_Handler.class, "test", String.valueOf(Integer.valueOf(prop) + 1));
 		System.out.println(prop);
-	}
+	}*/
 	
 	public DeviceInfoManager(DB_Handler dbhandler)
 	{
@@ -92,6 +93,7 @@ public class DeviceInfoManager extends Observable<DeviceStateChangeEvent> implem
 		UUID myUUID = UUID.fromString(uidStr);
 
 		this.myDevice = new Device(myUUID);
+		this.deviceMap.put(this.myDevice.uuid, this.myDevice);
 		
 		this.manageThread.start();
 		return true;
@@ -102,16 +104,11 @@ public class DeviceInfoManager extends Observable<DeviceStateChangeEvent> implem
 	{
 		if(!this.isRun) return;
 		deviceInfoLogger.log(Level.INFO, "노드 정보 관리 서비스 종료");
+		this.deviceMap.clear();
 		this.isRun = false;
 		this.manageThread.interrupt();
 	}
 	
-	public String[][] getDeviceIPTable()
-	{
-		String[][] queryArr = DB_Handler.toArray(this.dbHandler.query("select uuid, inet_addr from device_info"));
-		return queryArr;
-	}
-
 	public Device getMyDevice()
 	{
 		return this.myDevice;
@@ -133,6 +130,7 @@ public class DeviceInfoManager extends Observable<DeviceStateChangeEvent> implem
 			int changeState = 0;
 			if(!device.inetAddr.equals(inetAddr))
 			{
+				
 				changeState = changeState | DeviceStateChangeEvent.CHANGE_INETADDR;
 				device.inetAddr = inetAddr;
 			}
@@ -161,6 +159,7 @@ public class DeviceInfoManager extends Observable<DeviceStateChangeEvent> implem
 	
 	public synchronized void removeDevice(UUID uuid)
 	{
+		if(uuid.equals(this.myDevice.uuid)) return;
 		this.deviceMap.remove(uuid);
 		DeviceStateChangeEvent eventObj = new DeviceStateChangeEvent(DeviceStateChangeEvent.DISCONNECT_DEVICE, this.getDevice(uuid));
 		this.notifyObservers(NodeControlCore.mainThreadPool, eventObj);

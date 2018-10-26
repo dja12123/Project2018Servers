@@ -9,25 +9,23 @@ import node.network.communicator.SocketHandler;
 import node.util.observer.Observable;
 import node.util.observer.Observer;
 
-public class NodeInstaller implements Runnable, Observer<NetworkEvent>
+public class NodeInstaller implements Runnable
 {
 	private static final int DEFAULT_WAIT_TIME = 5000;
 	private static final int RANDOM_WAIT_TIME = 5000;
-	private SocketHandler socketHandler;
+	private NetworkManager networkManager;
 	private Thread waitThread;
 	private NodeDetectionService nodeDetectionService;
 	private NetworkEvent masterNodeData;
 
-	public NodeInstaller(NodeDetectionService nodeDetectionService, SocketHandler socketHandler)
+	public NodeInstaller(NodeDetectionService nodeDetectionService, NetworkManager networkManager)
 	{
 		this.nodeDetectionService = nodeDetectionService;
-		this.socketHandler = socketHandler;
+		this.networkManager = networkManager;
 		//this.dbHandler.getInstaller().checkAndCreateTable(NODE_TABLE_SCHEMA);
-		
 	}
 
-	@Override
-	public void update(Observable<NetworkEvent> object, NetworkEvent data)
+	public void updateNetwork(Observable<NetworkEvent> object, NetworkEvent data)
 	{
 		//String addr = data.inetAddr.getHostAddress();
 		//String uuid = data.packet.getSender().toString();
@@ -45,12 +43,12 @@ public class NodeInstaller implements Runnable, Observer<NetworkEvent>
 		NetworkManager.networkLogger.log(Level.INFO, "노드 알림 수신 시작");
 		this.waitThread = new Thread(this);
 		this.waitThread.start();
-		this.socketHandler.addObserver(MasterNodeService.KPROTO_MASTER_BROADCAST, this);
+		this.networkManager.socketHandler.addObserver(MasterNodeService.KPROTO_MASTER_BROADCAST, this::updateNetwork);
 	}
 	
 	public void stop()
 	{
-		this.socketHandler.removeObserver(this);
+		this.networkManager.socketHandler.removeObserver(MasterNodeService.KPROTO_MASTER_BROADCAST, this::updateNetwork);
 	}
 
 	@Override

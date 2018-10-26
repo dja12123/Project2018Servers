@@ -12,6 +12,7 @@ import java.util.logging.Level;
 import node.NodeControlCore;
 import node.device.Device;
 import node.device.DeviceInfoManager;
+import node.network.NetworkManager;
 import node.network.communicator.NetworkEvent;
 import node.network.communicator.SocketHandler;
 import node.network.packet.Packet;
@@ -21,13 +22,13 @@ import node.network.packet.PacketUtil;
 import node.util.observer.Observable;
 import node.util.observer.Observer;
 
-public class WorkNodeService implements Runnable, Observer<NetworkEvent>
+public class WorkNodeService implements Runnable
 {
 	public static final String PROP_DELAY_INFOMSG = "delayInitBroadcast";
 	public static final String KPROTO_NODE_INFO_MSG = "workNodeAlert";
 	
 	private final DeviceInfoManager deviceInfoManager;
-	private final SocketHandler socketHandler;
+	private final NetworkManager networkManager;
 	
 	private int broadCastDelay;
 	private Thread broadcastThread = null;
@@ -36,10 +37,10 @@ public class WorkNodeService implements Runnable, Observer<NetworkEvent>
 	private Device masterNode;
 	private NodeTable myMasterNodeTable;
 	
-	public WorkNodeService(DeviceInfoManager deviceInfoManager, SocketHandler socketHandler)
+	public WorkNodeService(DeviceInfoManager deviceInfoManager, NetworkManager networkManager)
 	{
 		this.deviceInfoManager = deviceInfoManager;
-		this.socketHandler = socketHandler;
+		this.networkManager = networkManager;
 	}
 	
 	public Device getMasterNode()
@@ -68,7 +69,7 @@ public class WorkNodeService implements Runnable, Observer<NetworkEvent>
 				NodeDetectionService.nodeDetectionLogger.log(Level.SEVERE, "마스터노드에게 알리는 패킷 생성중 오류.", e);
 				return;
 			}
-			this.socketHandler.sendMessage(this.masterNode.getInetAddr(), packet);
+			this.networkManager.socketHandler.sendMessage(this.masterNode.getInetAddr(), packet);
 			try
 			{
 				Thread.sleep(this.broadCastDelay);
@@ -81,7 +82,7 @@ public class WorkNodeService implements Runnable, Observer<NetworkEvent>
 	public void start(Packet masterNodePacket)
 	{	
 		if(this.isRun) return;
-		this.socketHandler.addObserver(MasterNodeService.KPROTO_MASTER_BROADCAST, this);
+		this.networkManager.socketHandler.addObserver(WorkNodeService.KPROTO_NODE_INFO_MSG, this::updateNetwork);
 		this.isRun = true;
 		
 		this.processFromMasterNodePacket(masterNodePacket);
@@ -98,7 +99,7 @@ public class WorkNodeService implements Runnable, Observer<NetworkEvent>
 	public void stop()
 	{
 		if(!this.isRun) return;
-		this.socketHandler.removeObserver(this);
+		this.networkManager.socketHandler.removeObserver(this::updateNetwork);
 		this.isRun = false;
 		this.broadcastThread.interrupt();
 	}
@@ -123,8 +124,7 @@ public class WorkNodeService implements Runnable, Observer<NetworkEvent>
 		}
 	}
 
-	@Override
-	public synchronized void update(Observable<NetworkEvent> object, NetworkEvent data)
+	public synchronized void updateNetwork(Observable<NetworkEvent> object, NetworkEvent data)
 	{
 		if(data.key.equals(MasterNodeService.KPROTO_MASTER_BROADCAST))
 		{

@@ -1,15 +1,25 @@
 package node.detection;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.HashMap;
+import java.util.UUID;
 import java.util.logging.Level;
 
 import node.NodeControlCore;
+import node.device.Device;
 import node.device.DeviceInfoManager;
+import node.device.DeviceStateChangeEvent;
+import node.network.NetworkManager;
 import node.network.NetworkUtil;
+import node.network.communicator.NetworkEvent;
 import node.network.communicator.SocketHandler;
 import node.network.packet.Packet;
 import node.network.packet.PacketBuildFailureException;
 import node.network.packet.PacketBuilder;
 import node.network.packet.PacketUtil;
+import node.util.observer.Observable;
+import node.util.observer.Observer;
 
 public class MasterNodeService implements Runnable
 {	
@@ -17,10 +27,12 @@ public class MasterNodeService implements Runnable
 	public static final String KPROTO_MASTER_BROADCAST = "masterNodeBroadcast";
 	
 	private DeviceInfoManager deviceInfoManager;
-	private SocketHandler socketHandler;
+	private NetworkManager networkManager;
 	private boolean isRun;
 	private Thread broadcastThread;
 	private int broadCastDelay;
+	
+	private UUID[] ipArr;
 	
 	/*public static void main(String[] args)
 	{
@@ -47,10 +59,21 @@ public class MasterNodeService implements Runnable
 		db.getInstaller().complete();
 	}*/
 	
-	public MasterNodeService(DeviceInfoManager deviceInfoManager, SocketHandler socketHandler)
+	public MasterNodeService(DeviceInfoManager deviceInfoManager, NetworkManager networkManager)
 	{
 		this.deviceInfoManager = deviceInfoManager;
-		this.socketHandler = socketHandler;
+		this.networkManager = networkManager;
+		this.ipArr = new UUID[255];
+		
+	}
+	
+	private void clearIpArr()
+	{
+		for(int i = 1; i < 255; ++i)
+		{
+			this.ipArr[i] = null;
+		}
+		this.ipArr[0] = this.deviceInfoManager.getMyDevice().uuid;
 	}
 
 	public void start()
@@ -58,8 +81,8 @@ public class MasterNodeService implements Runnable
 		if(this.isRun) return;
 		this.isRun = true;
 		
-		//this.socketHandler.;
-		
+		this.networkManager.socketHandler.addObserver(WorkNodeService.KPROTO_NODE_INFO_MSG, this::updateNetwork);
+		this.clearIpArr();
 		this.broadCastDelay = Integer.parseInt(NodeControlCore.getProp(PROP_DELAY_MASTER_MSG));
 		this.broadcastThread = new Thread(this);
 		this.broadcastThread.start();
@@ -70,8 +93,45 @@ public class MasterNodeService implements Runnable
 	{
 		if(!this.isRun) return;
 		this.isRun = false;
-		
+		this.networkManager.socketHandler.removeObserver(this::updateNetwork);
 		this.broadcastThread.interrupt();
+	}
+	
+	public synchronized void updateNetwork(Observable<NetworkEvent> object, NetworkEvent data)
+	{
+		if(data.key.equals(WorkNodeService.KPROTO_NODE_INFO_MSG))
+		{
+			UUID sender = data.packet.getSender();
+			if(this.deviceInfoManager.deviceExist(sender))
+			{// 기존 노드일때
+				this.deviceInfoManager.updateDevice(sender, data.inetAddr, false);
+			}
+			else
+			{// 처음 접근하는 노드일때
+				InetAddress inetAddr =  this.setDeviceInetAddr(sender);
+				this.deviceInfoManager.updateDevice(sender, inetAddr, false);
+			}
+		}
+	}
+	
+	private InetAddress setDeviceInetAddr(UUID uuid)
+	{
+		InetAddress addr = null;
+		for(int i = 0; i < 255; ++i)
+		{
+			if(this.ipArr[i] == null)
+			{
+				try
+				{
+					addr = InetAddress.getByName(String.format("192.168.0.%d", i));
+				}
+				catch (UnknownHostException e)
+				{
+					NodeDetectionService.nodeDetectionLogger.log(Level.SEVERE, "IP할당 오류", e);
+				}
+			}
+		}
+		return addr;
 	}
 
 	@Override
@@ -79,7 +139,7 @@ public class MasterNodeService implements Runnable
 	{
 		StringBuffer msgBuffer;
 		PacketBuilder packetBuilder;
-		String[][] queryArr;
+		Device[] deviceArr;
 		Packet packet;
 		
 		NodeDetectionService.nodeDetectionLogger.log(Level.INFO, "마스터 브로드캐스트 간격: " + this.broadCastDelay);
@@ -94,13 +154,13 @@ public class MasterNodeService implements Runnable
 			
 			msgBuffer = new StringBuffer();
 			packetBuilder = new PacketBuilder();
-			queryArr = this.deviceInfoManager.getDeviceIPTable();
+			deviceArr = this.deviceInfoManager.getDevices();
 			
-			for(int i = 0; i < queryArr.length; ++i)
+			for(Device d : deviceArr)
 			{
-				msgBuffer.append(queryArr[0]);
+				msgBuffer.append(d.uuid);
 				msgBuffer.append(PacketUtil.DPROTO_SEP_COL);
-				msgBuffer.append(queryArr[1]);
+				msgBuffer.append(d.getInetAddr().getHostAddress());
 				msgBuffer.append(PacketUtil.DPROTO_SEP_ROW);
 			}
 			
@@ -120,9 +180,10 @@ public class MasterNodeService implements Runnable
 			}
 			
 			
-			this.socketHandler.sendMessage(NetworkUtil.broadcastIA(), packet);
+			this.networkManager.socketHandler.sendMessage(NetworkUtil.broadcastIA(), packet);
 			
 		}
 		
 	}
+
 }

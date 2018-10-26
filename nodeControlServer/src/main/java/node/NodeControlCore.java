@@ -46,7 +46,7 @@ public class NodeControlCore
 		this.networkManager = new NetworkManager();
 		this.dhcp = new DHCPService();
 		this.deviceInfoManager = new DeviceInfoManager(this.dbHandler);
-		this.nodeDetectionService = new NodeDetectionService(this.dbHandler, this.deviceInfoManager, this.networkManager.socketHandler);
+		this.nodeDetectionService = new NodeDetectionService(this.dbHandler, this.deviceInfoManager, this.networkManager);
 		this.clusterService = new ClusterService(this.nodeDetectionService);
 	}
     
