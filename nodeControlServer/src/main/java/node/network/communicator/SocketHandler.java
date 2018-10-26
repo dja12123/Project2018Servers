@@ -14,6 +14,7 @@ import java.util.logging.Logger;
 
 import node.IServiceModule;
 import node.NodeControlCore;
+import node.device.DeviceInfoManager;
 import node.log.LogWriter;
 import node.network.NetworkManager;
 import node.network.NetworkUtil;
@@ -23,7 +24,8 @@ import node.util.observer.Observable;
 import node.util.observer.Observer;
 
 public class SocketHandler implements Runnable
-{	
+{
+	private final DeviceInfoManager deviceInfoManager;
 	private HashMap<String, Observable<NetworkEvent>> observerMap;
 	
 	private Thread worker = null;
@@ -33,8 +35,9 @@ public class SocketHandler implements Runnable
 
 	private int port;
 	
-	public SocketHandler()
+	public SocketHandler(DeviceInfoManager deviceInfoManager)
 	{
+		this.deviceInfoManager = deviceInfoManager;
 		this.observerMap = new HashMap<String, Observable<NetworkEvent>>();
 	}
 	
@@ -156,10 +159,20 @@ public class SocketHandler implements Runnable
 		}
 	}
 	
-	public void sendMessage(InetAddress addr, Packet packet)
+	public void sendMessage(Packet packet)
 	{
+		InetAddress inetAddr;
+		if(packet.isBroadcast())
+		{
+			inetAddr = NetworkUtil.broadcastIA();
+		}
+		else
+		{
+			inetAddr = this.deviceInfoManager.getDevice(packet.getReceiver()).getInetAddr();
+		}
+		
 		byte[] rawPacket = packet.getNativeArr();
-		DatagramPacket dgramPacket = new DatagramPacket(rawPacket, rawPacket.length, addr, port);
+		DatagramPacket dgramPacket = new DatagramPacket(rawPacket, rawPacket.length, inetAddr, port);
 		try
 		{
 			synchronized (this)

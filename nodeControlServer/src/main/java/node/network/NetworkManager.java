@@ -11,6 +11,7 @@ import node.IServiceModule;
 import node.NodeControlCore;
 import node.bash.CommandExecutor;
 import node.db.DB_Handler;
+import node.device.DeviceInfoManager;
 import node.log.LogWriter;
 import node.network.communicator.SocketHandler;
 
@@ -21,11 +22,14 @@ public class NetworkManager implements IServiceModule
 	public static final String PROP_INFOBROADCAST_PORT = "infoBroadcastPort";
 	public static final String PROP_INTERFACE = "networkInterface";
 	
+	public final DeviceInfoManager deviceInfoManager;
 	public final SocketHandler socketHandler;
 	
-	public NetworkManager()
+	public NetworkManager(DeviceInfoManager deviceInfoManager)
 	{
-		this.socketHandler = new SocketHandler();
+		this.deviceInfoManager = deviceInfoManager;
+		
+		this.socketHandler = new SocketHandler(this.deviceInfoManager);
 	}
 
 	@Override
@@ -43,10 +47,10 @@ public class NetworkManager implements IServiceModule
 	
 	public static void main(String[] args) throws UnknownHostException
 	{
-		NodeControlCore.init();
+		/*NodeControlCore.init();
 		NetworkManager networkManager = new NetworkManager();
 		networkManager.startModule();
-		networkManager.setInetAddr(InetAddress.getByName("192.168.0.99"));
+		networkManager.setInetAddr(InetAddress.getByName("192.168.0.99"));*/
 	}
 	
 	public void setInetAddr(InetAddress inetAddress)

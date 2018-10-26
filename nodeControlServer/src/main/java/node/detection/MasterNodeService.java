@@ -26,11 +26,13 @@ public class MasterNodeService implements Runnable
 	public static final String PROP_DELAY_MASTER_MSG = "delayMasterNodeBroadcast";
 	public static final String KPROTO_MASTER_BROADCAST = "masterNodeBroadcast";
 	
+	private NodeDetectionService nodeDetectionService;
 	private DeviceInfoManager deviceInfoManager;
 	private NetworkManager networkManager;
 	private boolean isRun;
 	private Thread broadcastThread;
 	private int broadCastDelay;
+	private Observer<NetworkEvent> networkObserverFunc;
 	
 	private UUID[] ipArr;
 	
@@ -59,12 +61,13 @@ public class MasterNodeService implements Runnable
 		db.getInstaller().complete();
 	}*/
 	
-	public MasterNodeService(DeviceInfoManager deviceInfoManager, NetworkManager networkManager)
+	public MasterNodeService(NodeDetectionService nodeDetectionService, DeviceInfoManager deviceInfoManager, NetworkManager networkManager)
 	{
+		this.nodeDetectionService = nodeDetectionService;
 		this.deviceInfoManager = deviceInfoManager;
 		this.networkManager = networkManager;
 		this.ipArr = new UUID[255];
-		
+		this.networkObserverFunc = this::updateNetwork;
 	}
 	
 	private void clearIpArr()
@@ -76,12 +79,13 @@ public class MasterNodeService implements Runnable
 		this.ipArr[0] = this.deviceInfoManager.getMyDevice().uuid;
 	}
 
-	public void start()
+	public synchronized void start()
 	{
 		if(this.isRun) return;
 		this.isRun = true;
 		
-		this.networkManager.socketHandler.addObserver(WorkNodeService.KPROTO_NODE_INFO_MSG, this::updateNetwork);
+		this.networkManager.socketHandler.addObserver(WorkNodeService.KPROTO_NODE_INFO_MSG, this.networkObserverFunc);
+		this.networkManager.socketHandler.addObserver(KPROTO_MASTER_BROADCAST, this.networkObserverFunc);
 		this.clearIpArr();
 		this.broadCastDelay = Integer.parseInt(NodeControlCore.getProp(PROP_DELAY_MASTER_MSG));
 		this.broadcastThread = new Thread(this);
@@ -89,11 +93,11 @@ public class MasterNodeService implements Runnable
 		return;
 	}
 
-	public void stop()
+	public synchronized void stop()
 	{
 		if(!this.isRun) return;
 		this.isRun = false;
-		this.networkManager.socketHandler.removeObserver(this::updateNetwork);
+		this.networkManager.socketHandler.removeObserver(this.networkObserverFunc);
 		this.broadcastThread.interrupt();
 	}
 	
@@ -108,13 +112,26 @@ public class MasterNodeService implements Runnable
 			}
 			else
 			{// 처음 접근하는 노드일때
-				InetAddress inetAddr =  this.setDeviceInetAddr(sender);
+				InetAddress inetAddr =  this.assignmentDeviceInetAddr(sender);
 				this.deviceInfoManager.updateDevice(sender, inetAddr, false);
+			}
+		}
+		if(data.key.equals(KPROTO_MASTER_BROADCAST))
+		{
+			UUID sender = data.packet.getSender();
+			if(sender.equals(this.deviceInfoManager.getMyDevice().uuid))
+			{// 내가 보낸 패킷이면 버림
+				return;
+			}
+			NodeInfoProtocol nodeInfoProtocol = new NodeInfoProtocol(data.packet);
+			if(DetectionUtil.isChangeMasterNode(nodeInfoProtocol, this.deviceInfoManager.getMyDevice().uuid, this.deviceInfoManager))
+			{
+				this.nodeDetectionService.workNodeSelectionCallback(nodeInfoProtocol);
 			}
 		}
 	}
 	
-	private InetAddress setDeviceInetAddr(UUID uuid)
+	private InetAddress assignmentDeviceInetAddr(UUID uuid)
 	{
 		InetAddress addr = null;
 		for(int i = 0; i < 255; ++i)
@@ -137,51 +154,51 @@ public class MasterNodeService implements Runnable
 	@Override
 	public void run()
 	{
-		StringBuffer msgBuffer;
-		PacketBuilder packetBuilder;
-		Device[] deviceArr;
-		Packet packet;
 		
 		NodeDetectionService.nodeDetectionLogger.log(Level.INFO, "마스터 브로드캐스트 간격: " + this.broadCastDelay);
 		
 		while(this.isRun)
 		{
+			synchronized (this)
+			{
+				PacketBuilder packetBuilder = new PacketBuilder();
+				Device[] deviceArr = this.deviceInfoManager.getDevices();
+				UUID[] uuids = new UUID[deviceArr.length];
+				InetAddress addrs[] = new InetAddress[deviceArr.length];
+				Packet packet = null;
+				
+				for(int i = 0; i < deviceArr.length; ++i)
+				{
+					uuids[i] = deviceArr[i].uuid;
+					addrs[i] = deviceArr[i].getInetAddr();
+				}
+				
+				NodeInfoProtocol nodeInfoProtocol = new NodeInfoProtocol(this.deviceInfoManager.getMyDevice().uuid, uuids, addrs, deviceArr.length);
+				
+				try
+				{
+					packetBuilder.setSender(this.deviceInfoManager.getMyDevice().uuid);
+					packetBuilder.setBroadCast();
+					packetBuilder.setKey(KPROTO_MASTER_BROADCAST);
+					packetBuilder.setData(nodeInfoProtocol.getPacketDataField());
+					packet = packetBuilder.createPacket();
+				}
+				catch (PacketBuildFailureException e)
+				{
+					
+					NodeDetectionService.nodeDetectionLogger.log(Level.SEVERE, "패킷 빌드중 오류", e);
+					continue;
+				}
+				
+				
+				this.networkManager.socketHandler.sendMessage(packet);
+			}
+			
 			try
 			{
 				Thread.sleep(this.broadCastDelay);
 			}
 			catch (InterruptedException e) {}
-			
-			msgBuffer = new StringBuffer();
-			packetBuilder = new PacketBuilder();
-			deviceArr = this.deviceInfoManager.getDevices();
-			
-			for(Device d : deviceArr)
-			{
-				msgBuffer.append(d.uuid);
-				msgBuffer.append(PacketUtil.DPROTO_SEP_COL);
-				msgBuffer.append(d.getInetAddr().getHostAddress());
-				msgBuffer.append(PacketUtil.DPROTO_SEP_ROW);
-			}
-			
-			try
-			{
-				packetBuilder.setSender(this.deviceInfoManager.getMyDevice().uuid);
-				packetBuilder.setBroadCast();
-				packetBuilder.setKey(KPROTO_MASTER_BROADCAST);
-				packetBuilder.setData(msgBuffer.toString());
-				packet = packetBuilder.createPacket();
-			}
-			catch (PacketBuildFailureException e)
-			{
-				
-				NodeDetectionService.nodeDetectionLogger.log(Level.SEVERE, "패킷 빌드중 오류", e);
-				continue;
-			}
-			
-			
-			this.networkManager.socketHandler.sendMessage(NetworkUtil.broadcastIA(), packet);
-			
 		}
 		
 	}

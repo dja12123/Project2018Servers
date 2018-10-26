@@ -12,6 +12,7 @@ import node.log.LogWriter;
 import node.network.NetworkManager;
 import node.network.communicator.NetworkEvent;
 import node.network.communicator.SocketHandler;
+import node.network.packet.Packet;
 import node.util.observer.Observable;
 import node.util.observer.Observer;
 
@@ -34,6 +35,8 @@ public class NodeDetectionService extends Observable<NetworkStateChangeEvent> im
 	private WorkNodeService workNodeService;
 	private MasterNodeService masterNodeService;
 	
+	private UUID masterNode;
+	
 	public NodeDetectionService(DB_Handler dbHandler, DeviceInfoManager deviceInfoManager, NetworkManager networkManager)
 	{
 		this.dbHandler = dbHandler;
@@ -42,33 +45,42 @@ public class NodeDetectionService extends Observable<NetworkStateChangeEvent> im
 
 		//this.nodeBroadcast = new NodeBroadcast(this.deviceInfoManager, this.socketHandler);
 		this.nodeInstaller = new NodeInstaller(this, this.networkManager);
-		this.workNodeService = new WorkNodeService(this.deviceInfoManager, this.networkManager);
-		this.masterNodeService = new MasterNodeService(this.deviceInfoManager, this.networkManager);
+		this.workNodeService = new WorkNodeService(this, this.deviceInfoManager, this.networkManager);
+		this.masterNodeService = new MasterNodeService(this, this.deviceInfoManager, this.networkManager);
 		
 	}
 	
-	private void nodeInit()
+	public synchronized void nodeInit()
 	{
 		this.state = STATE_INIT;
 		this.masterNodeService.stop();
 		this.workNodeService.stop();
 		this.nodeInstaller.start();
+		this.masterNode = null;
 	}
 	
-	public void workNodeSelectionCallback(NetworkEvent masterNodeEvent)
+	public synchronized void workNodeSelectionCallback(NodeInfoProtocol nodeInfoProtocol)
 	{
 		this.state = STATE_WORKNODE;
 		this.nodeInstaller.stop();
 		this.masterNodeService.stop();
-		this.workNodeService.start(masterNodeEvent.packet);
+		this.workNodeService.start(nodeInfoProtocol);
+		this.masterNode = nodeInfoProtocol.getMasterNode();
+		
 	}
 	
-	public void masterNodeSelectionCallback()
+	public synchronized void masterNodeSelectionCallback()
 	{
 		this.state = STATE_MASTERNODE;
 		this.nodeInstaller.stop();
 		this.workNodeService.stop();
 		this.masterNodeService.start();
+		this.masterNode = this.deviceInfoManager.getMyDevice().uuid;
+	}
+	
+	public UUID getMasterNode()
+	{
+		return this.masterNode;
 	}
 
 	@Override
@@ -86,35 +98,5 @@ public class NodeDetectionService extends Observable<NetworkStateChangeEvent> im
 		this.nodeInstaller.stop();
 		this.workNodeService.stop();
 		this.masterNodeService.stop();
-	}
-
-	public void updateNetwork(Observable<NetworkEvent> object, NetworkEvent data)
-	{// 마스터노드 관련 변경사항은 각 모듈에서 처리해줌..
-		UUID sender = data.packet.getSender();
-		/*if(this.state == STATE_WORKNODE)
-		{
-			if(data.key.equals(MasterNodeService.KPROTO_MASTER_BROADCAST))
-			{
-				if(data.device.isMasterNode())
-				{// 한 네트워크 세그먼트 상에서 내 마스터 노드가 아닌 다른 마스터 노드가 감지될때.
-					this.workNodeSelectionCallback(data);
-					
-				}
-				
-			}
-			if(data.getState(DeviceStateChangeEvent.DISCONNECT_DEVICE))
-			{
-				if(data.device.equals(this.workNodeService.getMasterNode()))
-				{// 마스터 노드가 사망했을때.
-					this.nodeInit();
-					
-					
-				}
-			}
-		}*/
-		
-		
-		
-		
 	}
 }

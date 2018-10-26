@@ -128,12 +128,12 @@ public class DeviceInfoManager extends Observable<DeviceStateChangeEvent> implem
 		else
 		{
 			int changeState = 0;
-			if(!device.inetAddr.equals(inetAddr))
+			/*if(!device.inetAddr.equals(inetAddr))
 			{
 				
 				changeState = changeState | DeviceStateChangeEvent.CHANGE_INETADDR;
 				device.inetAddr = inetAddr;
-			}
+			}*/
 			
 			if(device.masterNode != isMasterNode)
 			{
@@ -163,6 +163,11 @@ public class DeviceInfoManager extends Observable<DeviceStateChangeEvent> implem
 		this.deviceMap.remove(uuid);
 		DeviceStateChangeEvent eventObj = new DeviceStateChangeEvent(DeviceStateChangeEvent.DISCONNECT_DEVICE, this.getDevice(uuid));
 		this.notifyObservers(NodeControlCore.mainThreadPool, eventObj);
+	}
+	
+	public synchronized int getNodeCount()
+	{
+		return this.deviceMap.size();
 	}
 	
 	@Override
