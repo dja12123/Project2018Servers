@@ -151,7 +151,6 @@ public class WorkNodeService implements Runnable
 			{
 				taskIsMaster = true;
 				logger.log(Level.INFO, "master: " + taskUID.toString());
-				logger.log(Level.INFO, "master IP: " + taskAddr.getHostAddress());
 			}
 			
 			this.deviceInfoManager.updateDevice(taskUID, taskAddr, taskIsMaster);

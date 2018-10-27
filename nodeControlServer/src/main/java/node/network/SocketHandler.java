@@ -129,6 +129,7 @@ public class SocketHandler implements Runnable
 		{
 			inetAddr = this.deviceInfoManager.getDevice(packet.getReceiver()).getInetAddr();
 		}
+		logger.log(Level.INFO, "주소: " + inetAddr.getHostAddress());
 		
 		byte[] rawPacket = packet.getNativeArr();
 		DatagramPacket dgramPacket = new DatagramPacket(rawPacket, rawPacket.length, inetAddr, port);
