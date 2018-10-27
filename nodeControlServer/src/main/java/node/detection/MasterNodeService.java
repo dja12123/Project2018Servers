@@ -163,8 +163,9 @@ public class MasterNodeService implements Runnable
 				logger.log(Level.INFO, String.format("IP할당 해제 (%s)", data.device.uuid.toString()));
 				this.ipManager.removeInetAddr(data.device.uuid);
 			}
-			logger.log(Level.INFO, String.format("노드 연결 끊김  (%s)", data.device.uuid));
 			System.out.println("끊김3");
+			logger.log(Level.INFO, String.format("노드 연결 끊김  (%s)", data.device.uuid));
+			System.out.println("끊김4");
 		}
 	}
 
