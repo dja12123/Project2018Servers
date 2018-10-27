@@ -27,6 +27,8 @@ import node.util.observer.Observer;
 
 public class SocketHandler implements Runnable
 {
+	public static final Logger logger = LogWriter.createLogger(SocketHandler.class, "socket");
+	
 	private final DeviceInfoManager deviceInfoManager;
 	private NetworkManager networkManager;
 	
@@ -46,7 +48,7 @@ public class SocketHandler implements Runnable
 	public void start()
 	{
 		if(this.isWork) return;
-		NetworkManager.logger.log(Level.INFO, "소켓 핸들러 로드");
+		logger.log(Level.INFO, "소켓 핸들러 로드");
 		if(this.worker == null || !this.worker.isAlive())
 		{
 			this.worker = new Thread(this);
@@ -64,14 +66,14 @@ public class SocketHandler implements Runnable
 			Device myDevice = this.deviceInfoManager.getMyDevice();
 			if(myDevice.getInetAddr() != null)
 			{
-				NetworkManager.logger.log(Level.INFO, String.format("IP바인드 (%s)", myDevice.getInetAddr().getHostAddress()));
+				logger.log(Level.INFO, String.format("IP바인드 (%s)", myDevice.getInetAddr().getHostAddress()));
 				InetSocketAddress sockAddr = new InetSocketAddress(myDevice.getInetAddr(), this.port);
 				this.socket.bind(sockAddr);
 			}
 		}
 		catch (SocketException e)
 		{
-			NetworkManager.logger.log(Level.SEVERE, "소켓 열기 실패", e);
+			logger.log(Level.SEVERE, "소켓 열기 실패", e);
 			return;
 		}
 		
@@ -83,7 +85,7 @@ public class SocketHandler implements Runnable
 	public void stop()
 	{
 		if(!this.isWork) return;
-		NetworkManager.logger.log(Level.INFO, "소켓 핸들러 종료");
+		logger.log(Level.INFO, "소켓 핸들러 종료");
 		this.isWork = false;
 		this.worker.interrupt();
 		this.socket.close();
@@ -92,7 +94,7 @@ public class SocketHandler implements Runnable
 	@Override
 	public void run()
 	{
-		NetworkManager.logger.log(Level.INFO, "네트워크 수신 시작");
+		logger.log(Level.INFO, "네트워크 수신 시작");
 		byte[] packetBuffer = new byte[PacketUtil.HEADER_SIZE + PacketUtil.MAX_SIZE_KEY + PacketUtil.MAX_SIZE_DATA];
 		DatagramPacket dgramPacket;
 		
@@ -108,10 +110,10 @@ public class SocketHandler implements Runnable
 			{
 				if(this.socket.isClosed())
 				{
-					NetworkManager.logger.log(Level.INFO, "소켓 종료");
+					logger.log(Level.INFO, "소켓 종료");
 					return;
 				}
-				NetworkManager.logger.log(Level.SEVERE, "수신 실패", e);
+				logger.log(Level.SEVERE, "수신 실패", e);
 			}
 		}
 	}
@@ -139,7 +141,7 @@ public class SocketHandler implements Runnable
 		}
 		catch (IOException e)
 		{
-			NetworkManager.logger.log(Level.SEVERE, "패킷 전송 실패", e);
+			logger.log(Level.SEVERE, "패킷 전송 실패", e);
 		}
 	}
 }

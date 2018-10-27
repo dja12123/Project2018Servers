@@ -117,6 +117,7 @@ public class WorkNodeService implements Runnable
 	public synchronized void stop()
 	{
 		if(!this.isRun) return;
+		new Exception().printStackTrace();
 		logger.log(Level.INFO, "워커 노드 서비스 중지");
 		this.networkManager.removeObserver(this.networkObserverFunc);
 		this.deviceInfoManager.removeObserver(this.deviceStateObserverFunc);
