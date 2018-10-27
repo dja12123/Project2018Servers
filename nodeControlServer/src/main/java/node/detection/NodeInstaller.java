@@ -21,6 +21,7 @@ public class NodeInstaller implements Runnable
 	private NodeDetectionService nodeDetectionService;
 	private NodeInfoProtocol masterNodeData;
 	private Observer<NetworkEvent> networkObserverFunc;
+	private boolean isRun;
 
 	public NodeInstaller(NodeDetectionService nodeDetectionService, NetworkManager networkManager)
 	{
@@ -28,6 +29,7 @@ public class NodeInstaller implements Runnable
 		this.networkManager = networkManager;
 		//this.dbHandler.getInstaller().checkAndCreateTable(NODE_TABLE_SCHEMA);
 		this.networkObserverFunc = this::updateNetwork;
+		this.isRun = false;
 	}
 
 	public synchronized void updateNetwork(Observable<NetworkEvent> object, NetworkEvent data)
@@ -45,16 +47,20 @@ public class NodeInstaller implements Runnable
 	
 	public synchronized void start()
 	{
+		if(this.isRun) return;
 		logger.log(Level.INFO, "노드 초기화 활성화");
 		this.waitThread = new Thread(this);
 		this.waitThread.start();
 		this.networkManager.addObserver(MasterNodeService.KPROTO_MASTER_BROADCAST, this.networkObserverFunc);
+		this.isRun = true;
 	}
 	
 	public synchronized void stop()
 	{
+		if(!this.isRun) return;
 		logger.log(Level.INFO, "노드 초기화 중지");
 		this.networkManager.removeObserver(MasterNodeService.KPROTO_MASTER_BROADCAST, this.networkObserverFunc);
+		this.isRun = false;
 	}
 
 	@Override
