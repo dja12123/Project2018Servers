@@ -81,8 +81,8 @@ public class NodeControlCore
 		try
 		{
 			if(!this.dbHandler.startModule()) throw new Exception("DB핸들러 로드 실패");
+			if(!this.deviceInfoManager.startModule()) throw new Exception("노드 정보 모듈 로드 실패");
 			if(!this.networkManager.startModule()) throw new Exception("네트워크 모듈 로드 실패");
-			if(!this.deviceInfoManager.startModule()) throw new Exception("장치 정보 모듈 로드 실패");
 			if(!this.nodeDetectionService.startModule()) throw new Exception("노드 감지 서비스 모듈 로드 실패");
 			//if(!this.clusterService.startModule()) throw new Exception("스파크 모듈 로드 실패");
 			
