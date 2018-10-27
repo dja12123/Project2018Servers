@@ -95,6 +95,7 @@ public class MasterNodeService implements Runnable
 		this.deviceInfoManager.updateDevice(this.deviceInfoManager.getMyDevice().uuid, masterInetAddr, false);
 		this.networkManager.addObserver(WorkNodeService.KPROTO_NODE_INFO_MSG, this.networkObserverFunc);
 		this.networkManager.addObserver(KPROTO_MASTER_BROADCAST, this.networkObserverFunc);
+		this.deviceInfoManager.addObserver(this.deviceObserverFunc);
 		this.ipManager.clear();
 		this.broadCastDelay = Integer.parseInt(NodeControlCore.getProp(PROP_DELAY_MASTER_MSG));
 		this.broadcastThread = new Thread(this);
@@ -108,6 +109,7 @@ public class MasterNodeService implements Runnable
 		this.isRun = false;
 		logger.log(Level.INFO, "마스터 노드 서비스 중지");
 		this.networkManager.removeObserver(this.networkObserverFunc);
+		this.deviceInfoManager.removeObserver(this.deviceObserverFunc);
 		this.broadcastThread.interrupt();
 	}
 	
@@ -154,10 +156,11 @@ public class MasterNodeService implements Runnable
 	
 		if(data.getState(DeviceChangeEvent.DISCONNECT_DEVICE))
 		{
+			logger.log(Level.INFO, String.format("노드 연결 끊김  (%s)", data.device.uuid));
 			InetAddress deviceInetAddr = data.device.getInetAddr();
 			if(deviceInetAddr != null)
 			{
-				logger.log(Level.INFO, String.format("IP할당 해제 (%s %s)", data.device.uuid.toString(), deviceInetAddr.toString()));
+				logger.log(Level.INFO, String.format("IP할당 해제 (%s)", data.device.uuid.toString()));
 				this.ipManager.removeInetAddr(data.device.uuid);
 			}
 			
