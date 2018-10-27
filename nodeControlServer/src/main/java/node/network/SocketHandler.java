@@ -65,7 +65,6 @@ public class SocketHandler implements Runnable
 			this.socket.setBroadcast(true);
 			Device myDevice = this.deviceInfoManager.getMyDevice();
 			
-			logger.log(Level.INFO, "IP: ", myDevice.getInetAddr() + " ");
 			if(myDevice.getInetAddr() != null)
 			{
 				logger.log(Level.INFO, String.format("IP바인드 (%s)", myDevice.getInetAddr().getHostAddress()));
