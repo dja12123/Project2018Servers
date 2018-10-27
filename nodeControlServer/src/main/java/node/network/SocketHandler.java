@@ -97,6 +97,7 @@ public class SocketHandler implements Runnable
 			try
 			{
 				this.socket.receive(dgramPacket);
+				System.out.println("receive");
 				this.networkManager.socketReadCallback(dgramPacket.getAddress(), packetBuffer);
 			}
 			catch (IOException e)
