@@ -62,7 +62,6 @@ public class SocketHandler implements Runnable
 			//NetworkUtil.getNetworkInterface(interfaceStr);
 			//this.socket = new DatagramSocket(NetworkManager.PROP_SOCKET_INTERFACE)
 			this.socket = new DatagramSocket(this.port);
-			this.socket.setReuseAddress(true);
 			this.socket.setBroadcast(true);
 		}
 		catch (SocketException e)
