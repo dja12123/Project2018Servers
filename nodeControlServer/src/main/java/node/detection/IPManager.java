@@ -43,6 +43,7 @@ public class IPManager
 					NodeDetectionService.logger.log(Level.SEVERE, "IP할당 오류", e);
 					return null;
 				}
+				this.ipArr[i] = uuid;
 				this.ipMap.put(uuid, addr);
 				break;
 			}

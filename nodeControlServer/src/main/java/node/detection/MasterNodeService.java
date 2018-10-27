@@ -151,11 +151,12 @@ public class MasterNodeService implements Runnable
 		}
 	}
 	
-	public synchronized void updateDevice(Observable<DeviceChangeEvent> object, DeviceChangeEvent data)
+	public void updateDevice(Observable<DeviceChangeEvent> object, DeviceChangeEvent data)
 	{
 		if(data.getState(DeviceChangeEvent.DISCONNECT_DEVICE))
 		{
 			System.out.println("끊김1");
+		
 			System.out.println("끊김2");
 			InetAddress deviceInetAddr = data.device.getInetAddr();
 			System.exit(0);
