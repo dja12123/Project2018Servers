@@ -12,8 +12,8 @@ import node.device.DeviceInfoManager;
 import node.device.DeviceStateChangeEvent;
 import node.network.NetworkManager;
 import node.network.NetworkUtil;
-import node.network.communicator.NetworkEvent;
-import node.network.communicator.SocketHandler;
+import node.network.NetworkEvent;
+import node.network.SocketHandler;
 import node.network.packet.Packet;
 import node.network.packet.PacketBuildFailureException;
 import node.network.packet.PacketBuilder;
@@ -33,8 +33,7 @@ public class MasterNodeService implements Runnable
 	private Thread broadcastThread;
 	private int broadCastDelay;
 	private Observer<NetworkEvent> networkObserverFunc;
-	
-	private UUID[] ipArr;
+	private IPManager ipManager;
 	
 	/*public static void main(String[] args)
 	{
@@ -66,17 +65,9 @@ public class MasterNodeService implements Runnable
 		this.nodeDetectionService = nodeDetectionService;
 		this.deviceInfoManager = deviceInfoManager;
 		this.networkManager = networkManager;
-		this.ipArr = new UUID[255];
+		
+		this.ipManager = new IPManager();
 		this.networkObserverFunc = this::updateNetwork;
-	}
-	
-	private void clearIpArr()
-	{
-		for(int i = 1; i < 255; ++i)
-		{
-			this.ipArr[i] = null;
-		}
-		this.ipArr[0] = this.deviceInfoManager.getMyDevice().uuid;
 	}
 
 	public synchronized void start()
@@ -84,9 +75,9 @@ public class MasterNodeService implements Runnable
 		if(this.isRun) return;
 		this.isRun = true;
 		
-		this.networkManager.socketHandler.addObserver(WorkNodeService.KPROTO_NODE_INFO_MSG, this.networkObserverFunc);
-		this.networkManager.socketHandler.addObserver(KPROTO_MASTER_BROADCAST, this.networkObserverFunc);
-		this.clearIpArr();
+		this.networkManager.addObserver(WorkNodeService.KPROTO_NODE_INFO_MSG, this.networkObserverFunc);
+		this.networkManager.addObserver(KPROTO_MASTER_BROADCAST, this.networkObserverFunc);
+		this.ipManager.clear();
 		this.broadCastDelay = Integer.parseInt(NodeControlCore.getProp(PROP_DELAY_MASTER_MSG));
 		this.broadcastThread = new Thread(this);
 		this.broadcastThread.start();
@@ -97,7 +88,7 @@ public class MasterNodeService implements Runnable
 	{
 		if(!this.isRun) return;
 		this.isRun = false;
-		this.networkManager.socketHandler.removeObserver(this.networkObserverFunc);
+		this.networkManager.removeObserver(this.networkObserverFunc);
 		this.broadcastThread.interrupt();
 	}
 	
@@ -108,11 +99,17 @@ public class MasterNodeService implements Runnable
 			UUID sender = data.packet.getSender();
 			if(this.deviceInfoManager.deviceExist(sender))
 			{// 기존 노드일때
-				this.deviceInfoManager.updateDevice(sender, data.inetAddr, false);
+				Device device = this.deviceInfoManager.getDevice(sender);
+				InetAddress deviceInet = this.ipManager.getInetAddr(sender);
+				if(device.getInetAddr() == null || deviceInet == null)
+				{// ip가 없을때 ip를 새로 할당
+					deviceInet = this.ipManager.assignmentInetAddr(sender);
+				}
+				this.deviceInfoManager.updateDevice(sender, deviceInet, false);
 			}
 			else
 			{// 처음 접근하는 노드일때
-				InetAddress inetAddr =  this.assignmentDeviceInetAddr(sender);
+				InetAddress inetAddr =  this.ipManager.assignmentInetAddr(sender);
 				this.deviceInfoManager.updateDevice(sender, inetAddr, false);
 			}
 		}
@@ -129,26 +126,6 @@ public class MasterNodeService implements Runnable
 				this.nodeDetectionService.workNodeSelectionCallback(nodeInfoProtocol);
 			}
 		}
-	}
-	
-	private InetAddress assignmentDeviceInetAddr(UUID uuid)
-	{
-		InetAddress addr = null;
-		for(int i = 0; i < 255; ++i)
-		{
-			if(this.ipArr[i] == null)
-			{
-				try
-				{
-					addr = InetAddress.getByName(String.format("192.168.0.%d", i));
-				}
-				catch (UnknownHostException e)
-				{
-					NodeDetectionService.nodeDetectionLogger.log(Level.SEVERE, "IP할당 오류", e);
-				}
-			}
-		}
-		return addr;
 	}
 
 	@Override

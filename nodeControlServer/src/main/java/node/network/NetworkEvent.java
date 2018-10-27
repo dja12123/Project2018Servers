@@ -1,4 +1,4 @@
-package node.network.communicator;
+package node.network;
 
 import java.net.InetAddress;
 

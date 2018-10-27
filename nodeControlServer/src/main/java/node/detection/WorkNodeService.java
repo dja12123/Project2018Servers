@@ -1,10 +1,7 @@
 package node.detection;
 
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import java.util.logging.Level;
@@ -14,12 +11,10 @@ import node.device.Device;
 import node.device.DeviceInfoManager;
 import node.device.DeviceStateChangeEvent;
 import node.network.NetworkManager;
-import node.network.communicator.NetworkEvent;
-import node.network.communicator.SocketHandler;
+import node.network.NetworkEvent;
 import node.network.packet.Packet;
 import node.network.packet.PacketBuildFailureException;
 import node.network.packet.PacketBuilder;
-import node.network.packet.PacketUtil;
 import node.util.observer.Observable;
 import node.util.observer.Observer;
 
@@ -100,7 +95,7 @@ public class WorkNodeService implements Runnable
 			this.processFromMasterNodePacket(nodeInfoProtocol);
 		}
 		if(this.isRun) return;
-		this.networkManager.socketHandler.addObserver(WorkNodeService.KPROTO_NODE_INFO_MSG, this.networkObserverFunc);
+		this.networkManager.addObserver(WorkNodeService.KPROTO_NODE_INFO_MSG, this.networkObserverFunc);
 		this.deviceInfoManager.addObserver(this.deviceStateObserverFunc);
 		
 		this.processFromMasterNodePacket(nodeInfoProtocol);
@@ -118,7 +113,7 @@ public class WorkNodeService implements Runnable
 	public synchronized void stop()
 	{
 		if(!this.isRun) return;
-		this.networkManager.socketHandler.removeObserver(this.networkObserverFunc);
+		this.networkManager.removeObserver(this.networkObserverFunc);
 		this.deviceInfoManager.removeObserver(this.deviceStateObserverFunc);
 		this.isRun = false;
 		this.broadcastThread.interrupt();
@@ -126,12 +121,24 @@ public class WorkNodeService implements Runnable
 	
 	private void processFromMasterNodePacket(NodeInfoProtocol nodeInfoProtocol)
 	{
-		
+		Device myDevice = this.deviceInfoManager.getMyDevice();
 		for(int i = 0; i < nodeInfoProtocol.getSize(); ++i)
 		{
 			UUID taskUID = nodeInfoProtocol.getUUID(i);
 			InetAddress taskAddr = nodeInfoProtocol.getAddr(i);
 			boolean taskIsMaster = false;
+			if(taskUID.equals(myDevice.uuid))
+			{
+				InetAddress myDeviceInet = myDevice.getInetAddr();
+				if(myDeviceInet != null && myDeviceInet.equals(taskAddr))
+				{// 내 아이피가 문제 없을때.
+					
+				}
+				else
+				{// 내 아이피가 문제 있을때.
+					this.networkManager.setInetAddr(taskAddr);
+				}
+			}
 			
 			if(nodeInfoProtocol.getMasterNode().equals(taskUID))
 			{
@@ -153,7 +160,6 @@ public class WorkNodeService implements Runnable
 			}
 			else
 			{// 새로운 마스터 노드가 내 마스터 노드가 아닐경우!
-
 				if(DetectionUtil.isChangeMasterNode(nodeInfoProtocol, this.masterNode, this.deviceInfoManager))
 				{
 					this.nodeDetectionService.workNodeSelectionCallback(nodeInfoProtocol);

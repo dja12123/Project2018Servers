@@ -7,14 +7,9 @@ import java.util.logging.Logger;
 import node.IServiceModule;
 import node.db.DB_Handler;
 import node.device.DeviceInfoManager;
-import node.device.DeviceStateChangeEvent;
 import node.log.LogWriter;
 import node.network.NetworkManager;
-import node.network.communicator.NetworkEvent;
-import node.network.communicator.SocketHandler;
-import node.network.packet.Packet;
 import node.util.observer.Observable;
-import node.util.observer.Observer;
 
 public class NodeDetectionService extends Observable<NetworkStateChangeEvent> implements IServiceModule
 {// 마스터 노드 변경 관련 서비스.
@@ -98,5 +93,6 @@ public class NodeDetectionService extends Observable<NetworkStateChangeEvent> im
 		this.nodeInstaller.stop();
 		this.workNodeService.stop();
 		this.masterNodeService.stop();
+		this.clearObservers();
 	}
 }

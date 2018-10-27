@@ -3,6 +3,7 @@ package node.network;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.logging.Logger;
 
 import javax.xml.soap.Node;
@@ -13,7 +14,12 @@ import node.bash.CommandExecutor;
 import node.db.DB_Handler;
 import node.device.DeviceInfoManager;
 import node.log.LogWriter;
-import node.network.communicator.SocketHandler;
+import node.network.NetworkEvent;
+import node.network.SocketHandler;
+import node.network.packet.Packet;
+import node.network.packet.PacketUtil;
+import node.util.observer.Observable;
+import node.util.observer.Observer;
 
 public class NetworkManager implements IServiceModule
 {
@@ -25,11 +31,77 @@ public class NetworkManager implements IServiceModule
 	public final DeviceInfoManager deviceInfoManager;
 	public final SocketHandler socketHandler;
 	
+	private HashMap<String, Observable<NetworkEvent>> observerMap;
+	
 	public NetworkManager(DeviceInfoManager deviceInfoManager)
 	{
 		this.deviceInfoManager = deviceInfoManager;
-		
+
 		this.socketHandler = new SocketHandler(this.deviceInfoManager);
+		this.observerMap = new HashMap<String, Observable<NetworkEvent>>();
+	}
+	
+	public void addObserver(String key, Observer<NetworkEvent> observer)
+	{
+		Observable<NetworkEvent> ob = this.observerMap.getOrDefault(key, null);
+		if(ob == null)
+		{
+			ob = (new Observable<NetworkEvent>());
+			this.observerMap.put(key, ob);
+		}
+		
+		ob.addObserver(observer);
+	}
+	
+	public void removeObserver(String key, Observer<NetworkEvent> observer)
+	{
+		Observable<NetworkEvent> observable = this.observerMap.getOrDefault(key, null);
+		if(observable == null)
+		{
+			return;
+		}
+		observable.removeObserver(observer);
+		
+		if(observable.size() == 0)
+		{
+			this.observerMap.remove(key);
+		}
+	}
+	
+	public void removeObserver(Observer<NetworkEvent> observer)
+	{
+		Observable<NetworkEvent> observable;
+		for(String key : this.observerMap.keySet())
+		{
+			observable = this.observerMap.get(key);
+			observable.removeObserver(observer);
+			
+			if(observable.size() == 0)
+			{
+				this.observerMap.remove(key);
+			}
+		}
+	}
+	
+	void socketReadCallback(InetAddress addr, byte[] packetBuffer)
+	{
+		if(!PacketUtil.isPacket(packetBuffer))
+		{
+			return;
+		}
+		
+		Packet packetObj = new Packet(packetBuffer);
+		
+		String eventKey = packetObj.getKey();
+		
+		Observable<NetworkEvent> observable = observerMap.getOrDefault(eventKey, null);
+		if(observable == null)
+		{
+			return;
+		}
+		
+		NetworkEvent event = new NetworkEvent(eventKey, addr, packetObj);
+		observable.notifyObservers(NodeControlCore.mainThreadPool, event);
 	}
 
 	@Override
@@ -42,6 +114,7 @@ public class NetworkManager implements IServiceModule
 	@Override
 	public void stopModule()
 	{
+		this.observerMap.clear();
 		this.socketHandler.stop();
 	}
 	

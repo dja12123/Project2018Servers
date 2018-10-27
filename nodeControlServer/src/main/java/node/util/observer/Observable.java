@@ -52,4 +52,9 @@ public class Observable<ObservedType>
 			pool.submit(()->{obs.update(this, data);});
 		}
 	}
+	
+	public void clearObservers()
+	{
+		this._observers.clear();
+	}
 }

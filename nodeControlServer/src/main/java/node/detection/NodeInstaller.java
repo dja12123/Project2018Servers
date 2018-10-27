@@ -4,8 +4,8 @@ import java.util.Random;
 import java.util.logging.Level;
 
 import node.network.NetworkManager;
-import node.network.communicator.NetworkEvent;
-import node.network.communicator.SocketHandler;
+import node.network.NetworkEvent;
+import node.network.SocketHandler;
 import node.util.observer.Observable;
 import node.util.observer.Observer;
 
@@ -45,12 +45,12 @@ public class NodeInstaller implements Runnable
 		NetworkManager.networkLogger.log(Level.INFO, "노드 알림 수신 시작");
 		this.waitThread = new Thread(this);
 		this.waitThread.start();
-		this.networkManager.socketHandler.addObserver(MasterNodeService.KPROTO_MASTER_BROADCAST, this.networkObserverFunc);
+		this.networkManager.addObserver(MasterNodeService.KPROTO_MASTER_BROADCAST, this.networkObserverFunc);
 	}
 	
 	public synchronized void stop()
 	{
-		this.networkManager.socketHandler.removeObserver(MasterNodeService.KPROTO_MASTER_BROADCAST, this.networkObserverFunc);
+		this.networkManager.removeObserver(MasterNodeService.KPROTO_MASTER_BROADCAST, this.networkObserverFunc);
 	}
 
 	@Override

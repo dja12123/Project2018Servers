@@ -117,6 +117,7 @@ public class DeviceInfoManager extends Observable<DeviceStateChangeEvent> implem
 	public synchronized void updateDevice(UUID uuid, InetAddress inetAddr, boolean isMasterNode)
 	{// 장치 정보관리 모듈과 연결해줌.
 	 // 장치 정보가 수정되었을 때.
+
 		Device device = this.deviceMap.getOrDefault(uuid, null);
 		if(device == null)
 		{
@@ -128,12 +129,12 @@ public class DeviceInfoManager extends Observable<DeviceStateChangeEvent> implem
 		else
 		{
 			int changeState = 0;
-			/*if(!device.inetAddr.equals(inetAddr))
+			if(!device.inetAddr.equals(inetAddr))
 			{
 				
 				changeState = changeState | DeviceStateChangeEvent.CHANGE_INETADDR;
 				device.inetAddr = inetAddr;
-			}*/
+			}
 			
 			if(device.masterNode != isMasterNode)
 			{

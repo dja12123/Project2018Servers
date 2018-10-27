@@ -1,4 +1,4 @@
-package node.network.communicator;
+package node.network;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -26,7 +26,7 @@ import node.util.observer.Observer;
 public class SocketHandler implements Runnable
 {
 	private final DeviceInfoManager deviceInfoManager;
-	private HashMap<String, Observable<NetworkEvent>> observerMap;
+	private NetworkManager networkManager;
 	
 	private Thread worker = null;
 	private boolean isWork;
@@ -38,49 +38,6 @@ public class SocketHandler implements Runnable
 	public SocketHandler(DeviceInfoManager deviceInfoManager)
 	{
 		this.deviceInfoManager = deviceInfoManager;
-		this.observerMap = new HashMap<String, Observable<NetworkEvent>>();
-	}
-	
-	public void addObserver(String key, Observer<NetworkEvent> observer)
-	{
-		Observable<NetworkEvent> ob = this.observerMap.getOrDefault(key, null);
-		if(ob == null)
-		{
-			ob = (new Observable<NetworkEvent>());
-			this.observerMap.put(key, ob);
-		}
-		
-		ob.addObserver(observer);
-	}
-	
-	public void removeObserver(String key, Observer<NetworkEvent> observer)
-	{
-		Observable<NetworkEvent> observable = this.observerMap.getOrDefault(key, null);
-		if(observable == null)
-		{
-			return;
-		}
-		observable.removeObserver(observer);
-		
-		if(observable.size() == 0)
-		{
-			this.observerMap.remove(key);
-		}
-	}
-	
-	public void removeObserver(Observer<NetworkEvent> observer)
-	{
-		Observable<NetworkEvent> observable;
-		for(String key : this.observerMap.keySet())
-		{
-			observable = this.observerMap.get(key);
-			observable.removeObserver(observer);
-			
-			if(observable.size() == 0)
-			{
-				this.observerMap.remove(key);
-			}
-		}
 	}
 
 	public void start()
@@ -135,22 +92,7 @@ public class SocketHandler implements Runnable
 			try
 			{
 				this.socket.receive(dgramPacket);
-				if(!PacketUtil.isPacket(packetBuffer))
-				{
-					continue;
-				}
-				
-				Packet packetObj = new Packet(packetBuffer);
-				String eventKey = packetObj.getKey();
-				
-				Observable<NetworkEvent> observable = observerMap.getOrDefault(eventKey, null);
-				if(observable == null)
-				{
-					continue;
-				}
-				
-				NetworkEvent event = new NetworkEvent(eventKey, dgramPacket.getAddress(), packetObj);
-				observable.notifyObservers(NodeControlCore.mainThreadPool, event);
+				this.networkManager.socketReadCallback(dgramPacket.getAddress(), packetBuffer);
 			}
 			catch (IOException e)
 			{
