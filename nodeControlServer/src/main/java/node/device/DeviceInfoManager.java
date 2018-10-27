@@ -94,6 +94,7 @@ public class DeviceInfoManager extends Observable<DeviceChangeEvent> implements 
 		UUID myUUID = UUID.fromString(uidStr);
 		logger.log(Level.INFO, String.format("my UUID: %s", myUUID.toString()));
 		this.myDevice = new Device(myUUID);
+		this.myDevice.updateTime = new Date(System.currentTimeMillis());
 		this.deviceMap.put(this.myDevice.uuid, this.myDevice);
 		
 		this.isRun = true;
@@ -161,7 +162,6 @@ public class DeviceInfoManager extends Observable<DeviceChangeEvent> implements 
 			}
 			
 		}
-		logger.log(Level.INFO, "updateTime설정");
 		device.updateTime = new Date(System.currentTimeMillis());
 	}
 	
