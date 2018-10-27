@@ -19,7 +19,7 @@ public class DeviceChangeEvent
 	
 	public boolean getState(int state)
 	{
-		if((this.state & state) == 1)
+		if((this.state & state) > 1)
 		{
 			return true;
 		}

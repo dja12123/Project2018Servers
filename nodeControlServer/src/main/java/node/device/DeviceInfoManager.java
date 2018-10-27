@@ -188,7 +188,6 @@ public class DeviceInfoManager extends Observable<DeviceChangeEvent> implements 
 				{
 					if(device.getUpdateTime().after(compareTime))
 					{//타임아웃일때
-						System.out.println("장치 타임아웃");
 						removeDevices.add(device);
 					}
 				}
