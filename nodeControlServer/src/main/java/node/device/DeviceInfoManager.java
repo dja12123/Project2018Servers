@@ -161,6 +161,7 @@ public class DeviceInfoManager extends Observable<DeviceChangeEvent> implements 
 			}
 			
 		}
+		logger.log(Level.INFO, "updateTime설정");
 		device.updateTime = new Date(System.currentTimeMillis());
 	}
 	
