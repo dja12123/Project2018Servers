@@ -92,7 +92,7 @@ public class DeviceInfoManager extends Observable<DeviceChangeEvent> implements 
 		logger.log(Level.INFO, "노드 정보 관리 서비스 시작");
 		String uidStr = this.dbHandler.getOrSetDefaultVariableProperty(this.getClass(), VP_MYDEVICE_INFO, UUID.randomUUID().toString());
 		UUID myUUID = UUID.fromString(uidStr);
-
+		logger.log(Level.INFO, String.format("my UUID: %s", myUUID.toString()));
 		this.myDevice = new Device(myUUID);
 		this.deviceMap.put(this.myDevice.uuid, this.myDevice);
 		
