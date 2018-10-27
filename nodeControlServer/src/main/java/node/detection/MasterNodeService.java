@@ -156,7 +156,7 @@ public class MasterNodeService implements Runnable
 		if(data.getState(DeviceChangeEvent.DISCONNECT_DEVICE))
 		{
 			System.out.println("끊김1");
-			System.out.println(data);
+			System.out.println(data.device);
 			System.out.println("끊김2");
 			//InetAddress deviceInetAddr = data.device.getInetAddr();
 			System.out.println("끊김3");
