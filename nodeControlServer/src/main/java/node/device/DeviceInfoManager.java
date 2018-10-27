@@ -164,7 +164,7 @@ public class DeviceInfoManager extends Observable<DeviceChangeEvent> implements 
 		device.updateTime = new Date(System.currentTimeMillis());
 	}
 	
-	public void removeDevice(UUID uuid)
+	public synchronized void removeDevice(UUID uuid)
 	{
 		if(uuid.equals(this.myDevice.uuid)) return;
 		this.deviceMap.remove(uuid);
