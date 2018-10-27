@@ -4,6 +4,7 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.xml.soap.Node;
@@ -151,9 +152,9 @@ public class NetworkManager implements IServiceModule
 		command.add(String.format("ip route add default via %s", gatewayAddr));
 		command.add(String.format("ifup %s", iface));
 		
-		
 		synchronized (this.socketHandler)
 		{
+			logger.log(Level.INFO, "IP재할당...");
 			this.socketHandler.stop();
 			try
 			{
@@ -161,11 +162,10 @@ public class NetworkManager implements IServiceModule
 			}
 			catch (Exception e)
 			{
-				
 				e.printStackTrace();
 			}
 			this.socketHandler.start();
-			System.out.println("소켓시작");
+			logger.log(Level.INFO, "완료");
 		}
 		
 	}
