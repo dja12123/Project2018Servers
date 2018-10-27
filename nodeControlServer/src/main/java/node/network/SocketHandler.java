@@ -62,6 +62,7 @@ public class SocketHandler implements Runnable
 			//NetworkUtil.getNetworkInterface(interfaceStr);
 			//this.socket = new DatagramSocket(NetworkManager.PROP_SOCKET_INTERFACE)
 			this.socket = new DatagramSocket(this.port);
+			this.socket.setReuseAddress(true);
 			this.socket.setBroadcast(true);
 		}
 		catch (SocketException e)
@@ -97,7 +98,6 @@ public class SocketHandler implements Runnable
 			try
 			{
 				this.socket.receive(dgramPacket);
-				System.out.println("receive");
 				this.networkManager.socketReadCallback(dgramPacket.getAddress(), packetBuffer);
 			}
 			catch (IOException e)
@@ -130,6 +130,7 @@ public class SocketHandler implements Runnable
 		
 		byte[] rawPacket = packet.getNativeArr();
 		DatagramPacket dgramPacket = new DatagramPacket(rawPacket, rawPacket.length, inetAddr, port);
+		
 		try
 		{
 			this.socket.send(dgramPacket);
