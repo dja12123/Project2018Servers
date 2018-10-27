@@ -133,7 +133,6 @@ public class SocketHandler implements Runnable
 		{
 			logger.log(Level.WARNING, "null주소: " + packet.getReceiver());
 		}
-		logger.log(Level.INFO, "주소: " + inetAddr.getHostAddress());
 		
 		byte[] rawPacket = packet.getNativeArr();
 		DatagramPacket dgramPacket = new DatagramPacket(rawPacket, rawPacket.length, inetAddr, port);

@@ -133,7 +133,7 @@ public class MasterNodeService implements Runnable
 			{// 처음 접근하는 노드일때
 				InetAddress inetAddr =  this.ipManager.assignmentInetAddr(sender);
 				this.deviceInfoManager.updateDevice(sender, inetAddr, false);
-				logger.log(Level.INFO, String.format("새 노드 접근 (%s)", sender.toString()));
+				logger.log(Level.INFO, String.format("새 노드 접근 (%s %s)", sender.toString(), inetAddr.getHostAddress()));
 			}
 		}
 		if(data.key.equals(KPROTO_MASTER_BROADCAST))

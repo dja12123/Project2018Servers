@@ -190,6 +190,7 @@ public class DeviceInfoManager extends Observable<DeviceChangeEvent> implements 
 				
 				for(Device device : this.getDevices())
 				{
+					logger.log(Level.INFO, device.uuid + " " + device.updateTime.toString());
 					if(device.getUpdateTime().after(compareTime))
 					{//타임아웃일때
 						removeDevices.add(device);

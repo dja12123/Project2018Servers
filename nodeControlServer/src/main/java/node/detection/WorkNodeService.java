@@ -150,7 +150,6 @@ public class WorkNodeService implements Runnable
 			if(nodeInfoProtocol.getMasterNode().equals(taskUID))
 			{
 				taskIsMaster = true;
-				logger.log(Level.INFO, "master: " + taskUID.toString());
 			}
 			
 			this.deviceInfoManager.updateDevice(taskUID, taskAddr, taskIsMaster);
