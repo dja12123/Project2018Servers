@@ -37,7 +37,7 @@ public class NetworkManager implements IServiceModule
 	{
 		this.deviceInfoManager = deviceInfoManager;
 
-		this.socketHandler = new SocketHandler(this.deviceInfoManager);
+		this.socketHandler = new SocketHandler(this, this.deviceInfoManager);
 		this.observerMap = new HashMap<String, Observable<NetworkEvent>>();
 	}
 	

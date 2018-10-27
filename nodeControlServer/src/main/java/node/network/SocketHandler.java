@@ -35,8 +35,9 @@ public class SocketHandler implements Runnable
 
 	private int port;
 	
-	public SocketHandler(DeviceInfoManager deviceInfoManager)
+	public SocketHandler(NetworkManager networkManager, DeviceInfoManager deviceInfoManager)
 	{
+		this.networkManager = networkManager;
 		this.deviceInfoManager = deviceInfoManager;
 	}
 
