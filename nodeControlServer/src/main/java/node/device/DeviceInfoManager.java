@@ -117,7 +117,7 @@ public class DeviceInfoManager extends Observable<DeviceChangeEvent> implements 
 		return this.myDevice;
 	}
 	
-	public synchronized void updateDevice(UUID uuid, InetAddress inetAddr, boolean isMasterNode)
+	public void updateDevice(UUID uuid, InetAddress inetAddr, boolean isMasterNode)
 	{// 장치 정보관리 모듈과 연결해줌.
 	 // 장치 정보가 수정되었을 때.
 
