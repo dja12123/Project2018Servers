@@ -191,7 +191,6 @@ public class DeviceInfoManager extends Observable<DeviceChangeEvent> implements 
 				
 				for(Device device : this.getDevices())
 				{
-					logger.log(Level.INFO, device.uuid + " " + device.updateTime.toString());
 					if(device.equals(this.myDevice))
 					{
 						continue;
