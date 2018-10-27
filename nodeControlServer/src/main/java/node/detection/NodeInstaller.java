@@ -60,7 +60,6 @@ public class NodeInstaller implements Runnable
 	@Override
 	public void run()
 	{
-		logger.log(Level.INFO, "노드 감지 서비스 활성화");
 		try
 		{
 			Thread.sleep(DEFAULT_WAIT_TIME);
@@ -73,8 +72,8 @@ public class NodeInstaller implements Runnable
 			this.stop();
 			return;
 		}
-		logger.log(Level.INFO, "마스터 노드 미감지, 랜덤한 시간 대기");
 		int randomWaitTime = new Random(RANDOM_WAIT_TIME).nextInt();
+		logger.log(Level.INFO, String.format("마스터 노드 미감지, 랜덤한 시간 대기 (%dms)", randomWaitTime));
 		try
 		{
 			Thread.sleep(randomWaitTime);
