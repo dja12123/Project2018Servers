@@ -63,14 +63,6 @@ public class SocketHandler implements Runnable
 			//this.socket = new DatagramSocket(NetworkManager.PROP_SOCKET_INTERFACE)
 			this.socket = new DatagramSocket(this.port);
 			this.socket.setBroadcast(true);
-			Device myDevice = this.deviceInfoManager.getMyDevice();
-			
-			if(myDevice.getInetAddr() != null)
-			{
-				logger.log(Level.INFO, String.format("IP바인드 (%s)", myDevice.getInetAddr().getHostAddress()));
-				InetSocketAddress sockAddr = new InetSocketAddress(myDevice.getInetAddr(), this.port);
-				this.socket.bind(sockAddr);
-			}
 		}
 		catch (SocketException e)
 		{
