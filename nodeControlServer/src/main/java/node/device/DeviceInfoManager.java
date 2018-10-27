@@ -65,6 +65,7 @@ public class DeviceInfoManager extends Observable<DeviceChangeEvent> implements 
 	{
 		this.dbHandler = dbhandler;
 		this.deviceMap = new HashMap<UUID, Device>();
+		
 	}
 	
 	public Device getDevice(UUID uuid)
@@ -95,6 +96,7 @@ public class DeviceInfoManager extends Observable<DeviceChangeEvent> implements 
 		this.myDevice = new Device(myUUID);
 		this.deviceMap.put(this.myDevice.uuid, this.myDevice);
 		
+		this.manageThread = new Thread(this);
 		this.manageThread.start();
 		return true;
 	}
