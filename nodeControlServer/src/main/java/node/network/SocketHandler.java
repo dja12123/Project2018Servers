@@ -55,7 +55,7 @@ public class SocketHandler implements Runnable
 			this.port = Integer.parseInt(NodeControlCore.getProp(NetworkManager.PROP_INFOBROADCAST_PORT));
 
 			String interfaceStr = NodeControlCore.getProp(NetworkManager.PROP_INTERFACE);
-			NetworkUtil.getNetworkInterface(interfaceStr);
+			//NetworkUtil.getNetworkInterface(interfaceStr);
 			//this.socket = new DatagramSocket(NetworkManager.PROP_SOCKET_INTERFACE)
 			this.socket = new DatagramSocket(this.port);
 			this.socket.setBroadcast(true);
