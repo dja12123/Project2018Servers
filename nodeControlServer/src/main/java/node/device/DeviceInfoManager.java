@@ -117,7 +117,7 @@ public class DeviceInfoManager extends Observable<DeviceChangeEvent> implements 
 		return this.myDevice;
 	}
 	
-	public void updateDevice(UUID uuid, InetAddress inetAddr, boolean isMasterNode)
+	public synchronized void updateDevice(UUID uuid, InetAddress inetAddr, boolean isMasterNode)
 	{// 장치 정보관리 모듈과 연결해줌.
 	 // 장치 정보가 수정되었을 때.
 
@@ -164,12 +164,13 @@ public class DeviceInfoManager extends Observable<DeviceChangeEvent> implements 
 		device.updateTime = new Date(System.currentTimeMillis());
 	}
 	
-	public void removeDevice(UUID uuid)
+	public synchronized void removeDevice(UUID uuid)
 	{
 		if(uuid.equals(this.myDevice.uuid)) return;
 		this.deviceMap.remove(uuid);
 		DeviceChangeEvent eventObj = new DeviceChangeEvent(DeviceChangeEvent.DISCONNECT_DEVICE, this.getDevice(uuid));
 		this.notifyObservers(NodeControlCore.mainThreadPool, eventObj);
+		logger.log(Level.INFO, "노드 사망");
 	}
 	
 	public synchronized int getNodeCount()
