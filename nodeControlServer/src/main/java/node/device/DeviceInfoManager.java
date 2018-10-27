@@ -195,7 +195,7 @@ public class DeviceInfoManager extends Observable<DeviceChangeEvent> implements 
 					{
 						continue;
 					}
-					logger.log(Level.INFO, "노드 사망 감지" + device.uuid + " " + device.updateTime.toString() + " "+  compareTime.after(device.updateTime));
+					logger.log(Level.INFO, "노드 사망 감지" + device.uuid + " " + device.updateTime.toString() + " "+  compareTime.compareTo(device.updateTime));
 					if(device.updateTime.after(compareTime))
 					{//타임아웃일때
 						removeDevices.add(device);
