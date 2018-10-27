@@ -125,6 +125,8 @@ public class DeviceInfoManager extends Observable<DeviceChangeEvent> implements 
 		{
 			device = new Device(uuid);
 			this.deviceMap.put(uuid, device);
+			device.inetAddr = inetAddr;
+			device.masterNode = isMasterNode;
 			DeviceChangeEvent eventObj = new DeviceChangeEvent(DeviceChangeEvent.CONNECT_NEW_DEVICE, device);
 			this.notifyObservers(NodeControlCore.mainThreadPool, eventObj);
 		}
