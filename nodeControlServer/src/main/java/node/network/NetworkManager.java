@@ -23,7 +23,7 @@ import node.util.observer.Observer;
 
 public class NetworkManager implements IServiceModule
 {
-	public static final Logger networkLogger = LogWriter.createLogger(NetworkManager.class, "network");
+	public static final Logger logger = LogWriter.createLogger(NetworkManager.class, "network");
 	
 	public static final String PROP_INFOBROADCAST_PORT = "infoBroadcastPort";
 	public static final String PROP_INTERFACE = "networkInterface";

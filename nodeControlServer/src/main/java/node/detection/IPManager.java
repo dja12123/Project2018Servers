@@ -40,7 +40,7 @@ public class IPManager
 				}
 				catch (UnknownHostException e)
 				{
-					NodeDetectionService.nodeDetectionLogger.log(Level.SEVERE, "IP할당 오류", e);
+					NodeDetectionService.logger.log(Level.SEVERE, "IP할당 오류", e);
 					return null;
 				}
 				this.ipMap.put(uuid, addr);

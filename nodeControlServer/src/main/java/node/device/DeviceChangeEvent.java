@@ -1,6 +1,6 @@
 package node.device;
 
-public class DeviceStateChangeEvent
+public class DeviceChangeEvent
 {
 	public static final int CONNECT_NEW_DEVICE = 0b01;
 	public static final int DISCONNECT_DEVICE = 0b001;
@@ -11,7 +11,7 @@ public class DeviceStateChangeEvent
 	private final int state;
 	public final Device device;
 	
-	public DeviceStateChangeEvent(int state, Device device)
+	public DeviceChangeEvent(int state, Device device)
 	{
 		this.state = state;
 		this.device = device;

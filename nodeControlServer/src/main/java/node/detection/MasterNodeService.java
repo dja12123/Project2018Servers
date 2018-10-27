@@ -1,28 +1,27 @@
 package node.detection;
 
 import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.util.HashMap;
 import java.util.UUID;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import node.NodeControlCore;
 import node.device.Device;
 import node.device.DeviceInfoManager;
-import node.device.DeviceStateChangeEvent;
+import node.device.DeviceChangeEvent;
+import node.log.LogWriter;
 import node.network.NetworkManager;
-import node.network.NetworkUtil;
 import node.network.NetworkEvent;
-import node.network.SocketHandler;
 import node.network.packet.Packet;
 import node.network.packet.PacketBuildFailureException;
 import node.network.packet.PacketBuilder;
-import node.network.packet.PacketUtil;
 import node.util.observer.Observable;
 import node.util.observer.Observer;
 
 public class MasterNodeService implements Runnable
 {	
+	public static final Logger logger = LogWriter.createLogger(MasterNodeService.class, "masterNodeService");
+	
 	public static final String PROP_DELAY_MASTER_MSG = "delayMasterNodeBroadcast";
 	public static final String KPROTO_MASTER_BROADCAST = "masterNodeBroadcast";
 	
@@ -33,6 +32,7 @@ public class MasterNodeService implements Runnable
 	private Thread broadcastThread;
 	private int broadCastDelay;
 	private Observer<NetworkEvent> networkObserverFunc;
+	private Observer<DeviceChangeEvent> deviceObserverFunc;
 	private IPManager ipManager;
 	
 	/*public static void main(String[] args)
@@ -68,13 +68,14 @@ public class MasterNodeService implements Runnable
 		
 		this.ipManager = new IPManager();
 		this.networkObserverFunc = this::updateNetwork;
+		this.deviceObserverFunc = this::updateDevice;
 	}
 
 	public synchronized void start()
 	{
 		if(this.isRun) return;
 		this.isRun = true;
-		
+		logger.log(Level.INFO, "마스터 노드 서비스 시작");
 		this.networkManager.addObserver(WorkNodeService.KPROTO_NODE_INFO_MSG, this.networkObserverFunc);
 		this.networkManager.addObserver(KPROTO_MASTER_BROADCAST, this.networkObserverFunc);
 		this.ipManager.clear();
@@ -88,6 +89,7 @@ public class MasterNodeService implements Runnable
 	{
 		if(!this.isRun) return;
 		this.isRun = false;
+		logger.log(Level.INFO, "마스터 노드 서비스 중지");
 		this.networkManager.removeObserver(this.networkObserverFunc);
 		this.broadcastThread.interrupt();
 	}
@@ -104,6 +106,7 @@ public class MasterNodeService implements Runnable
 				if(device.getInetAddr() == null || deviceInet == null)
 				{// ip가 없을때 ip를 새로 할당
 					deviceInet = this.ipManager.assignmentInetAddr(sender);
+					logger.log(Level.INFO, String.format("노드에 IP 할당 (%s, %s)", device.uuid.toString(), deviceInet.getHostAddress()));
 				}
 				this.deviceInfoManager.updateDevice(sender, deviceInet, false);
 			}
@@ -111,6 +114,7 @@ public class MasterNodeService implements Runnable
 			{// 처음 접근하는 노드일때
 				InetAddress inetAddr =  this.ipManager.assignmentInetAddr(sender);
 				this.deviceInfoManager.updateDevice(sender, inetAddr, false);
+				logger.log(Level.INFO, String.format("새 노드 접근 (%s)", sender.toString()));
 			}
 		}
 		if(data.key.equals(KPROTO_MASTER_BROADCAST))
@@ -127,12 +131,26 @@ public class MasterNodeService implements Runnable
 			}
 		}
 	}
+	
+	public synchronized void updateDevice(Observable<DeviceChangeEvent> object, DeviceChangeEvent data)
+	{
+	
+		if(data.getState(DeviceChangeEvent.DISCONNECT_DEVICE))
+		{
+			InetAddress deviceInetAddr = data.device.getInetAddr();
+			if(deviceInetAddr != null)
+			{
+				logger.log(Level.INFO, String.format("IP할당 해제 (%s %s)", data.device.uuid.toString(), deviceInetAddr.toString()));
+				this.ipManager.removeInetAddr(data.device.uuid);
+			}
+			
+		}
+	}
 
 	@Override
 	public void run()
 	{
-		
-		NodeDetectionService.nodeDetectionLogger.log(Level.INFO, "마스터 브로드캐스트 간격: " + this.broadCastDelay);
+		logger.log(Level.INFO, String.format("마스터 노드 알림 시작 (%dms 간격)", this.broadCastDelay));
 		
 		while(this.isRun)
 		{
@@ -162,11 +180,8 @@ public class MasterNodeService implements Runnable
 				}
 				catch (PacketBuildFailureException e)
 				{
-					
-					NodeDetectionService.nodeDetectionLogger.log(Level.SEVERE, "패킷 빌드중 오류", e);
-					continue;
+					logger.log(Level.SEVERE, "패킷 빌드중 오류", e);
 				}
-				
 				
 				this.networkManager.socketHandler.sendMessage(packet);
 			}

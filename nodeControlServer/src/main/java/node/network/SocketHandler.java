@@ -61,7 +61,7 @@ public class SocketHandler implements Runnable
 		}
 		catch (SocketException e)
 		{
-			NetworkManager.networkLogger.log(Level.SEVERE, "소켓 열기 실패", e);
+			NetworkManager.logger.log(Level.SEVERE, "소켓 열기 실패", e);
 			return;
 		}
 		
@@ -82,7 +82,7 @@ public class SocketHandler implements Runnable
 	@Override
 	public void run()
 	{
-		NetworkManager.networkLogger.log(Level.INFO, "네트워크 수신 시작");
+		NetworkManager.logger.log(Level.INFO, "네트워크 수신 시작");
 		byte[] packetBuffer = new byte[PacketUtil.HEADER_SIZE + PacketUtil.MAX_SIZE_KEY + PacketUtil.MAX_SIZE_DATA];
 		DatagramPacket dgramPacket;
 		
@@ -96,7 +96,7 @@ public class SocketHandler implements Runnable
 			}
 			catch (IOException e)
 			{
-				NetworkManager.networkLogger.log(Level.SEVERE, "수신 실패", e);
+				NetworkManager.logger.log(Level.SEVERE, "수신 실패", e);
 			}
 		}
 	}
@@ -124,7 +124,7 @@ public class SocketHandler implements Runnable
 		}
 		catch (IOException e)
 		{
-			NetworkManager.networkLogger.log(Level.SEVERE, "패킷 전송 실패", e);
+			NetworkManager.logger.log(Level.SEVERE, "패킷 전송 실패", e);
 		}
 	}
 }

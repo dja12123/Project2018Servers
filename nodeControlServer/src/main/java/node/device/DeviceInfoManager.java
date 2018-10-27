@@ -23,9 +23,9 @@ import node.network.packet.PacketBuilder;
 import node.network.packet.PacketUtil;
 import node.util.observer.Observable;
 
-public class DeviceInfoManager extends Observable<DeviceStateChangeEvent> implements IServiceModule, Runnable
+public class DeviceInfoManager extends Observable<DeviceChangeEvent> implements IServiceModule, Runnable
 {
-	public static final Logger deviceInfoLogger = LogWriter.createLogger(DeviceInfoManager.class, "deviceInfo");
+	public static final Logger logger = LogWriter.createLogger(DeviceInfoManager.class, "deviceInfo");
 	public static final String VP_MYDEVICE_INFO = "myuuid";
 	
 	private static final String INFO_TABLE_SCHEMA = 
@@ -88,7 +88,7 @@ public class DeviceInfoManager extends Observable<DeviceStateChangeEvent> implem
 	public boolean startModule()
 	{
 		if(this.isRun) return true;
-		deviceInfoLogger.log(Level.INFO, "노드 정보 관리 서비스 시작");
+		logger.log(Level.INFO, "노드 정보 관리 서비스 시작");
 		String uidStr = this.dbHandler.getOrSetDefaultVariableProperty(this.getClass(), VP_MYDEVICE_INFO, UUID.randomUUID().toString());
 		UUID myUUID = UUID.fromString(uidStr);
 
@@ -103,7 +103,7 @@ public class DeviceInfoManager extends Observable<DeviceStateChangeEvent> implem
 	public void stopModule()
 	{
 		if(!this.isRun) return;
-		deviceInfoLogger.log(Level.INFO, "노드 정보 관리 서비스 종료");
+		logger.log(Level.INFO, "노드 정보 관리 서비스 종료");
 		this.deviceMap.clear();
 		this.isRun = false;
 		this.manageThread.interrupt();
@@ -123,7 +123,7 @@ public class DeviceInfoManager extends Observable<DeviceStateChangeEvent> implem
 		{
 			device = new Device(uuid);
 			this.deviceMap.put(uuid, device);
-			DeviceStateChangeEvent eventObj = new DeviceStateChangeEvent(DeviceStateChangeEvent.CONNECT_NEW_DEVICE, device);
+			DeviceChangeEvent eventObj = new DeviceChangeEvent(DeviceChangeEvent.CONNECT_NEW_DEVICE, device);
 			this.notifyObservers(NodeControlCore.mainThreadPool, eventObj);
 		}
 		else
@@ -132,7 +132,7 @@ public class DeviceInfoManager extends Observable<DeviceStateChangeEvent> implem
 			if(!device.inetAddr.equals(inetAddr))
 			{
 				
-				changeState = changeState | DeviceStateChangeEvent.CHANGE_INETADDR;
+				changeState = changeState | DeviceChangeEvent.CHANGE_INETADDR;
 				device.inetAddr = inetAddr;
 			}
 			
@@ -140,17 +140,17 @@ public class DeviceInfoManager extends Observable<DeviceStateChangeEvent> implem
 			{
 				if(device.masterNode)
 				{
-					changeState = changeState | DeviceStateChangeEvent.IS_MASTER_NODE;
+					changeState = changeState | DeviceChangeEvent.IS_MASTER_NODE;
 				}
 				else
 				{
-					changeState = changeState | DeviceStateChangeEvent.IS_NOT_MASTER_NODE;
+					changeState = changeState | DeviceChangeEvent.IS_NOT_MASTER_NODE;
 				}
 			}
 			
 			if(changeState != 0)
 			{
-				DeviceStateChangeEvent eventObj = new DeviceStateChangeEvent(changeState, device);
+				DeviceChangeEvent eventObj = new DeviceChangeEvent(changeState, device);
 				this.notifyObservers(NodeControlCore.mainThreadPool, eventObj);
 			}
 			
@@ -162,7 +162,7 @@ public class DeviceInfoManager extends Observable<DeviceStateChangeEvent> implem
 	{
 		if(uuid.equals(this.myDevice.uuid)) return;
 		this.deviceMap.remove(uuid);
-		DeviceStateChangeEvent eventObj = new DeviceStateChangeEvent(DeviceStateChangeEvent.DISCONNECT_DEVICE, this.getDevice(uuid));
+		DeviceChangeEvent eventObj = new DeviceChangeEvent(DeviceChangeEvent.DISCONNECT_DEVICE, this.getDevice(uuid));
 		this.notifyObservers(NodeControlCore.mainThreadPool, eventObj);
 	}
 	
