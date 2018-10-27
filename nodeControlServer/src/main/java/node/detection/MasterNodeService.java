@@ -159,7 +159,6 @@ public class MasterNodeService implements Runnable
 		
 			System.out.println("끊김2");
 			InetAddress deviceInetAddr = data.device.getInetAddr();
-			System.exit(0);
 			System.out.println("끊김3");
 			if(deviceInetAddr != null)
 			{
