@@ -156,11 +156,10 @@ public class MasterNodeService implements Runnable
 		if(data.getState(DeviceChangeEvent.DISCONNECT_DEVICE))
 		{
 			System.out.println("끊김1");
-			System.out.println(data.device);
 			System.out.println("끊김2");
-			//InetAddress deviceInetAddr = data.device.getInetAddr();
+			InetAddress deviceInetAddr = data.device.getInetAddr();
 			System.out.println("끊김3");
-			//if(deviceInetAddr != null)
+			if(deviceInetAddr != null)
 			{
 				logger.log(Level.INFO, String.format("IP할당 해제 (%s)", data.device.uuid.toString()));
 				this.ipManager.removeInetAddr(data.device.uuid);

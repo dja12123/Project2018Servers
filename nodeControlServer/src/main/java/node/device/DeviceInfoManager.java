@@ -167,8 +167,8 @@ public class DeviceInfoManager extends Observable<DeviceChangeEvent> implements 
 	public synchronized void removeDevice(UUID uuid)
 	{
 		if(uuid.equals(this.myDevice.uuid)) return;
-		this.deviceMap.remove(uuid);
 		DeviceChangeEvent eventObj = new DeviceChangeEvent(DeviceChangeEvent.DISCONNECT_DEVICE, this.getDevice(uuid));
+		this.deviceMap.remove(uuid);
 		this.notifyObservers(NodeControlCore.mainThreadPool, eventObj);
 		logger.log(Level.INFO, "노드 사망");
 	}
