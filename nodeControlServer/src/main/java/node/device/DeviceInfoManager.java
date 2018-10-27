@@ -131,7 +131,7 @@ public class DeviceInfoManager extends Observable<DeviceChangeEvent> implements 
 		else
 		{
 			int changeState = 0;
-			if(!device.inetAddr.equals(inetAddr))
+			if((device.inetAddr != null && !device.inetAddr.equals(inetAddr)) || (device.inetAddr == null && inetAddr != null))
 			{
 				
 				changeState = changeState | DeviceChangeEvent.CHANGE_INETADDR;
