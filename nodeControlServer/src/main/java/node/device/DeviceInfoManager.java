@@ -168,6 +168,7 @@ public class DeviceInfoManager extends Observable<DeviceChangeEvent> implements 
 	{
 		if(uuid.equals(this.myDevice.uuid)) return;
 		this.deviceMap.remove(uuid);
+		System.out.println("노드 사망");
 		DeviceChangeEvent eventObj = new DeviceChangeEvent(DeviceChangeEvent.DISCONNECT_DEVICE, this.getDevice(uuid));
 		this.notifyObservers(NodeControlCore.mainThreadPool, eventObj);
 	}
@@ -195,8 +196,7 @@ public class DeviceInfoManager extends Observable<DeviceChangeEvent> implements 
 					{
 						continue;
 					}
-					logger.log(Level.INFO, "노드 사망 감지" + device.uuid + " " + device.updateTime.toString() + " "+  !compareTime.before(device.updateTime));
-					if(!compareTime.before(device.updateTime))
+					if(compareTime.after(device.updateTime))
 					{//타임아웃일때
 						removeDevices.add(device);
 					}
