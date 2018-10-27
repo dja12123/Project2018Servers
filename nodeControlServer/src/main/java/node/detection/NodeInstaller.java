@@ -72,7 +72,7 @@ public class NodeInstaller implements Runnable
 			this.stop();
 			return;
 		}
-		int randomWaitTime = new Random(RANDOM_WAIT_TIME).nextInt();
+		int randomWaitTime = (int)(Math.random() * RANDOM_WAIT_TIME);
 		logger.log(Level.INFO, String.format("마스터 노드 미감지, 랜덤한 시간 대기 (%dms)", randomWaitTime));
 		try
 		{
