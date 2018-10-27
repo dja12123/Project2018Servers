@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.HashMap;
@@ -59,6 +60,8 @@ public class SocketHandler implements Runnable
 			//this.socket = new DatagramSocket(NetworkManager.PROP_SOCKET_INTERFACE)
 			this.socket = new DatagramSocket(this.port);
 			this.socket.setBroadcast(true);
+			InetSocketAddress sockAddr = new InetSocketAddress(this.deviceInfoManager.getMyDevice().getInetAddr(), this.port);
+			this.socket.bind(sockAddr);
 		}
 		catch (SocketException e)
 		{
