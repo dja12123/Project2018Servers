@@ -134,10 +134,7 @@ public class SocketHandler implements Runnable
 		DatagramPacket dgramPacket = new DatagramPacket(rawPacket, rawPacket.length, inetAddr, port);
 		try
 		{
-			synchronized (this)
-			{
-				this.socket.send(dgramPacket);
-			}
+			this.socket.send(dgramPacket);
 		}
 		catch (IOException e)
 		{

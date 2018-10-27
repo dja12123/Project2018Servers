@@ -99,7 +99,7 @@ public class WorkNodeService implements Runnable
 		}*/
 		if(this.isRun) return;
 		logger.log(Level.INFO, "워커 노드 서비스 시작");
-		this.networkManager.addObserver(WorkNodeService.KPROTO_NODE_INFO_MSG, this.networkObserverFunc);
+		this.networkManager.addObserver(MasterNodeService.KPROTO_MASTER_BROADCAST, this.networkObserverFunc);
 		this.deviceInfoManager.addObserver(this.deviceStateObserverFunc);
 		
 		this.processFromMasterNodePacket(nodeInfoProtocol);
@@ -150,6 +150,7 @@ public class WorkNodeService implements Runnable
 			if(nodeInfoProtocol.getMasterNode().equals(taskUID))
 			{
 				taskIsMaster = true;
+				logger.log(Level.INFO, "master: " + taskUID.toString());
 			}
 			
 			this.deviceInfoManager.updateDevice(taskUID, taskAddr, taskIsMaster);
