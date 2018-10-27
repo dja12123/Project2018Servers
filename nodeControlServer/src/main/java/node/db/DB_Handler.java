@@ -183,7 +183,7 @@ public class DB_Handler implements IServiceModule
 		this.isOpened = true;
 		this.installer = new DB_Installer(this);
 		
-		//this.installer.checkAndCreateTable(Variable_Property_Schema);
+		this.installer.checkAndCreateTable(Variable_Property_Schema);
         
         this.installer.complete();
         
