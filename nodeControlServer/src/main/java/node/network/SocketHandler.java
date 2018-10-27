@@ -68,8 +68,6 @@ public class SocketHandler implements Runnable
 				InetSocketAddress sockAddr = new InetSocketAddress(myDevice.getInetAddr(), this.port);
 				this.socket.bind(sockAddr);
 			}
-			
-			
 		}
 		catch (SocketException e)
 		{
@@ -85,7 +83,7 @@ public class SocketHandler implements Runnable
 	public void stop()
 	{
 		if(!this.isWork) return;
-		
+		NetworkManager.logger.log(Level.INFO, "소켓 핸들러 종료");
 		this.isWork = false;
 		this.worker.interrupt();
 		this.socket.close();
@@ -108,6 +106,11 @@ public class SocketHandler implements Runnable
 			}
 			catch (IOException e)
 			{
+				if(this.socket.isClosed())
+				{
+					NetworkManager.logger.log(Level.INFO, "소켓 종료");
+					return;
+				}
 				NetworkManager.logger.log(Level.SEVERE, "수신 실패", e);
 			}
 		}
