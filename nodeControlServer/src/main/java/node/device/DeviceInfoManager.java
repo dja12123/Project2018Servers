@@ -94,7 +94,6 @@ public class DeviceInfoManager extends Observable<DeviceChangeEvent> implements 
 		UUID myUUID = UUID.fromString(uidStr);
 		logger.log(Level.INFO, String.format("my UUID: %s", myUUID.toString()));
 		this.myDevice = new Device(myUUID);
-		this.myDevice.updateTime = new Date(System.currentTimeMillis());
 		this.deviceMap.put(this.myDevice.uuid, this.myDevice);
 		
 		this.isRun = true;
@@ -193,6 +192,10 @@ public class DeviceInfoManager extends Observable<DeviceChangeEvent> implements 
 				for(Device device : this.getDevices())
 				{
 					logger.log(Level.INFO, device.uuid + " " + device.updateTime.toString());
+					if(device.equals(this.myDevice))
+					{
+						continue;
+					}
 					if(device.getUpdateTime().after(compareTime))
 					{//타임아웃일때
 						removeDevices.add(device);
@@ -215,5 +218,4 @@ public class DeviceInfoManager extends Observable<DeviceChangeEvent> implements 
 			}
 		}
 	}
-
 }
