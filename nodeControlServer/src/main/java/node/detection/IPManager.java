@@ -44,6 +44,7 @@ public class IPManager
 					return null;
 				}
 				this.ipMap.put(uuid, addr);
+				break;
 			}
 		}
 		return addr;

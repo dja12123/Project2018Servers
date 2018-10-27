@@ -96,6 +96,7 @@ public class DeviceInfoManager extends Observable<DeviceChangeEvent> implements 
 		this.myDevice = new Device(myUUID);
 		this.deviceMap.put(this.myDevice.uuid, this.myDevice);
 		
+		this.isRun = true;
 		this.manageThread = new Thread(this);
 		this.manageThread.start();
 		return true;
