@@ -128,7 +128,10 @@ public class SocketHandler implements Runnable
 		else
 		{
 			inetAddr = this.deviceInfoManager.getDevice(packet.getReceiver()).getInetAddr();
-			logger.log(Level.INFO, this.deviceInfoManager.getDevice(packet.getReceiver()).getInetAddr().toString());
+		}
+		if(inetAddr == null)
+		{
+			logger.log(Level.WARNING, "null주소: " + packet.getReceiver());
 		}
 		logger.log(Level.INFO, "주소: " + inetAddr.getHostAddress());
 		
