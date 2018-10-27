@@ -39,7 +39,14 @@ public class NodeInfoProtocol
 			this.uuids[i] = UUID.fromString(nodeInfoStr[i][0]);
 			try
 			{
-				this.addrs[i] = InetAddress.getByName(nodeInfoStr[i][1]);
+				if(nodeInfoStr[i][1].equals("null"))
+				{
+					this.addrs[i] = null;
+				}
+				else
+				{
+					this.addrs[i] = InetAddress.getByName(nodeInfoStr[i][1]);
+				}
 			}
 			catch (UnknownHostException e)
 			{
@@ -78,7 +85,14 @@ public class NodeInfoProtocol
 		{
 			msgBuffer.append(this.uuids[i]);
 			msgBuffer.append(PacketUtil.DPROTO_SEP_COL);
-			msgBuffer.append(this.addrs[i].getHostAddress());
+			if(this.addrs[i] != null)
+			{
+				msgBuffer.append(this.addrs[i].getHostAddress());
+			}
+			else
+			{
+				msgBuffer.append("null");
+			}
 			msgBuffer.append(PacketUtil.DPROTO_SEP_ROW);
 		}
 		

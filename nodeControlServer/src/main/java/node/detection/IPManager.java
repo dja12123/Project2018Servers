@@ -30,7 +30,7 @@ public class IPManager
 	public InetAddress assignmentInetAddr(UUID uuid)
 	{
 		InetAddress addr = null;
-		for(int i = 0; i < 255; ++i)
+		for(int i = 100; i < 255; ++i)
 		{
 			if(this.ipArr[i] == null)
 			{

@@ -1,6 +1,7 @@
 package node.detection;
 
 import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -24,6 +25,20 @@ public class MasterNodeService implements Runnable
 	
 	public static final String PROP_DELAY_MASTER_MSG = "delayMasterNodeBroadcast";
 	public static final String KPROTO_MASTER_BROADCAST = "masterNodeBroadcast";
+	
+	private static InetAddress masterInetAddr;
+	
+	static
+	{
+		try
+		{
+			masterInetAddr = InetAddress.getByName("192.168.0.99");
+		}
+		catch (UnknownHostException e)
+		{
+			e.printStackTrace();
+		}
+	}
 	
 	private NodeDetectionService nodeDetectionService;
 	private DeviceInfoManager deviceInfoManager;
@@ -76,6 +91,7 @@ public class MasterNodeService implements Runnable
 		if(this.isRun) return;
 		this.isRun = true;
 		logger.log(Level.INFO, "마스터 노드 서비스 시작");
+		this.networkManager.setInetAddr(masterInetAddr);
 		this.networkManager.addObserver(WorkNodeService.KPROTO_NODE_INFO_MSG, this.networkObserverFunc);
 		this.networkManager.addObserver(KPROTO_MASTER_BROADCAST, this.networkObserverFunc);
 		this.ipManager.clear();
