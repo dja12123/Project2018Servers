@@ -15,6 +15,7 @@ import java.util.logging.Logger;
 
 import node.IServiceModule;
 import node.NodeControlCore;
+import node.device.Device;
 import node.device.DeviceInfoManager;
 import node.log.LogWriter;
 import node.network.NetworkManager;
@@ -45,7 +46,7 @@ public class SocketHandler implements Runnable
 	public void start()
 	{
 		if(this.isWork) return;
-		
+		NetworkManager.logger.log(Level.INFO, "소켓 핸들러 로드");
 		if(this.worker == null || !this.worker.isAlive())
 		{
 			this.worker = new Thread(this);
@@ -60,8 +61,15 @@ public class SocketHandler implements Runnable
 			//this.socket = new DatagramSocket(NetworkManager.PROP_SOCKET_INTERFACE)
 			this.socket = new DatagramSocket(this.port);
 			this.socket.setBroadcast(true);
-			InetSocketAddress sockAddr = new InetSocketAddress(this.deviceInfoManager.getMyDevice().getInetAddr(), this.port);
-			this.socket.bind(sockAddr);
+			Device myDevice = this.deviceInfoManager.getMyDevice();
+			if(myDevice.getInetAddr() != null)
+			{
+				NetworkManager.logger.log(Level.INFO, String.format("IP바인드 (%s)", myDevice.getInetAddr().getHostAddress()));
+				InetSocketAddress sockAddr = new InetSocketAddress(myDevice.getInetAddr(), this.port);
+				this.socket.bind(sockAddr);
+			}
+			
+			
 		}
 		catch (SocketException e)
 		{
