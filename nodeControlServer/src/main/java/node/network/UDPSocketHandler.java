@@ -63,7 +63,8 @@ public class UDPSocketHandler implements Runnable
 			//NetworkUtil.getNetworkInterface(interfaceStr);
 			//this.socket = new DatagramSocket(NetworkManager.PROP_SOCKET_INTERFACE)
 			this.socket = new DatagramSocket(49800);
-			System.out.println(this.socket.isBound());
+			System.out.println(this.socket);
+			this.socket.setReuseAddress(true);
 			
 			//this.socket.setBroadcast(true);
 		}
