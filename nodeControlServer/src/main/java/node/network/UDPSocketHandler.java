@@ -113,6 +113,7 @@ public class UDPSocketHandler implements Runnable
 			{
 				this.socket.receive(dgramPacket);
 				this.networkManager.socketReadCallback(dgramPacket.getAddress(), packetBuffer);
+				System.out.println("receive" + dgramPacket.getAddress());
 			}
 			catch (IOException e)
 			{
