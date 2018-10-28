@@ -66,9 +66,9 @@ public class UDPSocketHandler implements Runnable
 			System.out.println("socketOption setReuseAddress: " + this.socket.getReuseAddress());
 			System.out.println("socketOption getLocalSocketAddress: " + this.socket.getLocalSocketAddress());
 			System.out.println("socketOption getRemoteSocketAddress: " + this.socket.getRemoteSocketAddress());
-			this.socket.setReuseAddress(false);
+			//this.socket.setReuseAddress(false);
 			
-			//this.socket.setBroadcast(true);
+			this.socket.setBroadcast(true);
 		}
 		catch (SocketException e)
 		{
@@ -100,6 +100,15 @@ public class UDPSocketHandler implements Runnable
 		while(this.isWork)
 		{
 			dgramPacket = new DatagramPacket(packetBuffer, packetBuffer.length);
+			try
+			{
+				dgramPacket.setAddress(InetAddress.getByName("192.168.0.99"));
+			}
+			catch (UnknownHostException e1)
+			{
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 			try
 			{
 				this.socket.receive(dgramPacket);
