@@ -5,6 +5,7 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.net.SocketAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.HashMap;
@@ -62,6 +63,9 @@ public class UDPSocketHandler implements Runnable
 			//NetworkUtil.getNetworkInterface(interfaceStr);
 			//this.socket = new DatagramSocket(NetworkManager.PROP_SOCKET_INTERFACE)
 			this.socket = new DatagramSocket(this.port);
+			InetSocketAddress addr = new InetSocketAddress(49800);
+			this.socket.bind(addr);
+			
 			//this.socket.setBroadcast(true);
 		}
 		catch (SocketException e)
