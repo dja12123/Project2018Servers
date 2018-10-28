@@ -25,9 +25,9 @@ import node.network.packet.PacketUtil;
 import node.util.observer.Observable;
 import node.util.observer.Observer;
 
-public class SocketHandler implements Runnable
+public class UDPSocketHandler implements Runnable
 {
-	public static final Logger logger = LogWriter.createLogger(SocketHandler.class, "socket");
+	public static final Logger logger = LogWriter.createLogger(UDPSocketHandler.class, "socket");
 	
 	private final DeviceInfoManager deviceInfoManager;
 	private NetworkManager networkManager;
@@ -39,7 +39,7 @@ public class SocketHandler implements Runnable
 
 	private int port;
 	
-	public SocketHandler(NetworkManager networkManager, DeviceInfoManager deviceInfoManager)
+	public UDPSocketHandler(NetworkManager networkManager, DeviceInfoManager deviceInfoManager)
 	{
 		this.networkManager = networkManager;
 		this.deviceInfoManager = deviceInfoManager;
@@ -62,7 +62,7 @@ public class SocketHandler implements Runnable
 			//NetworkUtil.getNetworkInterface(interfaceStr);
 			//this.socket = new DatagramSocket(NetworkManager.PROP_SOCKET_INTERFACE)
 			this.socket = new DatagramSocket(this.port);
-			this.socket.setBroadcast(true);
+			//this.socket.setBroadcast(true);
 		}
 		catch (SocketException e)
 		{

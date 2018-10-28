@@ -16,7 +16,7 @@ import node.db.DB_Handler;
 import node.device.DeviceInfoManager;
 import node.log.LogWriter;
 import node.network.NetworkEvent;
-import node.network.SocketHandler;
+import node.network.UDPSocketHandler;
 import node.network.packet.Packet;
 import node.network.packet.PacketUtil;
 import node.util.observer.Observable;
@@ -30,7 +30,7 @@ public class NetworkManager implements IServiceModule
 	public static final String PROP_INTERFACE = "networkInterface";
 	
 	public final DeviceInfoManager deviceInfoManager;
-	public final SocketHandler socketHandler;
+	public final UDPSocketHandler socketHandler;
 	
 	private HashMap<String, Observable<NetworkEvent>> observerMap;
 	
@@ -38,7 +38,7 @@ public class NetworkManager implements IServiceModule
 	{
 		this.deviceInfoManager = deviceInfoManager;
 
-		this.socketHandler = new SocketHandler(this, this.deviceInfoManager);
+		this.socketHandler = new UDPSocketHandler(this, this.deviceInfoManager);
 		this.observerMap = new HashMap<String, Observable<NetworkEvent>>();
 	}
 	
