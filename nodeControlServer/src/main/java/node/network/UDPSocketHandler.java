@@ -62,10 +62,8 @@ public class UDPSocketHandler implements Runnable
 			String interfaceStr = NodeControlCore.getProp(NetworkManager.PROP_INTERFACE);
 			//NetworkUtil.getNetworkInterface(interfaceStr);
 			//this.socket = new DatagramSocket(NetworkManager.PROP_SOCKET_INTERFACE)
-			this.socket = new DatagramSocket();
+			this.socket = new DatagramSocket(49800);
 			System.out.println(this.socket.isBound());
-			InetSocketAddress addr = new InetSocketAddress("0.0.0.0", 56542);
-			this.socket.bind(addr);
 			
 			//this.socket.setBroadcast(true);
 		}
