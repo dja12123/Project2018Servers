@@ -80,7 +80,6 @@ public class NodeDetectionService extends Observable<NetworkStateChangeEvent> im
 	{
 		logger.log(Level.INFO, "노드 감지 서비스 활성화");
 		this.nodeInit();
-		this.nodeInstaller.start();
 		return true;
 	}
 
