@@ -121,6 +121,7 @@ public class UDPSocketHandler implements Runnable
 	
 	public void sendMessage(Packet packet)
 	{
+		System.out.println(packet);
 		InetAddress inetAddr;
 		if(packet.isBroadcast())
 		{
