@@ -121,7 +121,6 @@ public class UDPSocketHandler implements Runnable
 	
 	public void sendMessage(Packet packet)
 	{
-		System.out.println(packet);
 		InetAddress inetAddr;
 		if(packet.isBroadcast())
 		{
@@ -141,6 +140,7 @@ public class UDPSocketHandler implements Runnable
 		
 		try
 		{
+			System.out.println(dgramPacket.getAddress());
 			this.socket.send(dgramPacket);
 		}
 		catch (IOException e)
