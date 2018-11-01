@@ -117,14 +117,17 @@ public class MasterNodeService implements Runnable
 	{
 		try
 		{
-			logger.log(Level.INFO, "노드 접근");
+			logger.log(Level.INFO, "노드 접근1");
 			if(data.key.equals(WorkNodeService.KPROTO_NODE_INFO_MSG))
 			{
 				UUID sender = data.packet.getSender();
 				if(this.deviceInfoManager.deviceExist(sender))
 				{// 기존 노드일때
+					logger.log(Level.INFO, "노드 접근2");
 					Device device = this.deviceInfoManager.getDevice(sender);
+					logger.log(Level.INFO, "노드 접근3");
 					InetAddress deviceInet = this.ipManager.getInetAddr(sender);
+					logger.log(Level.INFO, "노드 접근4");
 					if(device.getInetAddr() == null || deviceInet == null)
 					{// ip가 없을때 ip를 새로 할당
 						deviceInet = this.ipManager.assignmentInetAddr(sender);
