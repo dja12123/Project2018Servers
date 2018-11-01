@@ -72,6 +72,7 @@ public class WorkNodeService implements Runnable
 					logger.log(Level.SEVERE, "마스터노드에게 알리는 패킷 생성중 오류.", e);
 					return;
 				}
+				logger.log(Level.SEVERE, "워커 노드 알림");
 				this.networkManager.socketHandler.sendMessage(packet);
 			}
 			
