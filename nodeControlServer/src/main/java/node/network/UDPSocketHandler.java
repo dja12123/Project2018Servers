@@ -100,15 +100,7 @@ public class UDPSocketHandler implements Runnable
 		while(this.isWork)
 		{
 			dgramPacket = new DatagramPacket(packetBuffer, packetBuffer.length);
-			try
-			{
-				dgramPacket.setAddress(InetAddress.getByName("192.168.0.99"));
-			}
-			catch (UnknownHostException e1)
-			{
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
+
 			try
 			{
 				this.socket.receive(dgramPacket);
