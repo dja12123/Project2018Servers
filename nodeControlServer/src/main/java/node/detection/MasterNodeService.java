@@ -117,7 +117,7 @@ public class MasterNodeService implements Runnable
 	{
 		try
 		{
-			logger.log(Level.INFO, "노드 접근1");
+			logger.log(Level.INFO, "노드 접근1" + data.key);
 			if(data.key.equals(WorkNodeService.KPROTO_NODE_INFO_MSG))
 			{
 				logger.log(Level.INFO, "노드 접근2");
