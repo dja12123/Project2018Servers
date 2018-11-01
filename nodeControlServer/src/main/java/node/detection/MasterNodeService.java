@@ -117,11 +117,14 @@ public class MasterNodeService implements Runnable
 	{
 		try
 		{
-			logger.log(Level.INFO, "노드 접근1" + data.key);
+			UUID sender = data.packet.getSender();
+			if(sender.equals(this.deviceInfoManager.getMyDevice().uuid))
+			{// 내가 보낸 패킷이면 버림.
+				return;
+			}
 			if(data.key.equals(WorkNodeService.KPROTO_NODE_INFO_MSG))
 			{
 				logger.log(Level.INFO, "노드 접근2");
-				UUID sender = data.packet.getSender();
 				if(this.deviceInfoManager.deviceExist(sender))
 				{// 기존 노드일때
 					logger.log(Level.INFO, "노드 접근3");
@@ -146,11 +149,6 @@ public class MasterNodeService implements Runnable
 			}
 			if(data.key.equals(KPROTO_MASTER_BROADCAST))
 			{
-				UUID sender = data.packet.getSender();
-				if(sender.equals(this.deviceInfoManager.getMyDevice().uuid))
-				{// 내가 보낸 패킷이면 버림
-					return;
-				}
 				NodeInfoProtocol nodeInfoProtocol = new NodeInfoProtocol(data.packet);
 				if(DetectionUtil.isChangeMasterNode(nodeInfoProtocol, this.deviceInfoManager.getMyDevice().uuid, this.deviceInfoManager))
 				{
