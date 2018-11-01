@@ -117,6 +117,7 @@ public class MasterNodeService implements Runnable
 	{
 		try
 		{
+			logger.log(Level.INFO, "노드 접근");
 			if(data.key.equals(WorkNodeService.KPROTO_NODE_INFO_MSG))
 			{
 				UUID sender = data.packet.getSender();
@@ -129,7 +130,7 @@ public class MasterNodeService implements Runnable
 						deviceInet = this.ipManager.assignmentInetAddr(sender);
 						logger.log(Level.INFO, String.format("노드에 IP 할당 (%s, %s)", device.uuid.toString(), deviceInet.getHostAddress()));
 					}
-					logger.log(Level.INFO, "노드 접근");
+					
 					this.deviceInfoManager.updateDevice(sender, deviceInet, false);
 				}
 				else
