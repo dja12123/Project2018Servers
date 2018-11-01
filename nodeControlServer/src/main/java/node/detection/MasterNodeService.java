@@ -115,41 +115,49 @@ public class MasterNodeService implements Runnable
 	
 	public synchronized void updateNetwork(Observable<NetworkEvent> object, NetworkEvent data)
 	{
-		if(data.key.equals(WorkNodeService.KPROTO_NODE_INFO_MSG))
+		try
 		{
-			UUID sender = data.packet.getSender();
-			if(this.deviceInfoManager.deviceExist(sender))
-			{// 기존 노드일때
-				Device device = this.deviceInfoManager.getDevice(sender);
-				InetAddress deviceInet = this.ipManager.getInetAddr(sender);
-				if(device.getInetAddr() == null || deviceInet == null)
-				{// ip가 없을때 ip를 새로 할당
-					deviceInet = this.ipManager.assignmentInetAddr(sender);
-					logger.log(Level.INFO, String.format("노드에 IP 할당 (%s, %s)", device.uuid.toString(), deviceInet.getHostAddress()));
-				}
-				logger.log(Level.INFO, "노드 접근");
-				this.deviceInfoManager.updateDevice(sender, deviceInet, false);
-			}
-			else
-			{// 처음 접근하는 노드일때
-				InetAddress inetAddr =  this.ipManager.assignmentInetAddr(sender);
-				this.deviceInfoManager.updateDevice(sender, inetAddr, false);
-				logger.log(Level.INFO, String.format("새 노드 접근 (%s %s)", sender.toString(), inetAddr.getHostAddress()));
-			}
-		}
-		if(data.key.equals(KPROTO_MASTER_BROADCAST))
-		{
-			UUID sender = data.packet.getSender();
-			if(sender.equals(this.deviceInfoManager.getMyDevice().uuid))
-			{// 내가 보낸 패킷이면 버림
-				return;
-			}
-			NodeInfoProtocol nodeInfoProtocol = new NodeInfoProtocol(data.packet);
-			if(DetectionUtil.isChangeMasterNode(nodeInfoProtocol, this.deviceInfoManager.getMyDevice().uuid, this.deviceInfoManager))
+			if(data.key.equals(WorkNodeService.KPROTO_NODE_INFO_MSG))
 			{
-				this.nodeDetectionService.workNodeSelectionCallback(nodeInfoProtocol);
+				UUID sender = data.packet.getSender();
+				if(this.deviceInfoManager.deviceExist(sender))
+				{// 기존 노드일때
+					Device device = this.deviceInfoManager.getDevice(sender);
+					InetAddress deviceInet = this.ipManager.getInetAddr(sender);
+					if(device.getInetAddr() == null || deviceInet == null)
+					{// ip가 없을때 ip를 새로 할당
+						deviceInet = this.ipManager.assignmentInetAddr(sender);
+						logger.log(Level.INFO, String.format("노드에 IP 할당 (%s, %s)", device.uuid.toString(), deviceInet.getHostAddress()));
+					}
+					logger.log(Level.INFO, "노드 접근");
+					this.deviceInfoManager.updateDevice(sender, deviceInet, false);
+				}
+				else
+				{// 처음 접근하는 노드일때
+					InetAddress inetAddr =  this.ipManager.assignmentInetAddr(sender);
+					this.deviceInfoManager.updateDevice(sender, inetAddr, false);
+					logger.log(Level.INFO, String.format("새 노드 접근 (%s %s)", sender.toString(), inetAddr.getHostAddress()));
+				}
+			}
+			if(data.key.equals(KPROTO_MASTER_BROADCAST))
+			{
+				UUID sender = data.packet.getSender();
+				if(sender.equals(this.deviceInfoManager.getMyDevice().uuid))
+				{// 내가 보낸 패킷이면 버림
+					return;
+				}
+				NodeInfoProtocol nodeInfoProtocol = new NodeInfoProtocol(data.packet);
+				if(DetectionUtil.isChangeMasterNode(nodeInfoProtocol, this.deviceInfoManager.getMyDevice().uuid, this.deviceInfoManager))
+				{
+					this.nodeDetectionService.workNodeSelectionCallback(nodeInfoProtocol);
+				}
 			}
 		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+		
 	}
 	
 	public synchronized void updateDevice(Observable<DeviceChangeEvent> object, DeviceChangeEvent data)
