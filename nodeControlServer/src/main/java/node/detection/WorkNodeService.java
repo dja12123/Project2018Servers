@@ -55,26 +55,35 @@ public class WorkNodeService implements Runnable
 	{
 		while(this.isRun)
 		{
-			synchronized (this)
+			try
 			{
-				PacketBuilder builder = new PacketBuilder();
-				
-				Packet packet;
-				try
+				synchronized (this)
 				{
-					builder.setSender(this.deviceInfoManager.getMyDevice().uuid);
-					builder.setReceiver(this.masterNode);
-					builder.setKey(KPROTO_NODE_INFO_MSG);
-					packet = builder.createPacket();
+					PacketBuilder builder = new PacketBuilder();
+					
+					Packet packet;
+					try
+					{
+						builder.setSender(this.deviceInfoManager.getMyDevice().uuid);
+						builder.setReceiver(this.masterNode);
+						builder.setKey(KPROTO_NODE_INFO_MSG);
+						packet = builder.createPacket();
+					}
+					catch (PacketBuildFailureException e)
+					{
+						logger.log(Level.SEVERE, "마스터노드에게 알리는 패킷 생성중 오류.", e);
+						return;
+					}
+					logger.log(Level.SEVERE, "워커 노드 알림");
+					this.networkManager.socketHandler.sendMessage(packet);
 				}
-				catch (PacketBuildFailureException e)
-				{
-					logger.log(Level.SEVERE, "마스터노드에게 알리는 패킷 생성중 오류.", e);
-					return;
-				}
-				logger.log(Level.SEVERE, "워커 노드 알림");
-				this.networkManager.socketHandler.sendMessage(packet);
 			}
+			catch(Exception e)
+			{
+			
+				e.printStackTrace();
+			}
+			
 			
 			try
 			{
