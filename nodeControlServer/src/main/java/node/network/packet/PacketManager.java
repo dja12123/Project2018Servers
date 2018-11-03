@@ -1,5 +1,8 @@
 package node.network.packet;
 
+import java.nio.ByteBuffer;
+import java.security.PublicKey;
+
 import node.security.RSAEncrypt;
 
 public class PacketManager
