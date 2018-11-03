@@ -47,7 +47,7 @@ public class NetworkUtil
 		}
 		catch (SocketException e)
 		{
-			NetworkManager.networkLogger.log(Level.SEVERE, "네트워크 인터페이스 목록을 가져올 수 없습니다.", e);
+			NetworkManager.logger.log(Level.SEVERE, "네트워크 인터페이스 목록을 가져올 수 없습니다.", e);
 		}
 		if (nets == null)
 			return null;
@@ -92,7 +92,7 @@ public class NetworkUtil
 			// netInfoBuf.deleteCharAt(netInfoBuf.length() - 1);
 
 		}
-		NetworkManager.networkLogger.log(Level.INFO, netInfoBuf.toString());
+		NetworkManager.logger.log(Level.INFO, netInfoBuf.toString());
 
 		return findInterface;
 	}

@@ -7,18 +7,13 @@ import java.util.logging.Logger;
 import node.IServiceModule;
 import node.db.DB_Handler;
 import node.device.DeviceInfoManager;
-import node.device.DeviceStateChangeEvent;
 import node.log.LogWriter;
 import node.network.NetworkManager;
-import node.network.communicator.NetworkEvent;
-import node.network.communicator.SocketHandler;
-import node.network.packet.Packet;
 import node.util.observer.Observable;
-import node.util.observer.Observer;
 
 public class NodeDetectionService extends Observable<NetworkStateChangeEvent> implements IServiceModule
 {// 마스터 노드 변경 관련 서비스.
-	public static final Logger nodeDetectionLogger = LogWriter.createLogger(NodeDetectionService.class, "nodeDetection");
+	public static final Logger logger = LogWriter.createLogger(NodeDetectionService.class, "nodeDetection");
 	
 	public static final int STATE_INIT = 0;
 	public static final int STATE_WORKNODE = 1;
@@ -30,7 +25,6 @@ public class NodeDetectionService extends Observable<NetworkStateChangeEvent> im
 	private DeviceInfoManager deviceInfoManager;
 	private NetworkManager networkManager;
 	
-	//private NodeBroadcast nodeBroadcast;
 	private NodeInstaller nodeInstaller;
 	private WorkNodeService workNodeService;
 	private MasterNodeService masterNodeService;
@@ -43,11 +37,9 @@ public class NodeDetectionService extends Observable<NetworkStateChangeEvent> im
 		this.networkManager = networkManager;
 		this.deviceInfoManager = deviceInfoManager;
 
-		//this.nodeBroadcast = new NodeBroadcast(this.deviceInfoManager, this.socketHandler);
 		this.nodeInstaller = new NodeInstaller(this, this.networkManager);
 		this.workNodeService = new WorkNodeService(this, this.deviceInfoManager, this.networkManager);
 		this.masterNodeService = new MasterNodeService(this, this.deviceInfoManager, this.networkManager);
-		
 	}
 	
 	public synchronized void nodeInit()
@@ -86,9 +78,8 @@ public class NodeDetectionService extends Observable<NetworkStateChangeEvent> im
 	@Override
 	public boolean startModule()
 	{
-		nodeDetectionLogger.log(Level.INFO, "노드 감지 서비스 활성화");
+		logger.log(Level.INFO, "노드 감지 서비스 활성화");
 		this.nodeInit();
-		this.nodeInstaller.start();
 		return true;
 	}
 
@@ -98,5 +89,6 @@ public class NodeDetectionService extends Observable<NetworkStateChangeEvent> im
 		this.nodeInstaller.stop();
 		this.workNodeService.stop();
 		this.masterNodeService.stop();
+		this.clearObservers();
 	}
 }

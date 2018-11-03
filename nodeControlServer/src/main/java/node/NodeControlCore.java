@@ -27,7 +27,7 @@ import node.network.NetworkManager;
 public class NodeControlCore
 {
 
-	public static final Logger mainLogger = LogWriter.createLogger(NodeControlCore.class, "main");// 메인 로거
+	public static final Logger logger = LogWriter.createLogger(NodeControlCore.class, "main");// 메인 로거
 	
 	public static final ExecutorService mainThreadPool = Executors.newCachedThreadPool();
 	
@@ -61,7 +61,7 @@ public class NodeControlCore
 	{
 		Logger.getGlobal().setLevel(Level.FINER);
 		
-		mainLogger.log(Level.INFO, "서버 시작");
+		logger.log(Level.INFO, "서버 시작");
 		
 		try
 		{
@@ -71,7 +71,7 @@ public class NodeControlCore
 		}
 		catch (Exception e)
 		{
-			mainLogger.log(Level.SEVERE, "config 로드 실패", e);
+			logger.log(Level.SEVERE, "config 로드 실패", e);
 			return;
 		}
 	}
@@ -81,25 +81,27 @@ public class NodeControlCore
 		try
 		{
 			if(!this.dbHandler.startModule()) throw new Exception("DB핸들러 로드 실패");
-			if(!this.deviceInfoManager.startModule()) throw new Exception("장치 정보 모듈 로드 실패");
-			if(!this.clusterService.startModule()) throw new Exception("스파크 모듈 로드 실패");
+			if(!this.deviceInfoManager.startModule()) throw new Exception("노드 정보 모듈 로드 실패");
+			if(!this.networkManager.startModule()) throw new Exception("네트워크 모듈 로드 실패");
+			if(!this.nodeDetectionService.startModule()) throw new Exception("노드 감지 서비스 모듈 로드 실패");
+			//if(!this.clusterService.startModule()) throw new Exception("스파크 모듈 로드 실패");
 			
 			this.dbHandler.getInstaller().complete();
 		}
 		catch(Exception e)
 		{
-			mainLogger.log(Level.SEVERE, "서비스 시작중 오류", e);
+			logger.log(Level.SEVERE, "서비스 시작중 오류", e);
 			this.stopService();
 			return;
 		}
-		mainLogger.log(Level.INFO, "서비스 시작 완료");
+		logger.log(Level.INFO, "서비스 시작 완료");
 	}
 	
 	private void stopService()
 	{
 		this.dbHandler.stopModule();
 		this.deviceInfoManager.stopModule();
-		mainLogger.log(Level.INFO, "서비스 중지");
+		logger.log(Level.INFO, "서비스 중지");
 	}
 
 	

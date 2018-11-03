@@ -1,9 +1,11 @@
-package node.network.communicator;
+package node.network;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.net.SocketAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.HashMap;
@@ -14,6 +16,7 @@ import java.util.logging.Logger;
 
 import node.IServiceModule;
 import node.NodeControlCore;
+import node.device.Device;
 import node.device.DeviceInfoManager;
 import node.log.LogWriter;
 import node.network.NetworkManager;
@@ -23,10 +26,12 @@ import node.network.packet.PacketUtil;
 import node.util.observer.Observable;
 import node.util.observer.Observer;
 
-public class SocketHandler implements Runnable
+public class UDPSocketHandler implements Runnable
 {
+	public static final Logger logger = LogWriter.createLogger(UDPSocketHandler.class, "socket");
+	
 	private final DeviceInfoManager deviceInfoManager;
-	private HashMap<String, Observable<NetworkEvent>> observerMap;
+	private NetworkManager networkManager;
 	
 	private Thread worker = null;
 	private boolean isWork;
@@ -35,58 +40,16 @@ public class SocketHandler implements Runnable
 
 	private int port;
 	
-	public SocketHandler(DeviceInfoManager deviceInfoManager)
+	public UDPSocketHandler(NetworkManager networkManager, DeviceInfoManager deviceInfoManager)
 	{
+		this.networkManager = networkManager;
 		this.deviceInfoManager = deviceInfoManager;
-		this.observerMap = new HashMap<String, Observable<NetworkEvent>>();
-	}
-	
-	public void addObserver(String key, Observer<NetworkEvent> observer)
-	{
-		Observable<NetworkEvent> ob = this.observerMap.getOrDefault(key, null);
-		if(ob == null)
-		{
-			ob = (new Observable<NetworkEvent>());
-			this.observerMap.put(key, ob);
-		}
-		
-		ob.addObserver(observer);
-	}
-	
-	public void removeObserver(String key, Observer<NetworkEvent> observer)
-	{
-		Observable<NetworkEvent> observable = this.observerMap.getOrDefault(key, null);
-		if(observable == null)
-		{
-			return;
-		}
-		observable.removeObserver(observer);
-		
-		if(observable.size() == 0)
-		{
-			this.observerMap.remove(key);
-		}
-	}
-	
-	public void removeObserver(Observer<NetworkEvent> observer)
-	{
-		Observable<NetworkEvent> observable;
-		for(String key : this.observerMap.keySet())
-		{
-			observable = this.observerMap.get(key);
-			observable.removeObserver(observer);
-			
-			if(observable.size() == 0)
-			{
-				this.observerMap.remove(key);
-			}
-		}
 	}
 
 	public void start()
 	{
 		if(this.isWork) return;
-		
+		logger.log(Level.INFO, "소켓 핸들러 로드");
 		if(this.worker == null || !this.worker.isAlive())
 		{
 			this.worker = new Thread(this);
@@ -97,14 +60,19 @@ public class SocketHandler implements Runnable
 			this.port = Integer.parseInt(NodeControlCore.getProp(NetworkManager.PROP_INFOBROADCAST_PORT));
 
 			String interfaceStr = NodeControlCore.getProp(NetworkManager.PROP_INTERFACE);
-			NetworkUtil.getNetworkInterface(interfaceStr);
+			//NetworkUtil.getNetworkInterface(interfaceStr);
 			//this.socket = new DatagramSocket(NetworkManager.PROP_SOCKET_INTERFACE)
-			this.socket = new DatagramSocket(this.port);
+			this.socket = new DatagramSocket(49800);
+			System.out.println("socketOption setReuseAddress: " + this.socket.getReuseAddress());
+			System.out.println("socketOption getLocalSocketAddress: " + this.socket.getLocalSocketAddress());
+			System.out.println("socketOption getRemoteSocketAddress: " + this.socket.getRemoteSocketAddress());
+			//this.socket.setReuseAddress(false);
+			
 			this.socket.setBroadcast(true);
 		}
 		catch (SocketException e)
 		{
-			NetworkManager.networkLogger.log(Level.SEVERE, "소켓 열기 실패", e);
+			logger.log(Level.SEVERE, "소켓 열기 실패", e);
 			return;
 		}
 		
@@ -116,7 +84,7 @@ public class SocketHandler implements Runnable
 	public void stop()
 	{
 		if(!this.isWork) return;
-		
+		logger.log(Level.INFO, "소켓 핸들러 종료");
 		this.isWork = false;
 		this.worker.interrupt();
 		this.socket.close();
@@ -125,36 +93,28 @@ public class SocketHandler implements Runnable
 	@Override
 	public void run()
 	{
-		NetworkManager.networkLogger.log(Level.INFO, "네트워크 수신 시작");
+		logger.log(Level.INFO, "네트워크 수신 시작");
 		byte[] packetBuffer = new byte[PacketUtil.HEADER_SIZE + PacketUtil.MAX_SIZE_KEY + PacketUtil.MAX_SIZE_DATA];
 		DatagramPacket dgramPacket;
 		
 		while(this.isWork)
 		{
 			dgramPacket = new DatagramPacket(packetBuffer, packetBuffer.length);
+
 			try
 			{
 				this.socket.receive(dgramPacket);
-				if(!PacketUtil.isPacket(packetBuffer))
-				{
-					continue;
-				}
-				
-				Packet packetObj = new Packet(packetBuffer);
-				String eventKey = packetObj.getKey();
-				
-				Observable<NetworkEvent> observable = observerMap.getOrDefault(eventKey, null);
-				if(observable == null)
-				{
-					continue;
-				}
-				
-				NetworkEvent event = new NetworkEvent(eventKey, dgramPacket.getAddress(), packetObj);
-				observable.notifyObservers(NodeControlCore.mainThreadPool, event);
+				this.networkManager.socketReadCallback(dgramPacket.getAddress(), packetBuffer);
+				System.out.println("receive" + dgramPacket.getAddress());
 			}
 			catch (IOException e)
 			{
-				NetworkManager.networkLogger.log(Level.SEVERE, "수신 실패", e);
+				if(this.socket.isClosed())
+				{
+					logger.log(Level.INFO, "소켓 종료");
+					return;
+				}
+				logger.log(Level.SEVERE, "수신 실패", e);
 			}
 		}
 	}
@@ -170,19 +130,22 @@ public class SocketHandler implements Runnable
 		{
 			inetAddr = this.deviceInfoManager.getDevice(packet.getReceiver()).getInetAddr();
 		}
+		if(inetAddr == null)
+		{
+			logger.log(Level.WARNING, "null주소: " + packet.getReceiver());
+		}
 		
 		byte[] rawPacket = packet.getNativeArr();
 		DatagramPacket dgramPacket = new DatagramPacket(rawPacket, rawPacket.length, inetAddr, port);
+		
 		try
 		{
-			synchronized (this)
-			{
-				this.socket.send(dgramPacket);
-			}
+			System.out.println(dgramPacket.getAddress());
+			this.socket.send(dgramPacket);
 		}
 		catch (IOException e)
 		{
-			NetworkManager.networkLogger.log(Level.SEVERE, "패킷 전송 실패", e);
+			logger.log(Level.SEVERE, "패킷 전송 실패", e);
 		}
 	}
 }

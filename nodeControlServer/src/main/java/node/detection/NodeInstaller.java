@@ -2,15 +2,18 @@ package node.detection;
 
 import java.util.Random;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import node.network.NetworkManager;
-import node.network.communicator.NetworkEvent;
-import node.network.communicator.SocketHandler;
+import node.log.LogWriter;
+import node.network.NetworkEvent;
 import node.util.observer.Observable;
 import node.util.observer.Observer;
 
 public class NodeInstaller implements Runnable
 {
+	public static final Logger logger = LogWriter.createLogger(NodeInstaller.class, "nodeInstaller");
+	
 	private static final int DEFAULT_WAIT_TIME = 5000;
 	private static final int RANDOM_WAIT_TIME = 5000;
 	private NetworkManager networkManager;
@@ -18,6 +21,7 @@ public class NodeInstaller implements Runnable
 	private NodeDetectionService nodeDetectionService;
 	private NodeInfoProtocol masterNodeData;
 	private Observer<NetworkEvent> networkObserverFunc;
+	private boolean isRun;
 
 	public NodeInstaller(NodeDetectionService nodeDetectionService, NetworkManager networkManager)
 	{
@@ -25,6 +29,7 @@ public class NodeInstaller implements Runnable
 		this.networkManager = networkManager;
 		//this.dbHandler.getInstaller().checkAndCreateTable(NODE_TABLE_SCHEMA);
 		this.networkObserverFunc = this::updateNetwork;
+		this.isRun = false;
 	}
 
 	public synchronized void updateNetwork(Observable<NetworkEvent> object, NetworkEvent data)
@@ -42,15 +47,20 @@ public class NodeInstaller implements Runnable
 	
 	public synchronized void start()
 	{
-		NetworkManager.networkLogger.log(Level.INFO, "노드 알림 수신 시작");
+		if(this.isRun) return;
+		logger.log(Level.INFO, "노드 초기화 활성화");
 		this.waitThread = new Thread(this);
 		this.waitThread.start();
-		this.networkManager.socketHandler.addObserver(MasterNodeService.KPROTO_MASTER_BROADCAST, this.networkObserverFunc);
+		this.networkManager.addObserver(MasterNodeService.KPROTO_MASTER_BROADCAST, this.networkObserverFunc);
+		this.isRun = true;
 	}
 	
 	public synchronized void stop()
 	{
-		this.networkManager.socketHandler.removeObserver(MasterNodeService.KPROTO_MASTER_BROADCAST, this.networkObserverFunc);
+		if(!this.isRun) return;
+		logger.log(Level.INFO, "노드 초기화 중지");
+		this.networkManager.removeObserver(MasterNodeService.KPROTO_MASTER_BROADCAST, this.networkObserverFunc);
+		this.isRun = false;
 	}
 
 	@Override
@@ -63,22 +73,25 @@ public class NodeInstaller implements Runnable
 		catch (InterruptedException e)
 		{
 			//마스터 노드 감지
+			logger.log(Level.INFO, String.format("마스터 노드 감지(%s)", this.masterNodeData.getMasterNode().toString()));
 			this.nodeDetectionService.workNodeSelectionCallback(this.masterNodeData);
 			this.stop();
 			return;
 		}
-		
-		int randomWaitTime = new Random(RANDOM_WAIT_TIME).nextInt();
+		int randomWaitTime = (int)(Math.random() * RANDOM_WAIT_TIME);
+		logger.log(Level.INFO, String.format("마스터 노드 미감지, 랜덤한 시간 대기 (%dms)", randomWaitTime));
 		try
 		{
 			Thread.sleep(randomWaitTime);
 		}
 		catch (InterruptedException e)
 		{
+			logger.log(Level.INFO, String.format("마스터 노드 감지(%s)", this.masterNodeData.getMasterNode().toString()));
 			this.nodeDetectionService.workNodeSelectionCallback(this.masterNodeData);
 			this.stop();
 			return;
 		}
+		logger.log(Level.INFO, "마스터 노드 선언");
 		this.nodeDetectionService.masterNodeSelectionCallback();
 		this.stop();
 	}
