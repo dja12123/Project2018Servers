@@ -6,6 +6,16 @@ import node.security.RSAEncrypt;
 
 public class EncPacketConverter
 {
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	public static final byte[] MAGIC_NO_PART = new byte[] {0x50, 0x41, 0x52, 0x54};	//PART
 	
 	public static final int MAGIC_PART_NUM_PLACE = MAGIC_NO_PART.length; //idx = 4;
