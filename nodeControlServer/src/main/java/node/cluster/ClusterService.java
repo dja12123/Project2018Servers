@@ -34,6 +34,7 @@ public class ClusterService implements IServiceModule {
 		this.instFlag = SPARK_NOT_INSTALLED;
 		this.connectState = NetworkStateChangeEvent.STATE_FAIL;
 		this.nds = nds;
+		nds.addObserver(nscEventReceiver);
 		this.masterIp = null;
 		
 		instSpark();
