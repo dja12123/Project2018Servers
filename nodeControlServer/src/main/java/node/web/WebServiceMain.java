@@ -69,7 +69,7 @@ public class WebServiceMain extends NanoHTTPD implements IServiceModule
 		// https://github.com/Teaonly/android-eye/blob/master/src/teaonly/droideye/TeaServer.java
 		
 		//System.out.println("root >> " + rootDirectory);
-		
+		//
 		String msg = "";
 		if (uri.startsWith("/"))
 		{ // Root Mapping
