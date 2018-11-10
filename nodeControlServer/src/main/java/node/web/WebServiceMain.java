@@ -34,7 +34,7 @@ public class WebServiceMain extends NanoHTTPD implements IServiceModule
 	private static final Logger LOG = LogWriter.createLogger(WebServiceMain.class, "WebServiceMain");
 	// private static final int MAXIMUM_SIZE_OF_IMAGE = 1000000;
 	public static final String rootDirectory = FileHandler.getExtResourceFile("www").toString();
-
+	
 	public WebServiceMain()
 	{
 		super(80);
@@ -67,7 +67,9 @@ public class WebServiceMain extends NanoHTTPD implements IServiceModule
 		// url이용해서 어떤 요청인지 구분 ->
 		// refer::
 		// https://github.com/Teaonly/android-eye/blob/master/src/teaonly/droideye/TeaServer.java
-
+		
+		System.out.println(rootDirectory);
+		
 		String msg = "";
 		if (uri.startsWith("/"))
 		{ // Root Mapping
