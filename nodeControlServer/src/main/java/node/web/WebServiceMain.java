@@ -12,7 +12,7 @@ import fi.iki.elonen.util.ServerRunner;
 
 enum MIME_TYPE
 {
-	IMAGE_JPEG("image/jpeg");
+	IMAGE_JPEG("image/jpeg"),
 	IMAGE_PNG("image/png");
 
 	String typeString;
