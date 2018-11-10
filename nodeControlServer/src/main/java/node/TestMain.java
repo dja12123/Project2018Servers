@@ -75,7 +75,7 @@ public class TestMain
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			System.out.println(new String(buffer));
+			System.out.println(bytesToHex(buffer, readLen));
 		}
 		
 		
