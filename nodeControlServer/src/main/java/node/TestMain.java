@@ -33,7 +33,8 @@ public class TestMain
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-		System.mapLibraryName("rocksaw");
+		String libName = System.mapLibraryName("rocksaw");
+		System.out.println(libName);
 
 	}
 	public static void main(String[] args)
