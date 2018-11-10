@@ -62,7 +62,6 @@ public class TestMain
 			e.printStackTrace();
 		}
 		byte[] buffer = new byte[100000];
-		ByteBuffer buf = ByteBuffer.wrap(buffer);
 		while(true)
 		{
 			System.out.println("정상적으로 수신중입니다...");
@@ -76,13 +75,21 @@ public class TestMain
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			
-			for(int i = 0; i < readLen; ++i)
-			{
-				System.out.println(buf.toString());
-			}
+			System.out.println(bytesToHex(buffer, readLen));
 		}
 		
 		
+	}
+	
+	private final static char[] hexArray = "0123456789ABCDEF".toCharArray();
+	public static String bytesToHex(byte[] bytes, int end) {
+	    StringBuffer buf = new StringBuffer();
+	    for ( int j = 0; j < end; j++ ) {
+	        int v = bytes[j] & 0xFF;
+	        buf.append(hexArray[v >>> 4]);
+	        buf.append(hexArray[v & 0x0F]);
+	        buf.append(' ');
+	    }
+	    return buf.toString();
 	}
 }
