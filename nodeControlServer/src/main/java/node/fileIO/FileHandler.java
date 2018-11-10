@@ -17,14 +17,15 @@ import node.log.LogWriter;
 public class FileHandler
 {
 	public static final Logger fileLogger = LogWriter.createLogger(FileHandler.class, "file");
-	public static final String jarDir = new File(FileHandler.class.getProtectionDomain().getCodeSource().getLocation().getPath()).getParentFile().getPath() + "/";
-    
-    
+	public static final String jarDir = new File(
+			FileHandler.class.getProtectionDomain().getCodeSource().getLocation().getPath()).getParentFile().getPath()
+			+ "/";
+
 	public static File[] getFileList(String file)
 	{
 		return getFileList(getExtResourceFile(file));
 	}
-	
+
 	public static File[] getFileList(File file)
 	{
 		File[] fileList = file.listFiles();
@@ -46,15 +47,15 @@ public class FileHandler
 	}
 
 	public static File getExtResourceFile(String filePath)
-	{        
-        StringBuffer dir = new StringBuffer(jarDir);
-        
-        dir.append("extResource/");
-        dir.append(filePath);
-        
+	{
+		StringBuffer dir = new StringBuffer(jarDir);
+
+		dir.append("extResource/");
+		dir.append(filePath);
+
 		return new File(dir.toString());
 	}
-	
+
 	public static InputStream getResourceAsStream(String path)
 	{
 		return FileHandler.class.getResourceAsStream(path);
@@ -73,12 +74,12 @@ public class FileHandler
 		}
 		return inputStream;
 	}
-	
+
 	public static FileInputStream getInputStream(String file)
 	{
 		return getInputStream(getExtResourceFile(file));
 	}
-	
+
 	public static FileOutputStream getOutputStream(File file)
 	{
 		FileOutputStream outputStream = null;
@@ -92,7 +93,7 @@ public class FileHandler
 		}
 		return outputStream;
 	}
-	
+
 	public static FileOutputStream getOutputStream(String file)
 	{
 		return getOutputStream(getExtResourceFile(file));
@@ -133,10 +134,11 @@ public class FileHandler
 
 		return fileReadString.toString();
 	}
-	
+
 	public static String readFileString(String file)
 	{
 		return readFileString(getExtResourceFile(file));
 	}
 	
+
 }

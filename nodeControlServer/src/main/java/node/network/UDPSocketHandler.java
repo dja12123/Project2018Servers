@@ -14,6 +14,8 @@ import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.savarese.rocksaw.net.RawSocket;
+
 import node.IServiceModule;
 import node.NodeControlCore;
 import node.device.Device;
@@ -37,6 +39,7 @@ public class UDPSocketHandler implements Runnable
 	private boolean isWork;
 	
 	private DatagramSocket socket;
+	private RawSocket rawSocket;
 
 	private int port;
 	
@@ -44,6 +47,7 @@ public class UDPSocketHandler implements Runnable
 	{
 		this.networkManager = networkManager;
 		this.deviceInfoManager = deviceInfoManager;
+		this.rawSocket = new RawSocket();
 	}
 
 	public void start()
