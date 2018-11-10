@@ -17,7 +17,7 @@ public class TestMain
 		File rawSocketLib = FileHandler.getExtResourceFile("rawSocket");
 		StringBuffer libPathBuffer = new StringBuffer();
 		libPathBuffer.append(rawSocketLib.toString());
-		libPathBuffer.append(";");
+		libPathBuffer.append(":");
 		libPathBuffer.append(System.getProperty("java.library.path"));
 		
 		System.setProperty("java.library.path", libPathBuffer.toString());
@@ -34,7 +34,7 @@ public class TestMain
 			e1.printStackTrace();
 		}
 		String libName = System.mapLibraryName("rocksaw");
-		System.out.println(libName);
+		System.out.println(libName + " is libname");
 
 	}
 	public static void main(String[] args)
