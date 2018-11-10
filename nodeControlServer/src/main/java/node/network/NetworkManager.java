@@ -7,8 +7,6 @@ import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.xml.soap.Node;
-
 import node.IServiceModule;
 import node.NodeControlCore;
 import node.bash.CommandExecutor;
@@ -154,7 +152,7 @@ public class NetworkManager implements IServiceModule
 		
 		synchronized (this.socketHandler)
 		{
-			logger.log(Level.INFO, "IP재할당...");
+			logger.log(Level.INFO, "IP�옱�븷�떦...");
 			this.socketHandler.stop();
 			try
 			{
@@ -165,7 +163,7 @@ public class NetworkManager implements IServiceModule
 				e.printStackTrace();
 			}
 			this.socketHandler.start();
-			logger.log(Level.INFO, "완료");
+			logger.log(Level.INFO, "�셿猷�");
 		}
 		
 	}
