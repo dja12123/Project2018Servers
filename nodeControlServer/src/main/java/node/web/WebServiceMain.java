@@ -13,6 +13,7 @@ import fi.iki.elonen.util.ServerRunner;
 enum MIME_TYPE
 {
 	IMAGE_JPEG("image/jpeg");
+	IMAGE_PNG("image/png");
 
 	String typeString;
 
@@ -32,7 +33,7 @@ public class WebServiceMain extends NanoHTTPD implements IServiceModule
 {
 	private static final Logger LOG = LogWriter.createLogger(WebServiceMain.class, "WebServiceMain");
 	// private static final int MAXIMUM_SIZE_OF_IMAGE = 1000000;
-	public static final String rootDirectory = "/root/Project2018Servers/nodeControlServer/resources/www";
+	public static final String rootDirectory = "/root/Project2018Servers/nodeControlServer/extResource/www";
 
 	public WebServiceMain()
 	{
@@ -74,7 +75,22 @@ public class WebServiceMain extends NanoHTTPD implements IServiceModule
 			{
 				return WebServiceMain.serveImage(MIME_TYPE.IMAGE_JPEG, rootDirectory + uri);
 			}
-			msg = FileHandler.readFileString("/www/index.html");
+			else if (uri.contains(".png")) 
+			{
+				return WebServiceMain.serveImage(MIME_TYPE.IMAGE_PNG, rootDirectory + uri);
+			}
+			else if (uri.contains(".js"))
+			{
+				msg = FileHandler.readFileString("/index.js");
+			}
+			else if (uri.contains(".css"))
+			{
+				msg = FileHandler.readFileString("/index.css");
+			}
+			else 
+			{
+				msg = FileHandler.readFileString("/index.html");
+			}
 		}
 
 		System.out.println("Response Data Recieve...");
