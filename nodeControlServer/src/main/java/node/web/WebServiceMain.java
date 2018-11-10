@@ -68,19 +68,19 @@ public class WebServiceMain extends NanoHTTPD implements IServiceModule
 		// refer::
 		// https://github.com/Teaonly/android-eye/blob/master/src/teaonly/droideye/TeaServer.java
 		
-		System.out.println("root >> " + rootDirectory);
+		//System.out.println("root >> " + rootDirectory);
 		
 		String msg = "";
 		if (uri.startsWith("/"))
 		{ // Root Mapping
 			if (uri.contains(".jpg"))
 			{
-				System.out.println("uri path >> " + (rootDirectory + uri));
-				return WebServiceMain.serveImage(MIME_TYPE.IMAGE_JPEG, rootDirectory + uri);
+				//System.out.println("uri path >> " + (rootDirectory + uri));
+				return WebServiceMain.serveImage(MIME_TYPE.IMAGE_JPEG, "www" + uri);
 			}
 			else if (uri.contains(".png")) 
 			{
-				return WebServiceMain.serveImage(MIME_TYPE.IMAGE_PNG, rootDirectory + uri);
+				return WebServiceMain.serveImage(MIME_TYPE.IMAGE_PNG, "www" + uri);
 			}
 			else if (uri.contains(".js"))
 			{
