@@ -76,7 +76,6 @@ public class TestMain
 				e.printStackTrace();
 			}
 			System.out.println(new String(buffer));
-			System.out.println(bytesToHex(buffer, readLen));
 		}
 		
 		
