@@ -3,6 +3,7 @@ package node;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.nio.ByteBuffer;
 
 import com.savarese.rocksaw.net.RawSocket;
 
@@ -61,6 +62,7 @@ public class TestMain
 			e.printStackTrace();
 		}
 		byte[] buffer = new byte[100000];
+		ByteBuffer buf = ByteBuffer.wrap(buffer);
 		while(true)
 		{
 			System.out.println("정상적으로 수신중입니다...");
@@ -74,9 +76,10 @@ public class TestMain
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+			
 			for(int i = 0; i < readLen; ++i)
 			{
-				System.out.println(buffer[i]);
+				System.out.println(buf.toString());
 			}
 		}
 		
