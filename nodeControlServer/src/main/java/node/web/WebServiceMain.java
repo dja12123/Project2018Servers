@@ -33,7 +33,7 @@ public class WebServiceMain extends NanoHTTPD implements IServiceModule
 {
 	private static final Logger LOG = LogWriter.createLogger(WebServiceMain.class, "WebServiceMain");
 	// private static final int MAXIMUM_SIZE_OF_IMAGE = 1000000;
-	public static final String rootDirectory = "/root/Project2018Servers/nodeControlServer/extResource/www";
+	public static final String rootDirectory = FileHandler.getExtResourceFile("www").toString();
 
 	public WebServiceMain()
 	{
