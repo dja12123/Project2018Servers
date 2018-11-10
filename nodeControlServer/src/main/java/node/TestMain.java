@@ -63,6 +63,7 @@ public class TestMain
 		byte[] buffer = new byte[100000];
 		while(true)
 		{
+			System.out.println("정상적으로 수신중입니다...");
 			int readLen = 0;
 			try
 			{
