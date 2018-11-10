@@ -13,6 +13,7 @@ public class TestMain
 {
 	static
 	{
+		
 		File rawSocketLib = FileHandler.getExtResourceFile("rawSocket");
 		StringBuffer libPathBuffer = new StringBuffer();
 		libPathBuffer.append(rawSocketLib.toString());
@@ -32,6 +33,7 @@ public class TestMain
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
+		System.mapLibraryName("rocksaw");
 
 	}
 	public static void main(String[] args)
@@ -39,6 +41,9 @@ public class TestMain
 		NodeControlCore.init();
 		
 		System.out.println(System.getProperty("java.library.path"));
+		
+		
+		
 		RawSocket rawSocket = new RawSocket();
 		try
 		{
