@@ -75,6 +75,7 @@ public class WebServiceMain extends NanoHTTPD implements IServiceModule
 		{ // Root Mapping
 			if (uri.contains(".jpg"))
 			{
+				System.out.println("uri path >> " + (rootDirectory + uri));
 				return WebServiceMain.serveImage(MIME_TYPE.IMAGE_JPEG, rootDirectory + uri);
 			}
 			else if (uri.contains(".png")) 
@@ -83,15 +84,15 @@ public class WebServiceMain extends NanoHTTPD implements IServiceModule
 			}
 			else if (uri.contains(".js"))
 			{
-				msg = FileHandler.readFileString("/index.js");
+				msg = FileHandler.readFileString("www/index.js");
 			}
 			else if (uri.contains(".css"))
 			{
-				msg = FileHandler.readFileString("/index.css");
+				msg = FileHandler.readFileString("www/index.css");
 			}
 			else 
 			{
-				msg = FileHandler.readFileString("/index.html");
+				msg = FileHandler.readFileString("www/index.html");
 			}
 		}
 
