@@ -84,10 +84,8 @@ public class CommandExecutor
 		StringBuffer resultBuffer = new StringBuffer();
 
 		ProcessBuilder pb = new ProcessBuilder(cmd);
-		pb.inheritIO();
 
 		Process process = pb.start();
-		process.waitFor();
 		successBufferReader = new BufferedReader(new InputStreamReader(process.getInputStream(), "UTF-8"));
 		while ((msg = successBufferReader.readLine()) != null)
 		{
