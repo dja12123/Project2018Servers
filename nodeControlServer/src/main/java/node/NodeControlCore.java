@@ -99,6 +99,7 @@ public class NodeControlCore
 				logger.log(Level.INFO, "환경변수(JAVA_HOME) 설정");
 				cmdresult = CommandExecutor.executeCommand("readlink", "-f", "/usr/bin/javac");
 				cmdresult = cmdresult.replace("/bin/javac", "");
+				System.out.println("DEBUG: " + cmdresult);
 				PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter("/etc/profile")), true);
 				pw.append("export JAVA_HOME=" + cmdresult);
 				pw.println();
