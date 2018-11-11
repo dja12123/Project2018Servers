@@ -100,6 +100,7 @@ public class NodeControlCore
 				cmdresult = cmdresult.replace("/bin/javac", "");
 				BufferedWriter bw = new BufferedWriter(new FileWriter("/etc/profile"));
 				bw.write(new String("export JAVA_HOME=" + cmdresult + "\n"));
+				bw.close();
 			}
 		}
 		catch (Exception e)
