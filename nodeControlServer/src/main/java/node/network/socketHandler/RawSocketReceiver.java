@@ -32,6 +32,7 @@ public class RawSocketReceiver implements Runnable
 	private RawSocket rawSocket;
 
 	private int port;
+	private String nic;
 	
 	public RawSocketReceiver(NetworkManager networkManager, DeviceInfoManager deviceInfoManager)
 	{
@@ -53,8 +54,10 @@ public class RawSocketReceiver implements Runnable
 		try
 		{
 			this.port = Integer.parseInt(NodeControlCore.getProp(NetworkManager.PROP_INFOBROADCAST_PORT));
+			this.nic = NodeControlCore.getProp(NetworkManager.PROP_INTERFACE);
 
 			//String interfaceStr = NodeControlCore.getProp(NetworkManager.PROP_INTERFACE);
+			this.rawSocket.bindDevice(this.nic);
 			this.rawSocket.open(RawSocket.PF_INET, RawSocket.getProtocolByName("ICMP"));
 			//NetworkUtil.getNetworkInterface(interfaceStr);
 			//this.socket = new DatagramSocket(NetworkManager.PROP_SOCKET_INTERFACE)

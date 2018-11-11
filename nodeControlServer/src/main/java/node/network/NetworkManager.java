@@ -30,7 +30,8 @@ public class NetworkManager implements IServiceModule
 	
 	public final DeviceInfoManager deviceInfoManager;
 	
-	private final RawSocketReceiver rawSocketHandler;
+	private final RawSocketReceiver rawSocketReceiver;
+	private final BroadcastSender broadcastSender;
 	
 	private HashMap<String, Observable<NetworkEvent>> observerMap;
 	
@@ -38,7 +39,8 @@ public class NetworkManager implements IServiceModule
 	{
 		this.deviceInfoManager = deviceInfoManager;
 
-		this.rawSocketHandler = new RawSocketReceiver(this, this.deviceInfoManager);
+		this.rawSocketReceiver = new RawSocketReceiver(this, this.deviceInfoManager);
+		this.broadcastSender = new BroadcastSender();
 		
 		
 		this.observerMap = new HashMap<String, Observable<NetworkEvent>>();
@@ -90,7 +92,7 @@ public class NetworkManager implements IServiceModule
 	{
 		if(packet.isBroadcast())
 		{
-			this.rawSocketHandler.sendMessage(packet.getDataByte());
+			this.broadcastSender.sendMessage(packet.getDataByte());
 		}
 	}
 	
@@ -118,7 +120,7 @@ public class NetworkManager implements IServiceModule
 	@Override
 	public boolean startModule()
 	{
-		this.rawSocketHandler.start();
+		this.rawSocketReceiver.start();
 		return true;
 	}
 
@@ -126,7 +128,7 @@ public class NetworkManager implements IServiceModule
 	public void stopModule()
 	{
 		this.observerMap.clear();
-		this.rawSocketHandler.stop();
+		this.rawSocketReceiver.stop();
 	}
 	
 	public static void main(String[] args) throws UnknownHostException
@@ -162,10 +164,10 @@ public class NetworkManager implements IServiceModule
 		command.add(String.format("ip route add default via %s", gatewayAddr));
 		command.add(String.format("ifup %s", iface));
 		
-		synchronized (this.rawSocketHandler)
+		synchronized (this.rawSocketReceiver)
 		{
 			logger.log(Level.INFO, "IP�옱�븷�떦...");
-			this.rawSocketHandler.stop();
+			this.rawSocketReceiver.stop();
 			try
 			{
 				CommandExecutor.executeBash(command);
@@ -174,7 +176,7 @@ public class NetworkManager implements IServiceModule
 			{
 				e.printStackTrace();
 			}
-			this.rawSocketHandler.start();
+			this.rawSocketReceiver.start();
 			logger.log(Level.INFO, "�셿猷�");
 		}
 		

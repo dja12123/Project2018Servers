@@ -48,14 +48,23 @@ public class BroadcastSender
 
 	}
 	
-	public void stop()
+	public void sendMessage(byte[] stream)
 	{
-		if(!this.isWork) return;
-		this.isWork = false;
-		
-		this.socket.close();
+		if(!this.isWork)
+		{
+			logger.log(Level.WARNING, "소켓 닫힘");
+			return;
+		}
+		DatagramPacket packet = new DatagramPacket(stream, this.port);
+		packet.setAddress(NetworkUtil.broadcastIA());
+		packet.setData(stream);
+		try
+		{
+			this.socket.send(packet);
+		}
+		catch (IOException e)
+		{
+			logger.log(Level.SEVERE, "브로드캐스트 실패", e);
+		}
 	}
-	
-	
-
 }
