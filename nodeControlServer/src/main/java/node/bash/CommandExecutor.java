@@ -63,11 +63,12 @@ public class CommandExecutor {
 	}
 	
 	//명령을 mv -r /df /fd 하고 싶으면 매개변수로 ("mv", "-r", "/df", "/fd) 이런식으로 넘기면 명령줄 실행
-	public static void executeCommand(String... cmd) throws Exception {
+	public static String executeCommand(String... cmd) throws Exception {
 
 		BufferedReader successBufferReader = null;
 		BufferedReader errorBufferReader = null;
 		String msg = null;
+		String resultMsg = new String();
 
    
         ProcessBuilder pb = new ProcessBuilder(cmd);
@@ -76,12 +77,17 @@ public class CommandExecutor {
         Process process = pb.start();
         successBufferReader = new BufferedReader(new InputStreamReader(process.getInputStream(), "UTF-8"));
         while((msg = successBufferReader.readLine()) != null) {
+        	
         	cmdlogger.log(Level.INFO, msg + System.getProperty("line.separator"));
+        	resultMsg += (msg + System.getProperty("line.separator"));
         }
         errorBufferReader = new BufferedReader(new InputStreamReader(process.getErrorStream(), "UTF-8"));
         while((msg = errorBufferReader.readLine()) != null) {
         	cmdlogger.log(Level.INFO, msg + System.getProperty("line.separator"));
+        	resultMsg += (msg + System.getProperty("line.separator"));
         }
+        
+        return resultMsg;
 	}
 	
 	//쉘 명령을 임시파일에 저장
