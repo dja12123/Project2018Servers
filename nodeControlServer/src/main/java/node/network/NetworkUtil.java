@@ -17,7 +17,7 @@ public class NetworkUtil
 	{
 		try
 		{
-			BROADCAST_IA = InetAddress.getByName("255.255.255.255");
+			BROADCAST_IA = InetAddress.getByName("192.168.0.255");
 			ALL_IA = InetAddress.getByName("0.0.0.0");
 		}
 		catch (UnknownHostException e)
