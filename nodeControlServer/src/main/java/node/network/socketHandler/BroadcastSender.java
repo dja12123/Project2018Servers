@@ -63,7 +63,7 @@ public class BroadcastSender
 			logger.log(Level.WARNING, "소켓 닫힘");
 			return;
 		}
-		DatagramPacket packet = new DatagramPacket(stream, this.port);
+		DatagramPacket packet = new DatagramPacket(stream, stream.length);
 		packet.setAddress(NetworkUtil.broadcastIA());
 		packet.setData(stream);
 		try
