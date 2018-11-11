@@ -87,9 +87,8 @@ public class RawSocketHandler implements Runnable
 	public void stop()
 	{
 		if(!this.isWork) return;
-		logger.log(Level.INFO, "소켓 핸들러 종료");
 		this.isWork = false;
-		this.worker.interrupt();
+		logger.log(Level.INFO, "소켓 핸들러 종료");
 		try
 		{
 			this.rawSocket.close();
@@ -98,6 +97,7 @@ public class RawSocketHandler implements Runnable
 		{
 			logger.log(Level.SEVERE, "로우 소켓 종료중 오류", e);
 		}
+		this.worker.interrupt();
 	}
 
 	@Override
