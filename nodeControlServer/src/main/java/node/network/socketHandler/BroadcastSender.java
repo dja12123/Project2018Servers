@@ -65,7 +65,6 @@ public class BroadcastSender
 		}
 		
 		DatagramPacket packet = new DatagramPacket(stream, stream.length);
-		packet.setAddress(NetworkUtil.broadcastIA());
 		packet.setData(stream);
 		try
 		{
