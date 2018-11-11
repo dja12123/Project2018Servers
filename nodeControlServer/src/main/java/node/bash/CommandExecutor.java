@@ -87,6 +87,7 @@ public class CommandExecutor
 		pb.inheritIO();
 
 		Process process = pb.start();
+		process.waitFor();
 		successBufferReader = new BufferedReader(new InputStreamReader(process.getInputStream(), "UTF-8"));
 		while ((msg = successBufferReader.readLine()) != null)
 		{
