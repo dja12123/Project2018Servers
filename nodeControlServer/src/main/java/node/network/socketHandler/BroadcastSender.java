@@ -63,12 +63,14 @@ public class BroadcastSender
 			logger.log(Level.WARNING, "소켓 닫힘");
 			return;
 		}
+		
 		DatagramPacket packet = new DatagramPacket(stream, stream.length);
 		packet.setAddress(NetworkUtil.broadcastIA());
 		packet.setData(stream);
 		try
 		{
 			this.socket.send(packet);
+			logger.log(Level.SEVERE, "브로드캐스트...");
 		}
 		catch (IOException e)
 		{
