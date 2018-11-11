@@ -15,7 +15,7 @@ public class TestMain
 	static
 	{
 		
-		File rawSocketLib = FileHandler.getExtResourceFile("rawsocket");
+		/*File rawSocketLib = FileHandler.getExtResourceFile("rawsocket");
 		StringBuffer libPathBuffer = new StringBuffer();
 		libPathBuffer.append(rawSocketLib.toString());
 		libPathBuffer.append(":");
@@ -34,7 +34,7 @@ public class TestMain
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-		System.loadLibrary("rocksaw");
+		System.loadLibrary("rocksaw");*/
 
 
 	}
