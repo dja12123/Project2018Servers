@@ -101,9 +101,6 @@ public class RawSocketReceiver implements Runnable
 			logger.log(Level.WARNING, "소켓 닫힘");
 			return;
 		}
-		
-		
-		
 
 		try
 		{

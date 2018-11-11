@@ -31,7 +31,7 @@ public class BroadcastSender
 		if(this.isWork) return;
 		this.isWork = true;
 		
-		logger.log(Level.INFO, "브로드캐스트 소켓 핸들러 로드");
+		logger.log(Level.INFO, "브로드캐스트 소켓 전송기 로드");
 
 		try
 		{
@@ -66,5 +66,17 @@ public class BroadcastSender
 		{
 			logger.log(Level.SEVERE, "브로드캐스트 실패", e);
 		}
+	}
+
+	public void stop()
+	{
+		if(!this.isWork) return;
+		this.isWork = false;
+		
+		logger.log(Level.WARNING, "브로드캐스트 소켓 전송기 중지");
+		
+		
+		this.socket.close();
+		
 	}
 }
