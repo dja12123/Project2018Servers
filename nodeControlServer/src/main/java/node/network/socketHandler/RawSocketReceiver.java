@@ -59,7 +59,7 @@ public class RawSocketReceiver implements Runnable
 			this.nic = NodeControlCore.getProp(NetworkManager.PROP_INTERFACE);
 			logger.log(Level.INFO, String.format("바인딩 인터페이스 (%s)", this.nic));
 			//String interfaceStr = NodeControlCore.getProp(NetworkManager.PROP_INTERFACE);
-			this.rawSocket.open(RawSocket.PF_INET, RawSocket.getProtocolByName("IP"));
+			this.rawSocket.open(RawSocket.PF_INET, RawSocket.getProtocolByName("UDP"));
 			this.rawSocket.bindDevice(this.nic);
 			
 			//NetworkUtil.getNetworkInterface(interfaceStr);
@@ -108,11 +108,7 @@ public class RawSocketReceiver implements Runnable
 		{
 
 			
-			
-			
-			
-			
-			
+			System.out.println(this.rawSocket.getIPHeaderInclude());
 			this.rawSocket.write(NetworkUtil.broadcastIA(), data);
 			logger.log(Level.SEVERE, "브로드캐스트...");
 		}
