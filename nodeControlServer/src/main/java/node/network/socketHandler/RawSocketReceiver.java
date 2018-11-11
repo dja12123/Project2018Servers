@@ -55,7 +55,7 @@ public class RawSocketReceiver implements Runnable
 		{
 			this.port = Integer.parseInt(NodeControlCore.getProp(NetworkManager.PROP_INFOBROADCAST_PORT));
 			this.nic = NodeControlCore.getProp(NetworkManager.PROP_INTERFACE);
-
+			logger.log(Level.INFO, String.format("바인딩 인터페이스 (%s)", this.nic));
 			//String interfaceStr = NodeControlCore.getProp(NetworkManager.PROP_INTERFACE);
 			this.rawSocket.bindDevice(this.nic);
 			this.rawSocket.open(RawSocket.PF_INET, RawSocket.getProtocolByName("ICMP"));
