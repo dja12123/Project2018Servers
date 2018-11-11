@@ -12,32 +12,6 @@ import node.fileIO.FileHandler;
 
 public class TestMain
 {
-	static
-	{
-		
-		/*File rawSocketLib = FileHandler.getExtResourceFile("rawsocket");
-		StringBuffer libPathBuffer = new StringBuffer();
-		libPathBuffer.append(rawSocketLib.toString());
-		libPathBuffer.append(":");
-		libPathBuffer.append(System.getProperty("java.library.path"));
-		
-		System.setProperty("java.library.path", libPathBuffer.toString());
-		Field sysPathsField = null;
-		try
-		{
-			sysPathsField = ClassLoader.class.getDeclaredField("sys_paths");
-			sysPathsField.setAccessible(true);
-			sysPathsField.set(null, null);
-		}
-		catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e1)
-		{
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-		System.loadLibrary("rocksaw");*/
-
-
-	}
 	public static void main(String[] args)
 	{
 		NodeControlCore.init();

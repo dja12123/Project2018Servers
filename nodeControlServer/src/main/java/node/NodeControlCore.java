@@ -1,6 +1,8 @@
 package node;
 
+import java.io.File;
 import java.io.InputStream;
+import java.lang.reflect.Field;
 import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -74,6 +76,31 @@ public class NodeControlCore
 			logger.log(Level.SEVERE, "config 로드 실패", e);
 			return;
 		}
+		logger.log(Level.INFO, "config 로드");
+		
+		File rawSocketLib = FileHandler.getExtResourceFile("rawsocket");
+		StringBuffer libPathBuffer = new StringBuffer();
+		libPathBuffer.append(rawSocketLib.toString());
+		libPathBuffer.append(":");
+		libPathBuffer.append(System.getProperty("java.library.path"));
+		
+		System.setProperty("java.library.path", libPathBuffer.toString());
+		Field sysPathsField = null;
+		try
+		{
+			sysPathsField = ClassLoader.class.getDeclaredField("sys_paths");
+			sysPathsField.setAccessible(true);
+			sysPathsField.set(null, null);
+		}
+		catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e1)
+		{
+			// TODO Auto-generated catch blsock
+			logger.log(Level.SEVERE, "JNI 라이브러리 폴더 링크 실패", e1);
+			return;
+		}
+		System.loadLibrary("rocksaw");
+		logger.log(Level.INFO, "JNI 라이브러리 로드");
+		
 	}
 	
 	private void startService()
