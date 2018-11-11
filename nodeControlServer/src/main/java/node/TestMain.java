@@ -27,7 +27,7 @@ public class TestMain
 		RawSocket rawSocket = new RawSocket();
 		try
 		{
-			rawSocket.open(RawSocket.PF_INET, RawSocket.getProtocolByName("UDP"));
+			rawSocket.open(RawSocket.PF_INET, RawSocket.getProtocolByName("ICMP"));
 			rawSocket.bindDevice("eth0");
 		}
 		catch (IllegalStateException e)
