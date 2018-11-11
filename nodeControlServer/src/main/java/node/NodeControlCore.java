@@ -9,6 +9,7 @@ import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import node.bash.CommandExecutor;
 import node.cluster.ClusterService;
 import node.db.DB_Handler;
 import node.detection.NodeDetectionService;
@@ -65,6 +66,7 @@ public class NodeControlCore
 		
 		logger.log(Level.INFO, "서버 시작");
 		
+		//CONFIG 로드 부분
 		try
 		{
 			InputStream stream = FileHandler.getResourceAsStream("/config.properties");
@@ -78,6 +80,23 @@ public class NodeControlCore
 		}
 		logger.log(Level.INFO, "config 로드");
 		
+		//환경 변수 설정 부분
+		try
+		{
+			String javaHome = CommandExecutor.executeCommandResult("echo $JAVA_HOME");
+			if(javaHome.equals(""))
+			{// 환경 변수가 설정되지 않았을경우
+				logger.log(Level.INFO, "환경변수(JAVA_HOME) 설정");
+			}
+		}
+		catch (Exception e)
+		{
+			logger.log(Level.SEVERE, "환경변수 변경 명령 실행중 오류", e);
+			return;
+		}
+		
+		
+		//JNI링크 부분
 		File rawSocketLib = FileHandler.getExtResourceFile("rawsocket");
 		StringBuffer libPathBuffer = new StringBuffer();
 		libPathBuffer.append(rawSocketLib.toString());

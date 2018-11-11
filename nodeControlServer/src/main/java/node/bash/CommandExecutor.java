@@ -84,6 +84,30 @@ public class CommandExecutor {
         }
 	}
 	
+	public static String executeCommandResult(String cmd) throws Exception
+	{
+		BufferedReader successBufferReader = null;
+		BufferedReader errorBufferReader = null;
+		String msg = null;
+		StringBuffer result = new StringBuffer();
+        ProcessBuilder pb = new ProcessBuilder(cmd);
+		
+        pb.inheritIO();
+        
+        Process process = pb.start();
+        
+        successBufferReader = new BufferedReader(new InputStreamReader(process.getInputStream(), "UTF-8"));
+        while((msg = successBufferReader.readLine()) != null) {
+        	cmdlogger.log(Level.INFO, msg + System.getProperty("line.separator"));
+        }
+        errorBufferReader = new BufferedReader(new InputStreamReader(process.getErrorStream(), "UTF-8"));
+        while((msg = errorBufferReader.readLine()) != null) {
+        	cmdlogger.log(Level.INFO, msg + System.getProperty("line.separator"));
+        }
+		
+		return result.toString();
+	}
+	
 	//쉘 명령을 임시파일에 저장
 	public static File createTempScript(ArrayList<String> cmd) throws IOException {
 		Iterator<String> cmdit = cmd.iterator();
