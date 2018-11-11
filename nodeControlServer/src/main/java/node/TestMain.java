@@ -28,7 +28,7 @@ public class TestMain
 		try
 		{
 			rawSocket.open(RawSocket.PF_INET, RawSocket.getProtocolByName("UDP"));
-			rawSocket.bind(InetAddress.getByName("192.168.0.39"));
+			rawSocket.bindDevice("eth0");
 		}
 		catch (IllegalStateException e)
 		{
