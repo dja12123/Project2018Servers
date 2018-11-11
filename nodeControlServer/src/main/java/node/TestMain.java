@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.net.InetAddress;
 import java.net.SocketException;
 import java.nio.ByteBuffer;
 
@@ -27,6 +28,7 @@ public class TestMain
 		try
 		{
 			rawSocket.open(RawSocket.PF_INET, RawSocket.getProtocolByName("UDP"));
+			rawSocket.bind(InetAddress.getByName("192.168.0.39"));
 		}
 		catch (IllegalStateException e)
 		{
