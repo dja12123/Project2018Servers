@@ -59,7 +59,7 @@ public class RawSocketReceiver implements Runnable
 			this.nic = NodeControlCore.getProp(NetworkManager.PROP_INTERFACE);
 			logger.log(Level.INFO, String.format("바인딩 인터페이스 (%s)", this.nic));
 			//String interfaceStr = NodeControlCore.getProp(NetworkManager.PROP_INTERFACE);
-			this.rawSocket.open(RawSocket.PF_INET, RawSocket.getProtocolByName("UDP"));
+			this.rawSocket.open(RawSocket.PF_INET, RawSocket.getProtocolByName("ICMP"));
 			this.rawSocket.bindDevice(this.nic);
 			this.rawSocket.setIPHeaderInclude(true);
 			
@@ -153,9 +153,9 @@ public class RawSocketReceiver implements Runnable
 	{
 		byte[] data = "Hello World!!".getBytes();
 		
-		
+		/*
 		UDPPacket udp = new UDPPacket(1);
-		byte[] packet = new byte[20 + 8 + data.length];
+		byte[] packet = new byte[20 + UDPPacket.LENGTH_UDP_HEADER + data.length];
 		System.arraycopy(data, 0, packet, 20 + UDPPacket.LENGTH_UDP_HEADER, data.length);
 		udp.setData(packet);
 		
@@ -177,10 +177,10 @@ public class RawSocketReceiver implements Runnable
 		System.out.println(NetworkUtil.bytesToHex(packet, packet.length));
 		System.out.println(udp.getUDPPacketLength() + " " + data.length);
 		
-		
-		/*System.out.println(data.length);
+		*/
 		NodeControlICMP icmp = new NodeControlICMP(data);
-		System.out.println(icmp.getICMPPacketByteLength());*/
+		System.out.println(NetworkUtil.bytesToHex(icmp.getData(), icmp.size()));
+		
 	}
 }
 
@@ -192,16 +192,31 @@ class NodeControlICMP extends ICMPPacket
 	private static int TYPE_NODE_ASSIGN = 14;
 	private static int CODE_BROADCAST = 0;
 	
-	public NodeControlICMP(byte[] data)
+	public NodeControlICMP(byte[] pdata)
 	{
 		super(1);
-		this.setIPHeaderLength(IP_HEADER_SIZE);
-		byte[] fullPacket = new byte[IP_HEADER_SIZE + this.getICMPHeaderByteLength() + data.length];
+		byte[] fullPacket = new byte[IP_HEADER_SIZE + 8 + pdata.length];
+		System.arraycopy(pdata, 0, fullPacket, 20 + 8, pdata.length);
+		
 		this.setData(fullPacket);
+		
+		this.setIPVersion(4);
+		this.setIPHeaderLength(5);
+		this.setIPPacketLength(fullPacket.length);
+		this.setFragmentOffset(0x0400);
+		this.setTTL(0x64);
+		this.setProtocol(IPPacket.PROTOCOL_ICMP);
 		
 		this.setType(TYPE_NODE_ASSIGN);
 		this.setCode(CODE_BROADCAST);
 		
+		this.computeICMPChecksum();
+		this.computeIPChecksum();
+	}
+	
+	public byte[] getData()
+	{
+		return this._data_;
 	}
 
 	@Override
