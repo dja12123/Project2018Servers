@@ -65,7 +65,15 @@ public class CommandExecutor {
 	
 	//명령을 mv -r /df /fd 하고 싶으면 매개변수로 ("mv", "-r", "/df", "/fd) 이런식으로 넘기면 명령줄 실행
 	public static String executeCommand(String... cmd) throws Exception {
-
+		
+		StringBuffer commandBuffer = new StringBuffer();
+		for(int i = 0; i < cmd.length; ++i)
+		{
+			commandBuffer.append(cmd[i]);
+			commandBuffer.append(' ');
+		}
+		cmdlogger.log(Level.INFO, "쉘 명령어 실행: " + commandBuffer.toString());
+		
 		BufferedReader successBufferReader = null;
 		BufferedReader errorBufferReader = null;
 		String msg = null;
@@ -79,14 +87,14 @@ public class CommandExecutor {
         while((msg = successBufferReader.readLine()) != null) {
         	resultBuffer.append(msg);
         	resultBuffer.append(LINE_SEP);
-        	cmdlogger.log(Level.INFO, msg + LINE_SEP);
         }
         errorBufferReader = new BufferedReader(new InputStreamReader(process.getErrorStream(), "UTF-8"));
         while((msg = errorBufferReader.readLine()) != null) {
         	resultBuffer.append(msg);
         	resultBuffer.append(LINE_SEP);
-        	cmdlogger.log(Level.INFO, msg + LINE_SEP);
         }
+        
+        cmdlogger.log(Level.INFO, "결과: " + resultBuffer.toString());
         return resultBuffer.toString();
 	}
 	
