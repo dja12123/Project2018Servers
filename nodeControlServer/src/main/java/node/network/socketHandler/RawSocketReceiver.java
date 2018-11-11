@@ -61,6 +61,7 @@ public class RawSocketReceiver implements Runnable
 			//String interfaceStr = NodeControlCore.getProp(NetworkManager.PROP_INTERFACE);
 			this.rawSocket.open(RawSocket.PF_INET, RawSocket.getProtocolByName("UDP"));
 			this.rawSocket.bindDevice(this.nic);
+			this.rawSocket.setIPHeaderInclude(true);
 			
 			//NetworkUtil.getNetworkInterface(interfaceStr);
 			//this.socket = new DatagramSocket(NetworkManager.PROP_SOCKET_INTERFACE)
@@ -131,7 +132,6 @@ public class RawSocketReceiver implements Runnable
 
 			try
 			{
-				System.out.println(this.rawSocket.getIPHeaderInclude());
 				readLen = this.rawSocket.read(packetBuffer, NetworkUtil.broadcastIA().getAddress());
 				logger.log(Level.INFO, NetworkUtil.bytesToHex(packetBuffer, readLen));
 				byte[] copyBuf = Arrays.copyOf(packetBuffer, readLen);
