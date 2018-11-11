@@ -2,12 +2,15 @@ package node;
 
 import java.io.File;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.lang.reflect.Field;
 import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import javax.imageio.stream.FileImageOutputStream;
 
 import node.bash.CommandExecutor;
 import node.cluster.ClusterService;
@@ -87,10 +90,14 @@ public class NodeControlCore
 		//환경 변수 설정 부분
 		try
 		{
-			String javaHome = CommandExecutor.executeCommand("echo","$JAVA_HOME");
-			if(javaHome.equals(""))
+			String cmdresult = CommandExecutor.executeCommand("echo","$JAVA_HOME");
+			if(cmdresult.equals(""))
 			{// 환경 변수가 설정되지 않았을경우
 				logger.log(Level.INFO, "환경변수(JAVA_HOME) 설정");
+				cmdresult = CommandExecutor.executeCommand("readlink", "-f", "/usr/bin/javac");
+				cmdresult = cmdresult.replace("/bin/javac", "");
+				OutputStream output = FileHandler.getOutputStream("/etc/profile");
+				output.write(new String("export JAVA_HOME=" + cmdresult + "\n").getBytes());
 			}
 		}
 		catch (Exception e)
