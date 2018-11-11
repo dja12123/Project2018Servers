@@ -1,6 +1,7 @@
 package node.network.socketHandler;
 
 import java.io.IOException;
+import java.net.InetAddress;
 import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -8,6 +9,7 @@ import java.util.logging.Logger;
 import org.savarese.vserv.tcpip.ICMPEchoPacket;
 import org.savarese.vserv.tcpip.ICMPPacket;
 import org.savarese.vserv.tcpip.IPPacket;
+import org.savarese.vserv.tcpip.UDPPacket;
 
 import com.savarese.rocksaw.net.RawSocket;
 
@@ -57,7 +59,7 @@ public class RawSocketReceiver implements Runnable
 			this.nic = NodeControlCore.getProp(NetworkManager.PROP_INTERFACE);
 			logger.log(Level.INFO, String.format("바인딩 인터페이스 (%s)", this.nic));
 			//String interfaceStr = NodeControlCore.getProp(NetworkManager.PROP_INTERFACE);
-			this.rawSocket.open(RawSocket.PF_INET, RawSocket.getProtocolByName("ICMP"));
+			this.rawSocket.open(RawSocket.PF_INET, RawSocket.getProtocolByName("UDP"));
 			this.rawSocket.bindDevice(this.nic);
 			
 			//NetworkUtil.getNetworkInterface(interfaceStr);
@@ -104,6 +106,13 @@ public class RawSocketReceiver implements Runnable
 
 		try
 		{
+
+			
+			
+			
+			
+			
+			
 			this.rawSocket.write(NetworkUtil.broadcastIA(), data);
 			logger.log(Level.SEVERE, "브로드캐스트...");
 		}
@@ -127,7 +136,7 @@ public class RawSocketReceiver implements Runnable
 
 			try
 			{
-
+				
 				readLen = this.rawSocket.read(packetBuffer);
 				logger.log(Level.INFO, NetworkUtil.bytesToHex(packetBuffer, readLen));
 				byte[] copyBuf = Arrays.copyOf(packetBuffer, readLen);
@@ -147,12 +156,36 @@ public class RawSocketReceiver implements Runnable
 	}
 	public static void main(String[] args)
 	{
-		byte[] data = "HHH".getBytes();
+		byte[] data = "Hello World!!".getBytes();
 		
 		
-		System.out.println(data.length);
+		UDPPacket udp = new UDPPacket(1);
+		byte[] packet = new byte[20 + 8 + data.length];
+		System.arraycopy(data, 0, packet, 20 + UDPPacket.LENGTH_UDP_HEADER, data.length);
+		udp.setData(packet);
+		
+		udp.setIPVersion(4);
+		udp.setIPHeaderLength(5);
+		udp.setIPPacketLength(packet.length);
+		udp.setFragmentOffset(0x0400);
+		udp.setTTL(0x64);
+		udp.setProtocol(IPPacket.PROTOCOL_UDP);
+		System.arraycopy(NetworkUtil.broadcastIA().getAddress(), 0, packet, IPPacket.OFFSET_DESTINATION_ADDRESS, 4);
+		
+		udp.setSourcePort(33333);
+		udp.setDestinationPort(33333);
+		udp.setUDPPacketLength(UDPPacket.LENGTH_UDP_HEADER + data.length);
+		
+		udp.computeUDPChecksum();
+		udp.computeIPChecksum();
+		
+		System.out.println(NetworkUtil.bytesToHex(packet, packet.length));
+		System.out.println(udp.getUDPPacketLength() + " " + data.length);
+		
+		
+		/*System.out.println(data.length);
 		NodeControlICMP icmp = new NodeControlICMP(data);
-		System.out.println(icmp.getICMPPacketByteLength());
+		System.out.println(icmp.getICMPPacketByteLength());*/
 	}
 }
 
