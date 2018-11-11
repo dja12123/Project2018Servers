@@ -94,7 +94,7 @@ public class NodeControlCore
 		//환경 변수 설정 부분
 		try
 		{
-			cmdresult = CommandExecutor.executeCommand("echo \\$JAVA_HOME");
+			cmdresult = System.getenv("JAVA_HOME");
 			System.out.println(cmdresult.length() + " " + cmdresult);
 			if(cmdresult.isEmpty())
 			{// 환경 변수가 설정되지 않았을경우
