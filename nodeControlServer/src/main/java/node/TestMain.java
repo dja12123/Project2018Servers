@@ -21,18 +21,8 @@ public class TestMain
 	public static void main(String[] args) throws Exception
 	{
 		NodeControlCore.init();
+
 		
-		System.out.println(System.getProperty("java.library.path"));
-		
-		DatagramSocket dgramSocket = new DatagramSocket();
-		byte[] buffer= new byte[10000];
-		while(true)
-		{
-			DatagramPacket dgramPacket = new DatagramPacket(buffer, buffer.length);
-			dgramSocket.receive(dgramPacket);
-			System.out.println(dgramPacket.getLength());
-		}
-		/*
 		RawSocket rawSocket = new RawSocket();
 		try
 		{
@@ -63,7 +53,7 @@ public class TestMain
 				e.printStackTrace();
 			}
 			System.out.println(NetworkUtil.bytesToHex(buffer, readLen));
-		}*/
+		}
 		
 		
 	}
