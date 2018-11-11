@@ -121,6 +121,7 @@ public class NetworkManager implements IServiceModule
 	public boolean startModule()
 	{
 		this.rawSocketReceiver.start();
+		this.broadcastSender.start();
 		return true;
 	}
 
@@ -129,6 +130,7 @@ public class NetworkManager implements IServiceModule
 	{
 		this.observerMap.clear();
 		this.rawSocketReceiver.stop();
+		this.broadcastSender.stop();
 	}
 	
 	public static void main(String[] args) throws UnknownHostException

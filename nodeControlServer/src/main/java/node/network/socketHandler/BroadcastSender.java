@@ -48,6 +48,14 @@ public class BroadcastSender
 
 	}
 	
+	public void stop()
+	{
+		if(!this.isWork) return;
+		this.isWork = false;
+		
+		this.socket.close();
+	}
+	
 	public void sendMessage(byte[] stream)
 	{
 		if(!this.isWork)
@@ -67,4 +75,5 @@ public class BroadcastSender
 			logger.log(Level.SEVERE, "브로드캐스트 실패", e);
 		}
 	}
+
 }
