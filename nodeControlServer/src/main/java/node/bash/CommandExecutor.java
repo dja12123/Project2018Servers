@@ -31,7 +31,6 @@ public class CommandExecutor {
 	        pb.inheritIO();
 	        
 	        Process process = pb.start();
-	        process.waitFor();
 	        successBufferReader = new BufferedReader(new InputStreamReader(process.getInputStream(), "UTF-8"));
 	        while((msg = successBufferReader.readLine()) != null) {
 	        	cmdlogger.log(Level.INFO, msg + System.getProperty("line.separator"));
@@ -40,6 +39,7 @@ public class CommandExecutor {
 	        while((msg = errorBufferReader.readLine()) != null) {
 	        	cmdlogger.log(Level.INFO, msg + System.getProperty("line.separator"));
 	        }
+	        process.waitFor();
 	        
 	        /*//shell 실행이 정상종료/ 비정상종료 됬을때 콘솔에 로그 표시
 	        if(process.exitValue() == 0) {
@@ -81,7 +81,6 @@ public class CommandExecutor {
         //Process process = pb.start();
 		
 		Process process = runtime.exec(cmd);
-        process.waitFor();
         successBufferReader = new BufferedReader(new InputStreamReader(process.getInputStream(), "UTF-8"));
         while((msg = successBufferReader.readLine()) != null) {
         	
@@ -93,6 +92,8 @@ public class CommandExecutor {
         	cmdlogger.log(Level.INFO, msg + System.getProperty("line.separator"));
         	resultMsg.append(msg + System.getProperty("line.separator"));
         }
+        
+        process.waitFor();
         successBufferReader.close();
         errorBufferReader.close();
         
