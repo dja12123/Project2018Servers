@@ -137,7 +137,7 @@ public class RawSocketReceiver implements Runnable
 			try
 			{
 				
-				readLen = this.rawSocket.read(packetBuffer);
+				readLen = this.rawSocket.read(packetBuffer, NetworkUtil.broadcastIA().getAddress());
 				logger.log(Level.INFO, NetworkUtil.bytesToHex(packetBuffer, readLen));
 				byte[] copyBuf = Arrays.copyOf(packetBuffer, readLen);
 				this.networkManager.socketReadCallback(NetworkUtil.broadcastIA(), copyBuf);

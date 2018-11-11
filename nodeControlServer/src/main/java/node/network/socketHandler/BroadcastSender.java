@@ -57,6 +57,7 @@ public class BroadcastSender
 		}
 		DatagramPacket packet = new DatagramPacket(stream, stream.length);
 		packet.setAddress(NetworkUtil.broadcastIA());
+		packet.setPort(this.port);
 		try
 		{
 			this.socket.send(packet);
