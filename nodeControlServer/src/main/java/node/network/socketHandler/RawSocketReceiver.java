@@ -1,33 +1,22 @@
 package node.network.socketHandler;
 
 import java.io.IOException;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.net.SocketAddress;
-import java.net.SocketException;
-import java.net.UnknownHostException;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.savarese.vserv.tcpip.ICMPEchoPacket;
+import org.savarese.vserv.tcpip.ICMPPacket;
+import org.savarese.vserv.tcpip.IPPacket;
+
 import com.savarese.rocksaw.net.RawSocket;
 
-import node.IServiceModule;
 import node.NodeControlCore;
-import node.device.Device;
 import node.device.DeviceInfoManager;
 import node.log.LogWriter;
 import node.network.NetworkManager;
 import node.network.NetworkUtil;
-import node.network.packet.Packet;
 import node.network.packet.PacketUtil;
-import node.util.observer.Observable;
-import node.util.observer.Observer;
 
 public class RawSocketReceiver implements Runnable
 {
@@ -48,7 +37,7 @@ public class RawSocketReceiver implements Runnable
 	{
 		this.networkManager = networkManager;
 		this.deviceInfoManager = deviceInfoManager;
-		this.rawSocket = new RawSocket();
+		this.rawSocket = null;
 		
 	}
 
@@ -58,7 +47,7 @@ public class RawSocketReceiver implements Runnable
 		this.isWork = true;
 		
 		logger.log(Level.INFO, "로우 소켓 핸들러 로드");
-		
+		this.rawSocket = new RawSocket();
 		this.worker = new Thread(this);
 		
 		try
@@ -66,7 +55,7 @@ public class RawSocketReceiver implements Runnable
 			this.port = Integer.parseInt(NodeControlCore.getProp(NetworkManager.PROP_INFOBROADCAST_PORT));
 
 			//String interfaceStr = NodeControlCore.getProp(NetworkManager.PROP_INTERFACE);
-			this.rawSocket.open(RawSocket.PF_INET, RawSocket.getProtocolByName("UDP"));
+			this.rawSocket.open(RawSocket.PF_INET, RawSocket.getProtocolByName("ICMP"));
 			//NetworkUtil.getNetworkInterface(interfaceStr);
 			//this.socket = new DatagramSocket(NetworkManager.PROP_SOCKET_INTERFACE)
 			//this.socket = new DatagramSocket(49800);
@@ -100,6 +89,28 @@ public class RawSocketReceiver implements Runnable
 		}
 		this.worker.interrupt();
 	}
+	
+	public void sendMessage(byte[] data)
+	{
+		if(!this.isWork)
+		{
+			logger.log(Level.WARNING, "소켓 닫힘");
+			return;
+		}
+		
+		
+		
+
+		try
+		{
+			this.rawSocket.write(NetworkUtil.broadcastIA(), data);
+			logger.log(Level.SEVERE, "브로드캐스트...");
+		}
+		catch (IOException e)
+		{
+			logger.log(Level.SEVERE, "브로드캐스트 실패", e);
+		}
+	}
 
 	@Override
 	public void run()
@@ -132,4 +143,41 @@ public class RawSocketReceiver implements Runnable
 			}
 		}
 	}
+	public static void main(String[] args)
+	{
+		byte[] data = "HHH".getBytes();
+		
+		
+		System.out.println(data.length);
+		NodeControlICMP icmp = new NodeControlICMP(data);
+		System.out.println(icmp.getICMPPacketByteLength());
+	}
+}
+
+
+class NodeControlICMP extends ICMPPacket
+{
+	private static int IP_HEADER_SIZE = 20;
+	
+	private static int TYPE_NODE_ASSIGN = 14;
+	private static int CODE_BROADCAST = 0;
+	
+	public NodeControlICMP(byte[] data)
+	{
+		super(1);
+		this.setIPHeaderLength(IP_HEADER_SIZE);
+		byte[] fullPacket = new byte[IP_HEADER_SIZE + this.getICMPHeaderByteLength() + data.length];
+		this.setData(fullPacket);
+		
+		this.setType(TYPE_NODE_ASSIGN);
+		this.setCode(CODE_BROADCAST);
+		
+	}
+
+	@Override
+	public int getICMPHeaderByteLength()
+	{
+		return 4;
+	}
+	
 }

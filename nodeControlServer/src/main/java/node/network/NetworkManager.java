@@ -30,8 +30,7 @@ public class NetworkManager implements IServiceModule
 	
 	public final DeviceInfoManager deviceInfoManager;
 	
-	private final RawSocketReceiver rawSocketReceiver;
-	private final BroadcastSender broadcastSender;
+	private final RawSocketReceiver rawSocketHandler;
 	
 	private HashMap<String, Observable<NetworkEvent>> observerMap;
 	
@@ -39,8 +38,7 @@ public class NetworkManager implements IServiceModule
 	{
 		this.deviceInfoManager = deviceInfoManager;
 
-		this.rawSocketReceiver = new RawSocketReceiver(this, this.deviceInfoManager);
-		this.broadcastSender = new BroadcastSender();
+		this.rawSocketHandler = new RawSocketReceiver(this, this.deviceInfoManager);
 		
 		
 		this.observerMap = new HashMap<String, Observable<NetworkEvent>>();
@@ -92,7 +90,7 @@ public class NetworkManager implements IServiceModule
 	{
 		if(packet.isBroadcast())
 		{
-			this.broadcastSender.sendMessage(packet.getDataByte());
+			this.rawSocketHandler.sendMessage(packet.getDataByte());
 		}
 	}
 	
@@ -120,8 +118,7 @@ public class NetworkManager implements IServiceModule
 	@Override
 	public boolean startModule()
 	{
-		this.rawSocketReceiver.start();
-		this.broadcastSender.start();
+		this.rawSocketHandler.start();
 		return true;
 	}
 
@@ -129,8 +126,7 @@ public class NetworkManager implements IServiceModule
 	public void stopModule()
 	{
 		this.observerMap.clear();
-		this.rawSocketReceiver.stop();
-		this.broadcastSender.stop();
+		this.rawSocketHandler.stop();
 	}
 	
 	public static void main(String[] args) throws UnknownHostException
@@ -166,10 +162,10 @@ public class NetworkManager implements IServiceModule
 		command.add(String.format("ip route add default via %s", gatewayAddr));
 		command.add(String.format("ifup %s", iface));
 		
-		synchronized (this.rawSocketReceiver)
+		synchronized (this.rawSocketHandler)
 		{
 			logger.log(Level.INFO, "IP�옱�븷�떦...");
-			this.rawSocketReceiver.stop();
+			this.rawSocketHandler.stop();
 			try
 			{
 				CommandExecutor.executeBash(command);
@@ -178,7 +174,7 @@ public class NetworkManager implements IServiceModule
 			{
 				e.printStackTrace();
 			}
-			this.rawSocketReceiver.start();
+			this.rawSocketHandler.start();
 			logger.log(Level.INFO, "�셿猷�");
 		}
 		
