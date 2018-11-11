@@ -97,8 +97,14 @@ public class CommandExecutor {
         }
         
         process.waitFor();
-        successBufferReader.close();
-        errorBufferReader.close();
+        
+        process.destroy();
+        if(successBufferReader != null) {
+        	successBufferReader.close();
+        }
+        if(errorBufferReader != null) {
+            errorBufferReader.close();
+        }
         
         return resultMsg.toString();
 	}
