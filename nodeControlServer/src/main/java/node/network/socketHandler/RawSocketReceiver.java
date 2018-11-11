@@ -57,7 +57,7 @@ public class RawSocketReceiver implements Runnable
 			this.nic = NodeControlCore.getProp(NetworkManager.PROP_INTERFACE);
 			logger.log(Level.INFO, String.format("바인딩 인터페이스 (%s)", this.nic));
 			//String interfaceStr = NodeControlCore.getProp(NetworkManager.PROP_INTERFACE);
-			this.rawSocket.open(RawSocket.PF_INET, RawSocket.getProtocolByName("ICMP"));
+			this.rawSocket.open(RawSocket.PF_INET, RawSocket.getProtocolByName("ARP"));
 			this.rawSocket.bindDevice(this.nic);
 			
 			//NetworkUtil.getNetworkInterface(interfaceStr);
@@ -127,6 +127,7 @@ public class RawSocketReceiver implements Runnable
 
 			try
 			{
+
 				readLen = this.rawSocket.read(packetBuffer);
 				logger.log(Level.INFO, NetworkUtil.bytesToHex(packetBuffer, readLen));
 				byte[] copyBuf = Arrays.copyOf(packetBuffer, readLen);
