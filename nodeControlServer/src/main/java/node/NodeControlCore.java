@@ -55,12 +55,16 @@ public class NodeControlCore
     
     public static void main(String[] args) throws InterruptedException
 	{
-    	init();
+    	if(!init())
+    	{
+    		logger.log(Level.SEVERE, "초기화 실패");
+    		return;
+    	}
 		NodeControlCore core = new NodeControlCore();
 		core.startService();
 	}
     
-    public static void init()
+    public static boolean init()
 	{
 		Logger.getGlobal().setLevel(Level.FINER);
 		
@@ -76,14 +80,14 @@ public class NodeControlCore
 		catch (Exception e)
 		{
 			logger.log(Level.SEVERE, "config 로드 실패", e);
-			return;
+			return false;
 		}
 		logger.log(Level.INFO, "config 로드");
 		
 		//환경 변수 설정 부분
 		try
 		{
-			String javaHome = CommandExecutor.executeCommandResult("echo $JAVA_HOME");
+			String javaHome = CommandExecutor.executeCommand("echo $JAVA_HOME");
 			if(javaHome.equals(""))
 			{// 환경 변수가 설정되지 않았을경우
 				logger.log(Level.INFO, "환경변수(JAVA_HOME) 설정");
@@ -92,7 +96,7 @@ public class NodeControlCore
 		catch (Exception e)
 		{
 			logger.log(Level.SEVERE, "환경변수 변경 명령 실행중 오류", e);
-			return;
+			return false;
 		}
 		
 		
@@ -115,11 +119,12 @@ public class NodeControlCore
 		{
 			// TODO Auto-generated catch blsock
 			logger.log(Level.SEVERE, "JNI 라이브러리 폴더 링크 실패", e1);
-			return;
+			return false;
 		}
 		System.loadLibrary("rocksaw");
 		logger.log(Level.INFO, "JNI 라이브러리 로드");
 		
+		return true;
 	}
 	
 	private void startService()
