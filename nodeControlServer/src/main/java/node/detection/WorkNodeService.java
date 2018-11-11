@@ -75,7 +75,7 @@ public class WorkNodeService implements Runnable
 						return;
 					}
 					logger.log(Level.SEVERE, "워커 노드 알림");
-					this.networkManager.socketHandler.sendMessage(packet);
+					this.networkManager.sendMessage(packet);
 				}
 			}
 			catch(Exception e)

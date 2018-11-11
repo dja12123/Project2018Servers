@@ -14,9 +14,10 @@ import node.db.DB_Handler;
 import node.device.DeviceInfoManager;
 import node.log.LogWriter;
 import node.network.NetworkEvent;
-import node.network.RawSocketHandler;
 import node.network.packet.Packet;
 import node.network.packet.PacketUtil;
+import node.network.socketHandler.BroadcastSender;
+import node.network.socketHandler.RawSocketReceiver;
 import node.util.observer.Observable;
 import node.util.observer.Observer;
 
@@ -28,7 +29,9 @@ public class NetworkManager implements IServiceModule
 	public static final String PROP_INTERFACE = "networkInterface";
 	
 	public final DeviceInfoManager deviceInfoManager;
-	public final RawSocketHandler socketHandler;
+	
+	private final RawSocketReceiver rawSocketReceiver;
+	private final BroadcastSender broadcastSender;
 	
 	private HashMap<String, Observable<NetworkEvent>> observerMap;
 	
@@ -36,7 +39,10 @@ public class NetworkManager implements IServiceModule
 	{
 		this.deviceInfoManager = deviceInfoManager;
 
-		this.socketHandler = new RawSocketHandler(this, this.deviceInfoManager);
+		this.rawSocketReceiver = new RawSocketReceiver(this, this.deviceInfoManager);
+		this.broadcastSender = new BroadcastSender();
+		
+		
 		this.observerMap = new HashMap<String, Observable<NetworkEvent>>();
 	}
 	
@@ -82,7 +88,15 @@ public class NetworkManager implements IServiceModule
 		}
 	}
 	
-	void socketReadCallback(InetAddress addr, byte[] packetBuffer, int readLen)
+	public void sendMessage(Packet packet)
+	{
+		if(packet.isBroadcast())
+		{
+			this.broadcastSender.sendMessage(packet.getDataByte());
+		}
+	}
+	
+	public void socketReadCallback(InetAddress addr, byte[] packetBuffer)
 	{
 		if(!PacketUtil.isPacket(packetBuffer))
 		{
@@ -106,7 +120,7 @@ public class NetworkManager implements IServiceModule
 	@Override
 	public boolean startModule()
 	{
-		this.socketHandler.start();
+		this.rawSocketReceiver.start();
 		return true;
 	}
 
@@ -114,7 +128,7 @@ public class NetworkManager implements IServiceModule
 	public void stopModule()
 	{
 		this.observerMap.clear();
-		this.socketHandler.stop();
+		this.rawSocketReceiver.stop();
 	}
 	
 	public static void main(String[] args) throws UnknownHostException
@@ -150,10 +164,10 @@ public class NetworkManager implements IServiceModule
 		command.add(String.format("ip route add default via %s", gatewayAddr));
 		command.add(String.format("ifup %s", iface));
 		
-		synchronized (this.socketHandler)
+		synchronized (this.rawSocketReceiver)
 		{
 			logger.log(Level.INFO, "IP�옱�븷�떦...");
-			this.socketHandler.stop();
+			this.rawSocketReceiver.stop();
 			try
 			{
 				CommandExecutor.executeBash(command);
@@ -162,7 +176,7 @@ public class NetworkManager implements IServiceModule
 			{
 				e.printStackTrace();
 			}
-			this.socketHandler.start();
+			this.rawSocketReceiver.start();
 			logger.log(Level.INFO, "�셿猷�");
 		}
 		

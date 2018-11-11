@@ -1,4 +1,4 @@
-package node.network;
+package node.network.socketHandler;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -8,6 +8,7 @@ import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -28,9 +29,9 @@ import node.network.packet.PacketUtil;
 import node.util.observer.Observable;
 import node.util.observer.Observer;
 
-public class RawSocketHandler implements Runnable
+public class RawSocketReceiver implements Runnable
 {
-	public static final Logger logger = LogWriter.createLogger(RawSocketHandler.class, "rawsocket");
+	public static final Logger logger = LogWriter.createLogger(RawSocketReceiver.class, "rawsocket");
 	
 	private final DeviceInfoManager deviceInfoManager;
 	private NetworkManager networkManager;
@@ -43,7 +44,7 @@ public class RawSocketHandler implements Runnable
 
 	private int port;
 	
-	public RawSocketHandler(NetworkManager networkManager, DeviceInfoManager deviceInfoManager)
+	public RawSocketReceiver(NetworkManager networkManager, DeviceInfoManager deviceInfoManager)
 	{
 		this.networkManager = networkManager;
 		this.deviceInfoManager = deviceInfoManager;
@@ -116,7 +117,8 @@ public class RawSocketHandler implements Runnable
 			{
 				readLen = this.rawSocket.read(packetBuffer);
 				logger.log(Level.INFO, NetworkUtil.bytesToHex(packetBuffer, readLen));
-				this.networkManager.socketReadCallback(NetworkUtil.broadcastIA(), packetBuffer, readLen);
+				byte[] copyBuf = Arrays.copyOf(packetBuffer, readLen);
+				this.networkManager.socketReadCallback(NetworkUtil.broadcastIA(), copyBuf);
 				//System.out.println("receive" + dgramPacket.getAddress());
 			}
 			catch (IOException e)
@@ -128,35 +130,6 @@ public class RawSocketHandler implements Runnable
 				}
 				logger.log(Level.SEVERE, "수신 실패", e);
 			}
-		}
-	}
-	
-	public void sendMessage(Packet packet)
-	{
-		InetAddress inetAddr;
-		if(packet.isBroadcast())
-		{
-			inetAddr = NetworkUtil.broadcastIA();
-		}
-		else
-		{
-			inetAddr = this.deviceInfoManager.getDevice(packet.getReceiver()).getInetAddr();
-		}
-		if(inetAddr == null)
-		{
-			logger.log(Level.WARNING, "null주소: " + packet.getReceiver());
-		}
-		
-		byte[] rawPacket = packet.getNativeArr();
-		
-		try
-		{
-			//System.out.println(dgramPacket.getAddress());
-			this.rawSocket.write(inetAddr, rawPacket);
-		}
-		catch (IOException e)
-		{
-			logger.log(Level.SEVERE, "패킷 전송 실패", e);
 		}
 	}
 }
