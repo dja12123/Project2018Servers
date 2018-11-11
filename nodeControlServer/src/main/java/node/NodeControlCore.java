@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.PrintWriter;
 import java.lang.reflect.Field;
 import java.util.Properties;
 import java.util.concurrent.ExecutorService;
@@ -98,9 +99,11 @@ public class NodeControlCore
 				logger.log(Level.INFO, "환경변수(JAVA_HOME) 설정");
 				cmdresult = CommandExecutor.executeCommand("readlink", "-f", "/usr/bin/javac");
 				cmdresult = cmdresult.replace("/bin/javac", "");
-				BufferedWriter bw = new BufferedWriter(new FileWriter("/etc/profile"));
-				bw.write(new String("export JAVA_HOME=" + cmdresult + "\n"));
-				bw.close();
+				System.out.println(cmdresult);
+				PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter("/etc/profile")), true);
+				pw.append("export JAVA_HOME=" + cmdresult);
+				pw.println();
+				pw.close();
 			}
 		}
 		catch (Exception e)
