@@ -54,11 +54,11 @@ public class RawSocketHandler implements Runnable
 	public void start()
 	{
 		if(this.isWork) return;
+		this.isWork = true;
+		
 		logger.log(Level.INFO, "로우 소켓 핸들러 로드");
-		if(this.worker == null || !this.worker.isAlive())
-		{
-			this.worker = new Thread(this);
-		}
+		
+		this.worker = new Thread(this);
 		
 		try
 		{
@@ -80,7 +80,6 @@ public class RawSocketHandler implements Runnable
 			return;
 		}
 		
-		this.isWork = true;
 		this.worker.start();
 		return;
 	}
