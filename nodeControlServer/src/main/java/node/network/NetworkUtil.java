@@ -114,4 +114,16 @@ public class NetworkUtil
 		return addr4;
 		
 	}
+	
+	private final static char[] hexArray = "0123456789ABCDEF".toCharArray();
+	public static String bytesToHex(byte[] bytes, int end) {
+	    StringBuffer buf = new StringBuffer();
+	    for ( int j = 0; j < end; j++ ) {
+	        int v = bytes[j] & 0xFF;
+	        buf.append(hexArray[v >>> 4]);
+	        buf.append(hexArray[v & 0x0F]);
+	        buf.append(' ');
+	    }
+	    return buf.toString();
+	}
 }
