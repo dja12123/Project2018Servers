@@ -94,10 +94,8 @@ public class NodeControlCore
 		//환경 변수 설정 부분
 		try
 		{
-			cmdresult = CommandExecutor.executeCommand("readlink -f /usr/bin/javac");
-			System.out.println("DEBUG: " + cmdresult);
 			cmdresult = CommandExecutor.executeCommand("echo $JAVA_HOME");
-			if(cmdresult.equals(""))
+			if(cmdresult.equals(" "))
 			{// 환경 변수가 설정되지 않았을경우
 				logger.log(Level.INFO, "환경변수(JAVA_HOME) 설정");
 				cmdresult = CommandExecutor.executeCommand("readlink -f /usr/bin/javac");
