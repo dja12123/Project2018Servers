@@ -28,9 +28,9 @@ import node.network.packet.PacketUtil;
 import node.util.observer.Observable;
 import node.util.observer.Observer;
 
-public class UDPSocketHandler implements Runnable
+public class RawSocketHandler implements Runnable
 {
-	public static final Logger logger = LogWriter.createLogger(UDPSocketHandler.class, "socket");
+	public static final Logger logger = LogWriter.createLogger(RawSocketHandler.class, "rawsocket");
 	
 	private final DeviceInfoManager deviceInfoManager;
 	private NetworkManager networkManager;
@@ -38,22 +38,23 @@ public class UDPSocketHandler implements Runnable
 	private Thread worker = null;
 	private boolean isWork;
 	
-	private DatagramSocket socket;
+	//private DatagramSocket socket;
 	private RawSocket rawSocket;
 
 	private int port;
 	
-	public UDPSocketHandler(NetworkManager networkManager, DeviceInfoManager deviceInfoManager)
+	public RawSocketHandler(NetworkManager networkManager, DeviceInfoManager deviceInfoManager)
 	{
 		this.networkManager = networkManager;
 		this.deviceInfoManager = deviceInfoManager;
 		this.rawSocket = new RawSocket();
+		
 	}
 
 	public void start()
 	{
 		if(this.isWork) return;
-		logger.log(Level.INFO, "소켓 핸들러 로드");
+		logger.log(Level.INFO, "로우 소켓 핸들러 로드");
 		if(this.worker == null || !this.worker.isAlive())
 		{
 			this.worker = new Thread(this);
@@ -63,18 +64,17 @@ public class UDPSocketHandler implements Runnable
 		{
 			this.port = Integer.parseInt(NodeControlCore.getProp(NetworkManager.PROP_INFOBROADCAST_PORT));
 
-			String interfaceStr = NodeControlCore.getProp(NetworkManager.PROP_INTERFACE);
+			//String interfaceStr = NodeControlCore.getProp(NetworkManager.PROP_INTERFACE);
+			this.rawSocket.open(RawSocket.PF_INET, RawSocket.getProtocolByName("UDP"));
 			//NetworkUtil.getNetworkInterface(interfaceStr);
 			//this.socket = new DatagramSocket(NetworkManager.PROP_SOCKET_INTERFACE)
-			this.socket = new DatagramSocket(49800);
-			System.out.println("socketOption setReuseAddress: " + this.socket.getReuseAddress());
-			System.out.println("socketOption getLocalSocketAddress: " + this.socket.getLocalSocketAddress());
-			System.out.println("socketOption getRemoteSocketAddress: " + this.socket.getRemoteSocketAddress());
+			//this.socket = new DatagramSocket(49800);
+
 			//this.socket.setReuseAddress(false);
 			
-			this.socket.setBroadcast(true);
+			//this.socket.setBroadcast(true);
 		}
-		catch (SocketException e)
+		catch (IllegalStateException | IOException e)
 		{
 			logger.log(Level.SEVERE, "소켓 열기 실패", e);
 			return;
@@ -91,7 +91,14 @@ public class UDPSocketHandler implements Runnable
 		logger.log(Level.INFO, "소켓 핸들러 종료");
 		this.isWork = false;
 		this.worker.interrupt();
-		this.socket.close();
+		try
+		{
+			this.rawSocket.close();
+		}
+		catch (IOException e)
+		{
+			logger.log(Level.SEVERE, "로우 소켓 종료중 오류", e);
+		}
 	}
 
 	@Override
@@ -99,21 +106,23 @@ public class UDPSocketHandler implements Runnable
 	{
 		logger.log(Level.INFO, "네트워크 수신 시작");
 		byte[] packetBuffer = new byte[PacketUtil.HEADER_SIZE + PacketUtil.MAX_SIZE_KEY + PacketUtil.MAX_SIZE_DATA];
-		DatagramPacket dgramPacket;
+		int readLen = 0;
+		//DatagramPacket dgramPacket;
 		
 		while(this.isWork)
 		{
-			dgramPacket = new DatagramPacket(packetBuffer, packetBuffer.length);
+			//dgramPacket = new DatagramPacket(packetBuffer, packetBuffer.length);
 
 			try
 			{
-				this.socket.receive(dgramPacket);
-				this.networkManager.socketReadCallback(dgramPacket.getAddress(), packetBuffer);
-				System.out.println("receive" + dgramPacket.getAddress());
+				readLen = this.rawSocket.read(packetBuffer);
+				logger.log(Level.INFO, NetworkUtil.bytesToHex(packetBuffer, readLen));
+				this.networkManager.socketReadCallback(NetworkUtil.broadcastIA(), packetBuffer, readLen);
+				//System.out.println("receive" + dgramPacket.getAddress());
 			}
 			catch (IOException e)
 			{
-				if(this.socket.isClosed())
+				if(!this.rawSocket.isOpen())
 				{
 					logger.log(Level.INFO, "소켓 종료");
 					return;
@@ -140,12 +149,11 @@ public class UDPSocketHandler implements Runnable
 		}
 		
 		byte[] rawPacket = packet.getNativeArr();
-		DatagramPacket dgramPacket = new DatagramPacket(rawPacket, rawPacket.length, inetAddr, port);
 		
 		try
 		{
-			System.out.println(dgramPacket.getAddress());
-			this.socket.send(dgramPacket);
+			//System.out.println(dgramPacket.getAddress());
+			this.rawSocket.write(inetAddr, rawPacket);
 		}
 		catch (IOException e)
 		{
