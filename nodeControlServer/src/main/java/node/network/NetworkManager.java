@@ -136,6 +136,7 @@ public class NetworkManager implements IServiceModule
 			logger.log(Level.SEVERE, "가상NIC설정 실패", e);
 			return false;
 		}
+		logger.log(Level.INFO, "네트워크 메니저 로드");
 		return true;
 	}
 
