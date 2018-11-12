@@ -55,25 +55,25 @@ public class RawSocketReceiver implements Runnable
 		this.isWork = true;
 		
 		logger.log(Level.INFO, "로우 소켓 핸들러 로드");
-		try
+		/*try
 		{
-			this.dgramSocket = new DatagramSocket(null);
-			SocketAddress addr = new InetSocketAddress(NetworkUtil.listenIA(NetworkUtil.DEFAULT_SUBNET), 49800);
-			this.dgramSocket.bind(addr);
-			this.dgramSocket.setBroadcast(true);
+			//this.dgramSocket = new DatagramSocket(null);
+			//SocketAddress addr = new InetSocketAddress(NetworkUtil.listenIA(NetworkUtil.DEFAULT_SUBNET), 49800);
+			//this.dgramSocket.bind(addr);
+			//this.dgramSocket.setBroadcast(true);
 		}
 		catch (SocketException e1)
 		{
 			e1.printStackTrace();
-		}
+		}*/
 		this.rawSocket = new RawSocket();
 		this.worker = new Thread(this);
 		
 		try
 		{
-			this.port = Integer.parseInt(NodeControlCore.getProp(NetworkManager.PROP_INFOBROADCAST_PORT));
-			this.nic = NodeControlCore.getProp(NetworkManager.PROP_INTERFACE);
-			logger.log(Level.INFO, String.format("바인딩 인터페이스 (%s)", this.nic));
+			//this.port = Integer.parseInt(NodeControlCore.getProp(NetworkManager.PROP_INFOBROADCAST_PORT));
+			//this.nic = NodeControlCore.getProp(NetworkManager.PROP_INTERFACE);
+			//logger.log(Level.INFO, String.format("바인딩 인터페이스 (%s)", this.nic));
 			//String interfaceStr = NodeControlCore.getProp(NetworkManager.PROP_INTERFACE);
 			this.rawSocket.open(RawSocket.PF_INET, RawSocket.getProtocolByName("UDP"));
 			this.rawSocket.bindDevice(NetworkManager.getNIC()+":0");
@@ -106,7 +106,7 @@ public class RawSocketReceiver implements Runnable
 		
 		try
 		{
-			this.dgramSocket.close();
+			//this.dgramSocket.close();
 			this.rawSocket.close();
 		}
 		catch (IOException e)
