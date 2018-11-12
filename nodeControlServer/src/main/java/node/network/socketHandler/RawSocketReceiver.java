@@ -134,6 +134,7 @@ public class RawSocketReceiver implements Runnable
 			try
 			{
 				readLen = this.rawSocket.read(packetBuffer, NetworkUtil.broadcastIA().getAddress());
+				System.out.println(readLen);
 				if(readLen == 0)
 				{
 					continue;
