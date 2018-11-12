@@ -59,6 +59,7 @@ public class RawSocketReceiver implements Runnable
 			//String interfaceStr = NodeControlCore.getProp(NetworkManager.PROP_INTERFACE);
 			this.rawSocket.open(RawSocket.PF_INET, RawSocket.getProtocolByName("UDP"));
 			
+			
 			//this.rawSocket.bindDevice(this.nic);
 			//this.rawSocket.setIPHeaderInclude(true);
 			
