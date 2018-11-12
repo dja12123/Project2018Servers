@@ -69,7 +69,7 @@ public class UDPBroadcast
 			return;
 		}
 		DatagramPacket packet = new DatagramPacket(stream, stream.length);
-		packet.setAddress(NetworkUtil.broadcastIA());
+		packet.setAddress(NetworkUtil.broadcastIA(NetworkUtil.DEFAULT_SUBNET));
 		packet.setPort(this.port);
 		try
 		{

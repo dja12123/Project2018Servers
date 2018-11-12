@@ -10,14 +10,17 @@ import java.util.logging.Level;
 
 public class NetworkUtil
 {
-	private static InetAddress BROADCAST_IA;
-	private static InetAddress ALL_IA;
+	public static final String DEFAULT_SUBNET = "192.168.0";
+	
+	private static String Subnet = null;
+	private static InetAddress BROADCAST_IA = null;
+	private static InetAddress LISTEN_IA = null;
+	private static InetAddress ALL_IA = null;
 	
 	static
 	{
 		try
 		{
-			BROADCAST_IA = InetAddress.getByName("192.168.0.255");
 			ALL_IA = InetAddress.getByName("0.0.0.0");
 		}
 		catch (UnknownHostException e)
@@ -26,9 +29,46 @@ public class NetworkUtil
 		}
 	}
 	
-	public static InetAddress broadcastIA()
+	private static boolean isSetSubnet(String subnet)
 	{
+		if(Subnet == null || !Subnet.equals(subnet))
+		{
+			Subnet = subnet;
+			return false;
+		}
+		return true;
+	}
+	
+	public static InetAddress broadcastIA(String subnet)
+	{
+		if(!isSetSubnet(subnet) || BROADCAST_IA == null)
+		{
+			try
+			{
+				BROADCAST_IA = InetAddress.getByName(Subnet + ".255");
+			}
+			catch (UnknownHostException e)
+			{
+				e.printStackTrace();
+			}
+		}
 		return BROADCAST_IA;
+	}
+	
+	public static InetAddress listenIA(String subnet)
+	{
+		if(!isSetSubnet(subnet) || LISTEN_IA == null)
+		{
+			try
+			{
+				LISTEN_IA = InetAddress.getByName(Subnet + ".250");
+			}
+			catch (UnknownHostException e)
+			{
+				e.printStackTrace();
+			}
+		}
+		return LISTEN_IA;
 	}
 	
 	public static InetAddress allIA()
