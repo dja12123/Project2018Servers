@@ -127,6 +127,15 @@ public class NetworkManager implements IServiceModule
 		nic = NodeControlCore.getProp(PROP_INTERFACE);
 		this.rawSocketReceiver.start();
 		this.udpBroadcast.start();
+		try
+		{
+			CommandExecutor.executeCommand(String.format("ifconfig %s:0 %s/24", nic, NetworkUtil.listenIA(NetworkUtil.DEFAULT_SUBNET).getHostAddress()));
+		}
+		catch (Exception e)
+		{
+			logger.log(Level.SEVERE, "가상NIC설정 실패", e);
+			return false;
+		}
 		return true;
 	}
 
@@ -164,8 +173,7 @@ public class NetworkManager implements IServiceModule
 			e.printStackTrace();
 		}
 		command.add(String.format("ifdown -a"));
-		command.add(String.format("ifconfig %s:0 %s/24", nic, NetworkUtil.listenIA(NetworkUtil.DEFAULT_SUBNET).getHostAddress()));
-		
+
 		command.add(String.format("ip addr flush dev %s", nic));
 		command.add(String.format("ip addr change dev %s %s/24", nic, inetAddress.getHostAddress()));
 		

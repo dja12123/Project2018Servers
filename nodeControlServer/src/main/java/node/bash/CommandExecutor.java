@@ -79,20 +79,19 @@ public class CommandExecutor {
         //pb.inheritIO();
         
         //Process process = pb.start();
-		cmdlogger.log(Level.INFO, "NOW EXECUTE COMMAND #### : " + cmd + System.getProperty("line.separator"));
+		cmdlogger.log(Level.INFO, "명령 실행: " + cmd);
 		
 		Process process = runtime.exec(cmd);
 		
         successBufferReader = new BufferedReader(new InputStreamReader(process.getInputStream(), "UTF-8"));
-        cmdlogger.log(Level.INFO, "SUCCESS MESSAGE #### : " + System.getProperty("line.separator"));
         while((msg = successBufferReader.readLine()) != null) {
-        	cmdlogger.log(Level.INFO, msg + System.getProperty("line.separator"));
+        	cmdlogger.log(Level.INFO, msg);
         	resultMsg.append(msg + System.getProperty("line.separator"));
         }
         errorBufferReader = new BufferedReader(new InputStreamReader(process.getErrorStream(), "UTF-8"));
-        cmdlogger.log(Level.INFO, "ERROR MESSAGE #### : " + System.getProperty("line.separator"));
+
         while((msg = errorBufferReader.readLine()) != null) {
-        	cmdlogger.log(Level.INFO, msg + System.getProperty("line.separator"));
+        	cmdlogger.log(Level.INFO, msg);
         	resultMsg.append(msg + System.getProperty("line.separator"));
         }
         
