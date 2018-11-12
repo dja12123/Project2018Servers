@@ -25,9 +25,6 @@ public class RawSocketReceiver implements Runnable
 {
 	public static final Logger logger = LogWriter.createLogger(RawSocketReceiver.class, "rawsocket");
 	
-
-	private NetworkManager networkManager;
-	
 	private Thread worker;
 	private boolean isWork;
 	
@@ -138,7 +135,7 @@ public class RawSocketReceiver implements Runnable
 
 				logger.log(Level.INFO, NetworkUtil.bytesToHex(packetBuffer, readLen));
 				byte[] copyBuf = Arrays.copyOf(packetBuffer, readLen);
-				this.networkManager.socketReadCallback(NetworkUtil.broadcastIA(NetworkUtil.DEFAULT_SUBNET), copyBuf);
+				this.receiveCallback.accept(NetworkUtil.broadcastIA(NetworkUtil.DEFAULT_SUBNET), copyBuf);
 				//System.out.println("receive" + dgramPacket.getAddress());
 			}
 			catch (IOException e)
