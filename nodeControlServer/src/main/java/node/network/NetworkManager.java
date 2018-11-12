@@ -165,7 +165,7 @@ public class NetworkManager implements IServiceModule
 		command.add(String.format("ifdown -a"));
 		command.add(String.format("ip addr flush dev %s", iface));
 		command.add(String.format("ip addr change dev %s %s/24", iface, inetAddress.getHostAddress()));
-		command.add(String.format("ip addr add dev %s %s/24", iface, NetworkUtil.listenIA(NetworkUtil.DEFAULT_SUBNET)));
+		command.add(String.format("ip addr add dev %s %s/24", iface, NetworkUtil.listenIA(NetworkUtil.DEFAULT_SUBNET).getHostAddress()));
 		command.add(String.format("ip route add default via %s", gatewayAddr));
 		command.add(String.format("ifup -a"));
 		
