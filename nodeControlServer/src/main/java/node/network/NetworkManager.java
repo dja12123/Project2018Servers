@@ -129,7 +129,7 @@ public class NetworkManager implements IServiceModule
 		this.udpBroadcast.start();
 		try
 		{
-			CommandExecutor.executeCommand(String.format("ifconfig %s:0 %s/24", nic, NetworkUtil.listenIA(NetworkUtil.DEFAULT_SUBNET).getHostAddress()));
+			CommandExecutor.executeCommand(String.format("ifconfig %s:0 %s/24", nic, "192.168.0.251"));
 		}
 		catch (Exception e)
 		{
