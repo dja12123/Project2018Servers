@@ -57,9 +57,10 @@ public class RawSocketReceiver implements Runnable
 		logger.log(Level.INFO, "로우 소켓 핸들러 로드");
 		try
 		{
-			this.dgramSocket = new DatagramSocket(null);
+			this.dgramSocket = new DatagramSocket();
 			SocketAddress addr = new InetSocketAddress("192.168.0.99", 49800);
 			this.dgramSocket.bind(addr);
+			this.dgramSocket.setBroadcast(true);
 		}
 		catch (SocketException e1)
 		{
