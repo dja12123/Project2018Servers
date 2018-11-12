@@ -58,8 +58,8 @@ public class RawSocketReceiver implements Runnable
 		try
 		{
 			this.dgramSocket = new DatagramSocket();
-			//SocketAddress addr = new InetSocketAddress("192.168.0.99", 49800);
-			//this.dgramSocket.bind(addr);
+			SocketAddress addr = new InetSocketAddress(NetworkUtil.listenIA(NetworkUtil.DEFAULT_SUBNET), 49800);
+			this.dgramSocket.bind(addr);
 			this.dgramSocket.setBroadcast(true);
 		}
 		catch (SocketException e1)
