@@ -76,7 +76,9 @@ public class RawSocketReceiver implements Runnable
 			//logger.log(Level.INFO, String.format("바인딩 인터페이스 (%s)", this.nic));
 			//String interfaceStr = NodeControlCore.getProp(NetworkManager.PROP_INTERFACE);
 			this.rawSocket.open(RawSocket.PF_INET, RawSocket.getProtocolByName("UDP"));
-			this.rawSocket.bindDevice(NetworkManager.getNIC()+":0");
+			String bindNIC = NetworkManager.getNIC()+":0";
+			logger.log(Level.INFO, String.format("바인드:(%s)", bindNIC));
+			this.rawSocket.bindDevice(bindNIC);
 			
 			//this.rawSocket.bindDevice(this.nic);
 			//this.rawSocket.setIPHeaderInclude(true);
