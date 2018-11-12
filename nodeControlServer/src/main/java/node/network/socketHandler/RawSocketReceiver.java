@@ -175,8 +175,9 @@ public class RawSocketReceiver implements Runnable
 				}
 				logger.log(Level.SEVERE, "수신 실패", e);
 			}*/
-			logger.log(Level.INFO, "소켓 핸들러 종료");
+			
 		}
+		logger.log(Level.INFO, "소켓 핸들러 종료");
 	}
 	public static void main(String[] args)
 	{

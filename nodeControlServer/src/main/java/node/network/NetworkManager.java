@@ -147,7 +147,6 @@ public class NetworkManager implements IServiceModule
 	{
 		ArrayList<String> command = new ArrayList<String>();
 		String iface = NodeControlCore.getProp(PROP_INTERFACE);
-		System.out.println("interface: " + iface);
 		
 		byte[] myAddrByte = inetAddress.getAddress();
 		myAddrByte[3] = 1;
@@ -161,7 +160,6 @@ public class NetworkManager implements IServiceModule
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		System.out.println(gatewayAddr);
 		command.add(String.format("ifdown -a"));
 		command.add(String.format("ip addr flush dev %s", iface));
 		command.add(String.format("ip addr change dev %s %s/24", iface, inetAddress.getHostAddress()));
