@@ -151,13 +151,13 @@ public class RawSocketReceiver implements Runnable
 			try
 			{
 				this.dgramSocket.receive(dgramPacket);
+				System.out.println("UDPRECEIVE " + dgramPacket.getLength());
 			}
 			catch (IOException e)
 			{
 				continue;
 			}
-			System.out.println("UDPRECEIVE " + dgramPacket.getLength());
-			
+		
 			/*try
 			{
 				readLen = this.rawSocket.read(packetBuffer, NetworkUtil.broadcastIA(NetworkUtil.DEFAULT_SUBNET).getAddress());
