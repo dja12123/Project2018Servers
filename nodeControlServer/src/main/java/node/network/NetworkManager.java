@@ -16,7 +16,7 @@ import node.log.LogWriter;
 import node.network.NetworkEvent;
 import node.network.packet.Packet;
 import node.network.packet.PacketUtil;
-import node.network.socketHandler.BroadcastSender;
+import node.network.socketHandler.UDPBroadcast;
 import node.network.socketHandler.RawSocketReceiver;
 import node.util.observer.Observable;
 import node.util.observer.Observer;
@@ -30,8 +30,7 @@ public class NetworkManager implements IServiceModule
 	
 	public final DeviceInfoManager deviceInfoManager;
 	
-	private final RawSocketReceiver rawSocketReceiver;
-	private final BroadcastSender broadcastSender;
+	private final UDPBroadcast udpBroadcast;
 	
 	private HashMap<String, Observable<NetworkEvent>> observerMap;
 	
@@ -39,8 +38,7 @@ public class NetworkManager implements IServiceModule
 	{
 		this.deviceInfoManager = deviceInfoManager;
 
-		this.rawSocketReceiver = new RawSocketReceiver(this, this.deviceInfoManager);
-		this.broadcastSender = new BroadcastSender();
+		this.udpBroadcast = new UDPBroadcast(this::socketReadCallback);
 		
 		
 		this.observerMap = new HashMap<String, Observable<NetworkEvent>>();
@@ -92,7 +90,7 @@ public class NetworkManager implements IServiceModule
 	{
 		if(packet.isBroadcast())
 		{
-			this.broadcastSender.sendMessage(packet.getDataByte());
+			this.udpBroadcast.sendMessage(packet.getDataByte());
 		}
 	}
 	
@@ -120,8 +118,7 @@ public class NetworkManager implements IServiceModule
 	@Override
 	public boolean startModule()
 	{
-		this.rawSocketReceiver.start();
-		this.broadcastSender.start();
+		this.udpBroadcast.start();
 		return true;
 	}
 
@@ -129,8 +126,7 @@ public class NetworkManager implements IServiceModule
 	public void stopModule()
 	{
 		this.observerMap.clear();
-		this.rawSocketReceiver.stop();
-		this.broadcastSender.stop();
+		this.udpBroadcast.stop();
 	}
 	
 	public static void main(String[] args) throws UnknownHostException
@@ -160,16 +156,16 @@ public class NetworkManager implements IServiceModule
 			e.printStackTrace();
 		}
 		System.out.println(gatewayAddr);
-		command.add(String.format("ifdown %s", iface));
+		command.add(String.format("ifdown -a"));
 		command.add(String.format("ip addr flush dev %s", iface));
 		command.add(String.format("ip addr change dev %s %s/24", iface, inetAddress.getHostAddress()));
 		command.add(String.format("ip route add default via %s", gatewayAddr));
-		command.add(String.format("ifup %s", iface));
+		command.add(String.format("ifup -a"));
 		
-		synchronized (this.rawSocketReceiver)
+		synchronized (this)
 		{
-			logger.log(Level.INFO, "IP�옱�븷�떦...");
-			this.rawSocketReceiver.stop();
+			logger.log(Level.INFO, "IP변경 시작");
+			this.udpBroadcast.stop();
 			try
 			{
 				CommandExecutor.executeBash(command);
@@ -178,8 +174,8 @@ public class NetworkManager implements IServiceModule
 			{
 				e.printStackTrace();
 			}
-			this.rawSocketReceiver.start();
-			logger.log(Level.INFO, "�셿猷�");
+			this.udpBroadcast.start();
+			logger.log(Level.INFO, "IP변경 완료");
 		}
 		
 	}

@@ -3,6 +3,9 @@ package node.network.socketHandler;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.net.InetAddress;
+import java.util.Arrays;
+import java.util.function.BiConsumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -10,26 +13,36 @@ import node.NodeControlCore;
 import node.log.LogWriter;
 import node.network.NetworkManager;
 import node.network.NetworkUtil;
+import node.network.packet.PacketUtil;
 
-public class BroadcastSender
+public class UDPBroadcast
 {
-	public static final Logger logger = LogWriter.createLogger(BroadcastSender.class, "broadcast");
+	public static final Logger logger = LogWriter.createLogger(UDPBroadcast.class, "broadcast");
 	
 	private DatagramSocket socket;
 	private int port;
 
 	private boolean isWork;
+
+	private Thread worker;
+
+	private BiConsumer<InetAddress, byte[]> receiveCallback;
 	
-	public BroadcastSender()
+	public UDPBroadcast(BiConsumer<InetAddress, byte[]> receiveCallback)
 	{
+		this.receiveCallback = receiveCallback;
+		
 		this.socket = null;
 		this.isWork = false;
+		this.worker = null;
 	}
 	
 	public void start()
 	{
 		if(this.isWork) return;
 		this.isWork = true;
+		
+		this.worker = new Thread(this::run);
 		
 		logger.log(Level.INFO, "브로드캐스트 소켓 전송기 로드");
 
@@ -67,12 +80,37 @@ public class BroadcastSender
 			logger.log(Level.SEVERE, "브로드캐스트 실패", e);
 		}
 	}
+	
+	public void run()
+	{
+		logger.log(Level.INFO, "네트워크 수신 시작");
+		byte[] packetBuffer = new byte[PacketUtil.HEADER_SIZE + PacketUtil.MAX_SIZE_KEY + PacketUtil.MAX_SIZE_DATA];
+		DatagramPacket dgramPacket;
+		
+		while(this.isWork)
+		{
+			dgramPacket = new DatagramPacket(packetBuffer, packetBuffer.length);
+
+			try
+			{
+				this.socket.receive(dgramPacket);
+				byte[] copyBuf = Arrays.copyOf(packetBuffer, dgramPacket.getLength());
+				this.receiveCallback.accept(dgramPacket.getAddress(), copyBuf);
+				logger.log(Level.INFO, dgramPacket.getAddress().toString());
+			}
+			catch (IOException e)
+			{
+				
+				logger.log(Level.SEVERE, "수신 실패", e);
+			}
+		}
+	}
 
 	public void stop()
 	{
 		if(!this.isWork) return;
 		this.isWork = false;
-		
+		this.worker.interrupt();
 		logger.log(Level.WARNING, "브로드캐스트 소켓 전송기 중지");
 		
 		
