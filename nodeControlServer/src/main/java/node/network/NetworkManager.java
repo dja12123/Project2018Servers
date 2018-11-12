@@ -16,6 +16,7 @@ import node.log.LogWriter;
 import node.network.NetworkEvent;
 import node.network.packet.Packet;
 import node.network.packet.PacketUtil;
+import node.network.socketHandler.RawSocketReceiver;
 import node.network.socketHandler.UDPBroadcast;
 import node.util.observer.Observable;
 import node.util.observer.Observer;
@@ -30,15 +31,19 @@ public class NetworkManager implements IServiceModule
 	public final DeviceInfoManager deviceInfoManager;
 	
 	private final UDPBroadcast udpBroadcast;
+	private RawSocketReceiver rawSocketReceiver;
 	
 	private HashMap<String, Observable<NetworkEvent>> observerMap;
+
+
 	
 	public NetworkManager(DeviceInfoManager deviceInfoManager)
 	{
 		this.deviceInfoManager = deviceInfoManager;
+		
 
 		this.udpBroadcast = new UDPBroadcast(this::socketReadCallback);
-		
+		this.rawSocketReceiver = new RawSocketReceiver(this::socketReadCallback);
 		
 		this.observerMap = new HashMap<String, Observable<NetworkEvent>>();
 	}
@@ -117,6 +122,7 @@ public class NetworkManager implements IServiceModule
 	@Override
 	public boolean startModule()
 	{
+		this.rawSocketReceiver.start();
 		this.udpBroadcast.start();
 		return true;
 	}
@@ -126,6 +132,7 @@ public class NetworkManager implements IServiceModule
 	{
 		this.observerMap.clear();
 		this.udpBroadcast.stop();
+		this.rawSocketReceiver.stop();
 	}
 	
 	public static void main(String[] args) throws UnknownHostException
@@ -166,6 +173,7 @@ public class NetworkManager implements IServiceModule
 		{
 			logger.log(Level.INFO, "IP변경 시작");
 			this.udpBroadcast.stop();
+			this.rawSocketReceiver.stop();
 			try
 			{
 				CommandExecutor.executeBash(command);
@@ -175,6 +183,7 @@ public class NetworkManager implements IServiceModule
 				e.printStackTrace();
 			}
 			this.udpBroadcast.start();
+			this.rawSocketReceiver.start();
 			logger.log(Level.INFO, "IP변경 완료");
 		}
 		
