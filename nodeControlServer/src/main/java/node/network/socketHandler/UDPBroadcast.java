@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.util.Arrays;
 import java.util.function.BiConsumer;
 import java.util.logging.Level;
@@ -51,6 +52,7 @@ public class UDPBroadcast
 			this.port = Integer.parseInt(NodeControlCore.getProp(NetworkManager.PROP_INFOBROADCAST_PORT));
 
 			this.socket = new DatagramSocket();
+			this.socket.bind(new InetSocketAddress(NetworkUtil.listenIA(NetworkUtil.DEFAULT_SUBNET), 49800));
 			this.socket.setBroadcast(true);
 		}
 		catch (IllegalStateException | IOException e)
