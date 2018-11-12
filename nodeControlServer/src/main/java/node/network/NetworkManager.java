@@ -35,17 +35,19 @@ public class NetworkManager implements IServiceModule
 	
 	private HashMap<String, Observable<NetworkEvent>> observerMap;
 
+	private static String nic = null;
+
 
 	
 	public NetworkManager(DeviceInfoManager deviceInfoManager)
 	{
 		this.deviceInfoManager = deviceInfoManager;
-		
 
 		this.udpBroadcast = new UDPBroadcast(this::socketReadCallback);
 		this.rawSocketReceiver = new RawSocketReceiver(this::socketReadCallback);
 		
 		this.observerMap = new HashMap<String, Observable<NetworkEvent>>();
+
 	}
 	
 	public void addObserver(String key, Observer<NetworkEvent> observer)
@@ -122,6 +124,7 @@ public class NetworkManager implements IServiceModule
 	@Override
 	public boolean startModule()
 	{
+		nic = NodeControlCore.getProp(PROP_INTERFACE);
 		this.rawSocketReceiver.start();
 		this.udpBroadcast.start();
 		return true;
@@ -146,7 +149,7 @@ public class NetworkManager implements IServiceModule
 	public void setInetAddr(InetAddress inetAddress)
 	{
 		ArrayList<String> command = new ArrayList<String>();
-		String iface = NodeControlCore.getProp(PROP_INTERFACE);
+		
 		
 		byte[] myAddrByte = inetAddress.getAddress();
 		myAddrByte[3] = 1;
@@ -161,9 +164,11 @@ public class NetworkManager implements IServiceModule
 			e.printStackTrace();
 		}
 		command.add(String.format("ifdown -a"));
-		command.add(String.format("ip addr flush dev %s", iface));
-		command.add(String.format("ip addr change dev %s %s/24", iface, inetAddress.getHostAddress()));
-		command.add(String.format("ip addr add dev %s %s/24", iface, NetworkUtil.listenIA(NetworkUtil.DEFAULT_SUBNET).getHostAddress()));
+		command.add(String.format("ifconfig %s:0 %s/24", nic, NetworkUtil.listenIA(NetworkUtil.DEFAULT_SUBNET).getHostAddress()));
+		
+		command.add(String.format("ip addr flush dev %s", nic));
+		command.add(String.format("ip addr change dev %s %s/24", nic, inetAddress.getHostAddress()));
+		
 		command.add(String.format("ip route add default via %s", gatewayAddr));
 		command.add(String.format("ifup -a"));
 		
@@ -185,5 +190,10 @@ public class NetworkManager implements IServiceModule
 			logger.log(Level.INFO, "IP변경 완료");
 		}
 		
+	}
+	
+	public static String getNIC()
+	{
+		return nic;
 	}
 }
