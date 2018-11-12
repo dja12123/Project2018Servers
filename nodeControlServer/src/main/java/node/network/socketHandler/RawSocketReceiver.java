@@ -57,7 +57,7 @@ public class RawSocketReceiver implements Runnable
 		logger.log(Level.INFO, "로우 소켓 핸들러 로드");
 		try
 		{
-			this.dgramSocket = new DatagramSocket();
+			this.dgramSocket = new DatagramSocket(null);
 			SocketAddress addr = new InetSocketAddress(NetworkUtil.listenIA(NetworkUtil.DEFAULT_SUBNET), 49800);
 			this.dgramSocket.bind(addr);
 			this.dgramSocket.setBroadcast(true);
