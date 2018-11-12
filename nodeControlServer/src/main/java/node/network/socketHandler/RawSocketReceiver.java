@@ -1,7 +1,12 @@
 package node.network.socketHandler;
 
 import java.io.IOException;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.net.SocketAddress;
+import java.net.SocketException;
 import java.util.Arrays;
 import java.util.function.BiConsumer;
 import java.util.logging.Level;
@@ -27,6 +32,7 @@ public class RawSocketReceiver implements Runnable
 	
 	private Thread worker;
 	private boolean isWork;
+	private DatagramSocket dgramSocket;
 	
 	//private DatagramSocket socket;
 	private RawSocket rawSocket;
@@ -40,6 +46,7 @@ public class RawSocketReceiver implements Runnable
 	{
 		this.receiveCallback = receiveCallback;
 		this.rawSocket = null;
+		this.dgramSocket = null;
 	}
 
 	public void start()
@@ -48,6 +55,16 @@ public class RawSocketReceiver implements Runnable
 		this.isWork = true;
 		
 		logger.log(Level.INFO, "로우 소켓 핸들러 로드");
+		try
+		{
+			this.dgramSocket = new DatagramSocket(null);
+			SocketAddress addr = new InetSocketAddress("192.168.0.99", 49800);
+			this.dgramSocket.bind(addr);
+		}
+		catch (SocketException e1)
+		{
+			e1.printStackTrace();
+		}
 		this.rawSocket = new RawSocket();
 		this.worker = new Thread(this);
 		
@@ -88,6 +105,7 @@ public class RawSocketReceiver implements Runnable
 		logger.log(Level.INFO, "소켓 핸들러 종료");
 		try
 		{
+			this.dgramSocket.close();
 			this.rawSocket.close();
 		}
 		catch (IOException e)
@@ -124,13 +142,21 @@ public class RawSocketReceiver implements Runnable
 		logger.log(Level.INFO, "네트워크 수신 시작");
 		byte[] packetBuffer = new byte[PacketUtil.HEADER_SIZE + PacketUtil.MAX_SIZE_KEY + PacketUtil.MAX_SIZE_DATA];
 		int readLen = 0;
-		//DatagramPacket dgramPacket;
+		DatagramPacket dgramPacket;
 		
 		while(this.isWork)
 		{
-			//dgramPacket = new DatagramPacket(packetBuffer, packetBuffer.length);
-
+			dgramPacket = new DatagramPacket(packetBuffer, packetBuffer.length);
 			try
+			{
+				this.dgramSocket.receive(dgramPacket);
+			}
+			catch (IOException e)
+			{
+				e.printStackTrace();
+			}
+			
+			/*try
 			{
 				readLen = this.rawSocket.read(packetBuffer, NetworkUtil.broadcastIA(NetworkUtil.DEFAULT_SUBNET).getAddress());
 
@@ -147,7 +173,7 @@ public class RawSocketReceiver implements Runnable
 					return;
 				}
 				logger.log(Level.SEVERE, "수신 실패", e);
-			}
+			}*/
 		}
 	}
 	public static void main(String[] args)
