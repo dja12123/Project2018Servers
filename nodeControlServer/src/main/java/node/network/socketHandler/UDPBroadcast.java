@@ -52,10 +52,10 @@ public class UDPBroadcast
 		{
 			this.port = Integer.parseInt(NodeControlCore.getProp(NetworkManager.PROP_INFOBROADCAST_PORT));
 
-			this.socket = new DatagramSocket();
-			//SocketAddress addr = new InetSocketAddress("192.168.0.99", 49800);
-			//logger.log(Level.INFO, String.format("바인딩(%s)", addr.toString()));
-			//this.socket.bind(addr);
+			this.socket = new DatagramSocket(null);
+			SocketAddress addr = new InetSocketAddress(NetworkUtil.listenIA(NetworkUtil.DEFAULT_SUBNET), 49800);
+			logger.log(Level.INFO, String.format("바인딩(%s)", addr.toString()));
+			this.socket.bind(addr);
 			this.socket.setBroadcast(true);
 		}
 		catch (IllegalStateException | IOException e)
