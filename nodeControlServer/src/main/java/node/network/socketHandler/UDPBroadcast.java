@@ -76,6 +76,7 @@ public class UDPBroadcast
 		DatagramPacket packet = new DatagramPacket(stream, stream.length);
 		packet.setAddress(NetworkUtil.broadcastIA(NetworkUtil.DEFAULT_SUBNET));
 		packet.setPort(this.port);
+		logger.log(Level.INFO, "브로드케스트..");
 		try
 		{
 			this.socket.send(packet);
