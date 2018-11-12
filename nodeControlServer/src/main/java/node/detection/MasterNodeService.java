@@ -213,7 +213,7 @@ public class MasterNodeService implements Runnable
 					logger.log(Level.SEVERE, "패킷 빌드중 오류", e);
 				}
 				
-				this.networkManager.socketHandler.sendMessage(packet);
+				this.networkManager.sendMessage(packet);
 			}
 			
 			try

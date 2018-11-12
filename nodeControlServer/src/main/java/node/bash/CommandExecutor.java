@@ -39,8 +39,8 @@ public class CommandExecutor {
 	        while((msg = errorBufferReader.readLine()) != null) {
 	        	cmdlogger.log(Level.INFO, msg + System.getProperty("line.separator"));
 	        }
-	        
 	        process.waitFor();
+	        
 	        /*//shell 실행이 정상종료/ 비정상종료 됬을때 콘솔에 로그 표시
 	        if(process.exitValue() == 0) {
 	        	System.out.println("Succeed Process# Here Printed Process log");
@@ -59,29 +59,54 @@ public class CommandExecutor {
 	    }
 	    finally {
 	        tempScript.delete();
+	        
 	    }
+	    successBufferReader.close();
+        errorBufferReader.close();
 	}
 	
-	//명령을 mv -r /df /fd 하고 싶으면 매개변수로 ("mv", "-r", "/df", "/fd) 이런식으로 넘기면 명령줄 실행
-	public static void executeCommand(String... cmd) throws Exception {
+	//명령을 mv -r /df /fd 하고 싶으면 매개변수로 ("mv -r /df /fd") 이런식으로 넘기면 명령줄 실행
+	public static String executeCommand(String cmd) throws Exception {
 
 		BufferedReader successBufferReader = null;
 		BufferedReader errorBufferReader = null;
 		String msg = null;
-
-   
-        ProcessBuilder pb = new ProcessBuilder(cmd);
-        pb.inheritIO();
+		StringBuffer resultMsg = new StringBuffer();
+		
+		Runtime runtime = Runtime.getRuntime();
+        //ProcessBuilder pb = new ProcessBuilder(cmd);
         
-        Process process = pb.start();
+        //pb.inheritIO();
+        
+        //Process process = pb.start();
+		cmdlogger.log(Level.INFO, "NOW EXECUTE COMMAND #### : " + cmd + System.getProperty("line.separator"));
+		
+		Process process = runtime.exec(cmd);
+		
         successBufferReader = new BufferedReader(new InputStreamReader(process.getInputStream(), "UTF-8"));
+        cmdlogger.log(Level.INFO, "SUCCESS MESSAGE #### : " + System.getProperty("line.separator"));
         while((msg = successBufferReader.readLine()) != null) {
         	cmdlogger.log(Level.INFO, msg + System.getProperty("line.separator"));
+        	resultMsg.append(msg + System.getProperty("line.separator"));
         }
         errorBufferReader = new BufferedReader(new InputStreamReader(process.getErrorStream(), "UTF-8"));
+        cmdlogger.log(Level.INFO, "ERROR MESSAGE #### : " + System.getProperty("line.separator"));
         while((msg = errorBufferReader.readLine()) != null) {
         	cmdlogger.log(Level.INFO, msg + System.getProperty("line.separator"));
+        	resultMsg.append(msg + System.getProperty("line.separator"));
         }
+        
+        process.waitFor();
+        
+        process.destroy();
+        if(successBufferReader != null) {
+        	successBufferReader.close();
+        }
+        if(errorBufferReader != null) {
+            errorBufferReader.close();
+        }
+        
+        return resultMsg.toString();
 	}
 	
 	//쉘 명령을 임시파일에 저장

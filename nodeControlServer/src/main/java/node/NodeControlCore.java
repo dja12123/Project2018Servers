@@ -1,12 +1,21 @@
 package node;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
 import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.PrintWriter;
+import java.lang.reflect.Field;
 import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.imageio.stream.FileImageOutputStream;
+
+import node.bash.CommandExecutor;
 import node.cluster.ClusterService;
 import node.db.DB_Handler;
 import node.detection.NodeDetectionService;
@@ -52,17 +61,22 @@ public class NodeControlCore
     
     public static void main(String[] args) throws InterruptedException
 	{
-    	init();
+    	if(!init())
+    	{
+    		logger.log(Level.SEVERE, "초기화 실패");
+    		return;
+    	}
 		NodeControlCore core = new NodeControlCore();
 		core.startService();
 	}
     
-    public static void init()
+    public static boolean init()
 	{
 		Logger.getGlobal().setLevel(Level.FINER);
 		
 		logger.log(Level.INFO, "서버 시작");
 		
+		//CONFIG 로드 부분
 		try
 		{
 			InputStream stream = FileHandler.getResourceAsStream("/config.properties");
@@ -72,8 +86,60 @@ public class NodeControlCore
 		catch (Exception e)
 		{
 			logger.log(Level.SEVERE, "config 로드 실패", e);
-			return;
+			return false;
 		}
+		logger.log(Level.INFO, "config 로드");
+		
+		String cmdresult;
+		//환경 변수 설정 부분
+		try
+		{
+			cmdresult = System.getenv("JAVA_HOME");
+			if(cmdresult == null)
+			{// 환경 변수가 설정되지 않았을경우
+				logger.log(Level.INFO, "환경변수(JAVA_HOME) 설정");
+				cmdresult = CommandExecutor.executeCommand("readlink -f /usr/bin/javac");
+				System.out.println("DEBUG: " + cmdresult);
+				cmdresult = cmdresult.replace("/bin/javac", "");
+				System.out.println("DEBUG: " + cmdresult);
+				PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter("/etc/profile")), true);
+				pw.append("export JAVA_HOME=" + cmdresult);
+				pw.println();
+				pw.close();
+			}
+		}
+		catch (Exception e)
+		{
+			logger.log(Level.SEVERE, "환경변수 변경 명령 실행중 오류", e);
+			return false;
+		}
+		
+		
+		//JNI링크 부분
+		File rawSocketLib = FileHandler.getExtResourceFile("rawsocket");
+		StringBuffer libPathBuffer = new StringBuffer();
+		libPathBuffer.append(rawSocketLib.toString());
+		libPathBuffer.append(":");
+		libPathBuffer.append(System.getProperty("java.library.path"));
+		
+		System.setProperty("java.library.path", libPathBuffer.toString());
+		Field sysPathsField = null;
+		try
+		{
+			sysPathsField = ClassLoader.class.getDeclaredField("sys_paths");
+			sysPathsField.setAccessible(true);
+			sysPathsField.set(null, null);
+		}
+		catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e1)
+		{
+			// TODO Auto-generated catch blsock
+			logger.log(Level.SEVERE, "JNI 라이브러리 폴더 링크 실패", e1);
+			return false;
+		}
+		System.loadLibrary("rocksaw");
+		logger.log(Level.INFO, "JNI 라이브러리 로드");
+		
+		return true;
 	}
 	
 	private void startService()
