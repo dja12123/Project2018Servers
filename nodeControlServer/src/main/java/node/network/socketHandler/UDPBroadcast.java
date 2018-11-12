@@ -52,7 +52,7 @@ public class UDPBroadcast
 			this.port = Integer.parseInt(NodeControlCore.getProp(NetworkManager.PROP_INFOBROADCAST_PORT));
 
 			this.socket = new DatagramSocket();
-			this.socket.bind(new InetSocketAddress(NetworkUtil.listenIA(NetworkUtil.DEFAULT_SUBNET), 49800));
+			this.socket.bind(new InetSocketAddress(NetworkUtil.listenIA(NetworkUtil.DEFAULT_SUBNET), 50000));
 			this.socket.setBroadcast(true);
 		}
 		catch (IllegalStateException | IOException e)
