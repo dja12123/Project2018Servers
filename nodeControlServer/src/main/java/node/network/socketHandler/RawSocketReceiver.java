@@ -155,6 +155,7 @@ public class RawSocketReceiver implements Runnable
 			{
 				e.printStackTrace();
 			}
+			System.out.println("UDPRECEIVE " + dgramPacket.getLength());
 			
 			/*try
 			{
