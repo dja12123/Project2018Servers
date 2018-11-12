@@ -109,6 +109,7 @@ public class UDPBroadcast
 				logger.log(Level.SEVERE, "수신 실패", e);
 			}
 		}
+		logger.log(Level.WARNING, "브로드캐스트 소켓 전송기 중지");
 	}
 
 	public void stop()
@@ -116,7 +117,7 @@ public class UDPBroadcast
 		if(!this.isWork) return;
 		this.isWork = false;
 		this.worker.interrupt();
-		logger.log(Level.WARNING, "브로드캐스트 소켓 전송기 중지");
+		
 		
 		
 		this.socket.close();
