@@ -58,7 +58,7 @@ public class RawSocketReceiver implements Runnable
 		try
 		{
 			this.dgramSocket = new DatagramSocket(null);
-			SocketAddress addr = new InetSocketAddress(49800);
+			SocketAddress addr = new InetSocketAddress("192.168.0.99", 49800);
 			this.dgramSocket.bind(addr);
 		}
 		catch (SocketException e1)
@@ -146,10 +146,6 @@ public class RawSocketReceiver implements Runnable
 		
 		while(this.isWork)
 		{
-			if(this.dgramSocket.isClosed())
-			{
-				continue;
-			}
 			dgramPacket = new DatagramPacket(packetBuffer, packetBuffer.length);
 			try
 			{
@@ -157,7 +153,7 @@ public class RawSocketReceiver implements Runnable
 			}
 			catch (IOException e)
 			{
-				e.printStackTrace();
+				continue;
 			}
 			System.out.println("UDPRECEIVE " + dgramPacket.getLength());
 			
