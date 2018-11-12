@@ -89,7 +89,7 @@ public class UDPBroadcast
 	
 	public void run()
 	{
-		logger.log(Level.INFO, "네트워크 수신 시작");
+		/*logger.log(Level.INFO, "네트워크 수신 시작");
 		byte[] packetBuffer = new byte[PacketUtil.HEADER_SIZE + PacketUtil.MAX_SIZE_KEY + PacketUtil.MAX_SIZE_DATA];
 		DatagramPacket dgramPacket;
 		
@@ -110,7 +110,7 @@ public class UDPBroadcast
 				logger.log(Level.SEVERE, "수신 실패", e);
 			}
 		}
-		logger.log(Level.WARNING, "브로드캐스트 소켓 전송기 중지");
+		logger.log(Level.WARNING, "브로드캐스트 소켓 전송기 중지");*/
 	}
 
 	public void stop()
