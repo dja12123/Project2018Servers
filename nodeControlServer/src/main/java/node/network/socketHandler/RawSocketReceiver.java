@@ -59,7 +59,7 @@ public class RawSocketReceiver implements Runnable
 			this.nic = NodeControlCore.getProp(NetworkManager.PROP_INTERFACE);
 			logger.log(Level.INFO, String.format("바인딩 인터페이스 (%s)", this.nic));
 			//String interfaceStr = NodeControlCore.getProp(NetworkManager.PROP_INTERFACE);
-			//this.rawSocket.open(RawSocket.PF_INET, RawSocket.getProtocolByName("UDP"));
+			this.rawSocket.open(RawSocket.PF_INET, RawSocket.getProtocolByName("RAW"));
 			
 			//this.rawSocket.bindDevice(this.nic);
 			//this.rawSocket.setIPHeaderInclude(true);
@@ -72,7 +72,7 @@ public class RawSocketReceiver implements Runnable
 			
 			//this.socket.setBroadcast(true);
 		}
-		catch (IllegalStateException e)
+		catch (IllegalStateException | IOException e)
 		{
 			logger.log(Level.SEVERE, "소켓 열기 실패", e);
 			return;
@@ -134,11 +134,7 @@ public class RawSocketReceiver implements Runnable
 			try
 			{
 				readLen = this.rawSocket.read(packetBuffer, NetworkUtil.broadcastIA().getAddress());
-				System.out.println(readLen);
-				if(readLen == 0)
-				{
-					continue;
-				}
+
 				logger.log(Level.INFO, NetworkUtil.bytesToHex(packetBuffer, readLen));
 				byte[] copyBuf = Arrays.copyOf(packetBuffer, readLen);
 				this.networkManager.socketReadCallback(NetworkUtil.broadcastIA(), copyBuf);
