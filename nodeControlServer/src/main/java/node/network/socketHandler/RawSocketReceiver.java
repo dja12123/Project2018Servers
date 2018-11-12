@@ -102,7 +102,7 @@ public class RawSocketReceiver implements Runnable
 	{
 		if(!this.isWork) return;
 		this.isWork = false;
-		logger.log(Level.INFO, "소켓 핸들러 종료");
+		
 		try
 		{
 			this.dgramSocket.close();
@@ -153,7 +153,7 @@ public class RawSocketReceiver implements Runnable
 			}
 			catch (IOException e)
 			{
-				e.printStackTrace();
+				continue;
 			}
 			System.out.println("UDPRECEIVE " + dgramPacket.getLength());
 			
@@ -175,6 +175,7 @@ public class RawSocketReceiver implements Runnable
 				}
 				logger.log(Level.SEVERE, "수신 실패", e);
 			}*/
+			logger.log(Level.INFO, "소켓 핸들러 종료");
 		}
 	}
 	public static void main(String[] args)
