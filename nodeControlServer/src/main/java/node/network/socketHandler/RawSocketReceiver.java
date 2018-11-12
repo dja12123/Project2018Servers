@@ -78,7 +78,7 @@ public class RawSocketReceiver implements Runnable
 			this.rawSocket.open(RawSocket.PF_INET, RawSocket.getProtocolByName("UDP"));
 			String bindNIC = NetworkManager.getNIC()+":0";
 			logger.log(Level.INFO, String.format("바인드:(%s)", bindNIC));
-			this.rawSocket.bindDevice("eth0");
+			this.rawSocket.bindDevice("eth0:0");
 			
 			//this.rawSocket.bindDevice(this.nic);
 			//this.rawSocket.setIPHeaderInclude(true);
@@ -149,7 +149,7 @@ public class RawSocketReceiver implements Runnable
 		
 		while(this.isWork)
 		{
-			dgramPacket = new DatagramPacket(packetBuffer, packetBuffer.length);
+			/*dgramPacket = new DatagramPacket(packetBuffer, packetBuffer.length);
 			try
 			{
 				this.dgramSocket.receive(dgramPacket);
@@ -158,8 +158,8 @@ public class RawSocketReceiver implements Runnable
 			catch (IOException e)
 			{
 				continue;
-			}
-			/*
+			}*/
+			
 			try
 			{
 				readLen = this.rawSocket.read(packetBuffer, NetworkUtil.broadcastIA(NetworkUtil.DEFAULT_SUBNET).getAddress());
@@ -177,7 +177,7 @@ public class RawSocketReceiver implements Runnable
 					return;
 				}
 				logger.log(Level.SEVERE, "수신 실패", e);
-			}*/
+			}
 			
 		}
 		logger.log(Level.INFO, "소켓 핸들러 종료");
