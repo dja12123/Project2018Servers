@@ -146,6 +146,10 @@ public class RawSocketReceiver implements Runnable
 		
 		while(this.isWork)
 		{
+			if(this.dgramSocket.isClosed())
+			{
+				continue;
+			}
 			dgramPacket = new DatagramPacket(packetBuffer, packetBuffer.length);
 			try
 			{
