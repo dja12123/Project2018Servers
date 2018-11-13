@@ -53,7 +53,6 @@ public class BroadcastSocketReceiver implements Runnable
 		try
 		{
 			this.dgramSocket = new DatagramSocket(null);
-			
 			this.dgramSocket.bind(new InetSocketAddress(addr, NetworkUtil.broadcastPort()));
 			this.dgramSocket.setBroadcast(true);
 		}

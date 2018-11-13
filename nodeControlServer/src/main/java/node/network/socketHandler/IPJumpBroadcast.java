@@ -60,7 +60,7 @@ public class IPJumpBroadcast
 
 	}
 	
-	public synchronized void sendMessage(boolean jump, byte[] stream)
+	public synchronized void sendMessage(boolean jump, byte[] data)
 	{
 		if(!this.isWork)
 		{
@@ -93,8 +93,8 @@ public class IPJumpBroadcast
 				{
 					this.socket.close();
 				}
-				this.socket = new DatagramSocket(null);
-				this.socket.bind(new InetSocketAddress(nowAddr, NetworkUtil.broadcastPort()));
+				this.socket = new DatagramSocket();
+				//this.socket.bind(new InetSocketAddress(nowAddr, NetworkUtil.broadcastPort()));
 				this.socket.setBroadcast(true);
 			}
 			catch (IllegalStateException | IOException e)
@@ -104,7 +104,7 @@ public class IPJumpBroadcast
 			}
 		}
 		
-		DatagramPacket packet = new DatagramPacket(stream, stream.length);
+		DatagramPacket packet = new DatagramPacket(data, data.length);
 		packet.setAddress(NetworkUtil.broadcastIA(NetworkUtil.DEFAULT_SUBNET));
 		packet.setPort(NetworkUtil.broadcastPort());
 		logger.log(Level.INFO, "브로드케스트..");
