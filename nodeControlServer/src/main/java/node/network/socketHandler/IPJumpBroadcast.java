@@ -91,6 +91,10 @@ public class IPJumpBroadcast
 			}
 			try
 			{
+				if(this.socket != null && !this.socket.isClosed())
+				{
+					this.socket.close();
+				}
 				this.socket = new DatagramSocket(null);
 				this.socket.bind(new InetSocketAddress(nowAddr, this.port));
 				this.socket.setBroadcast(true);
