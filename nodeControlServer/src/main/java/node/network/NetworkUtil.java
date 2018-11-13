@@ -17,14 +17,14 @@ public class NetworkUtil
 	private static String Subnet = null;
 	private static InetAddress BROADCAST_IA = null;
 	private static InetAddress ALL_IA = null;
-	private static int port;
+	private static int broadcastPort;
 	
 	static
 	{
 		try
 		{
 			ALL_IA = InetAddress.getByName("0.0.0.0");
-			port = Integer.parseInt(NodeControlCore.getProp(NetworkManager.PROP_INFOBROADCAST_PORT));
+			broadcastPort = Integer.parseInt(NodeControlCore.getProp(NetworkManager.PROP_INFOBROADCAST_PORT));
 		}
 		catch (UnknownHostException e)
 		{
@@ -63,9 +63,9 @@ public class NetworkUtil
 		return ALL_IA;
 	}
 	
-	public static int port()
+	public static int broadcastPort()
 	{
-		return port;
+		return broadcastPort;
 	}
 	
 	public static NetworkInterface getNetworkInterface(String name)

@@ -94,7 +94,7 @@ public class IPJumpBroadcast
 					this.socket.close();
 				}
 				this.socket = new DatagramSocket(null);
-				this.socket.bind(new InetSocketAddress(nowAddr, NetworkUtil.port()));
+				this.socket.bind(new InetSocketAddress(nowAddr, NetworkUtil.broadcastPort()));
 				this.socket.setBroadcast(true);
 			}
 			catch (IllegalStateException | IOException e)
@@ -106,7 +106,7 @@ public class IPJumpBroadcast
 		
 		DatagramPacket packet = new DatagramPacket(stream, stream.length);
 		packet.setAddress(NetworkUtil.broadcastIA(NetworkUtil.DEFAULT_SUBNET));
-		packet.setPort(NetworkUtil.port());
+		packet.setPort(NetworkUtil.broadcastPort());
 		logger.log(Level.INFO, "브로드케스트..");
 		try
 		{

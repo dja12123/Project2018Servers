@@ -51,7 +51,7 @@ public class BroadcastSocketReceiver implements Runnable
 		
 		try
 		{
-			this.dgramSocket = new DatagramSocket(NetworkUtil.port());
+			this.dgramSocket = new DatagramSocket(NetworkUtil.broadcastPort());
 			this.dgramSocket.setBroadcast(true);
 		}
 		catch (SocketException e)
