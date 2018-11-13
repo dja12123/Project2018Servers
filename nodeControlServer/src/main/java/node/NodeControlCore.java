@@ -84,7 +84,7 @@ public class NodeControlCore
 		}
 		logger.log(Level.INFO, "config 로드");
 		
-		String cmdresult;
+		/*String cmdresult;
 		//환경 변수 설정 부분
 		try
 		{
@@ -104,7 +104,7 @@ public class NodeControlCore
 		{
 			logger.log(Level.SEVERE, "환경변수 변경 명령 실행중 오류", e);
 			return false;
-		}
+		}*/
 		
 		
 		//JNI링크 부분
