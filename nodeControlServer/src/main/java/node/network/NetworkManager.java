@@ -125,8 +125,10 @@ public class NetworkManager implements IServiceModule
 	public boolean startModule()
 	{
 		nic = NodeControlCore.getProp(PROP_INTERFACE);
+		
 		this.rawSocketReceiver.start();
 		this.ipJumpBroadcast.start();
+
 		logger.log(Level.INFO, "네트워크 메니저 로드");
 		return true;
 	}
@@ -167,7 +169,8 @@ public class NetworkManager implements IServiceModule
 		command.add(String.format("ifdown -a"));
 
 		command.add(String.format("ip addr flush dev %s", nic));
-		command.add(String.format("ip addr change dev %s %s/24", nic, inetAddress.getHostAddress()));
+		command.add(String.format("ip addr add %s/24 brd + dev %s", inetAddress.getHostAddress(), nic));
+		command.add(String.format("ifconfig %s:0 %s/24", nic, "192.168.0.251"));
 		
 		command.add(String.format("ip route add default via %s", gatewayAddr));
 		command.add(String.format("ifup -a"));

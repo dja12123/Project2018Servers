@@ -18,17 +18,15 @@ public class BashSet {
 	//파일상수, 매개변수(옵션)1, 매개변수(옵션)2,... 이런식으로 사용
 	public static void execSh(File shFile, String... arg) {
 		//현재 노드에서 주키퍼 서버 실행
-		ArrayList<String> tempSh = new ArrayList<String>();
-		StringBuffer cmdline = new StringBuffer(shFile.getAbsolutePath());
+		StringBuffer cmdline = new StringBuffer("bash ");
 		
+		cmdline.append(shFile.getAbsolutePath());
 		for(int i = 0; i < arg.length; i++) {
 			cmdline.append(" " + arg[i]);
 		}
-		
-		tempSh.add(cmdline.toString());
-		
+			
 		try {
-			CommandExecutor.executeBash(tempSh);
+			CommandExecutor.executeCommand(cmdline.toString());
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
