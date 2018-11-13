@@ -3,6 +3,7 @@ if [ -z "$1" ]; then
 fi
 
 if grep -q "export SPARK_HOME=$1" /etc/bashrc; then
+else
 	mkdir "$1/../"
 	cd "$1/../"
 	
