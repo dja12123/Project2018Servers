@@ -80,7 +80,7 @@ public class IPJumpBroadcast
 			String ipSetCommand = String.format("ifconfig %s:%s %s/24", NetworkUtil.getNIC(), VNIC, nowAddr);
 			try
 			{
-				CommandExecutor.executeCommand(ipSetCommand);
+				CommandExecutor.executeCommand(ipSetCommand, false);
 			}
 			catch (Exception e)
 			{
