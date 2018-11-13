@@ -57,23 +57,18 @@ public class ClusterService implements IServiceModule {
 		}
 		
 	}
-<<<<<<< HEAD
-	public boolean reciveEvent(NetworkStateChangeEvent eventInfo) {
+
+	public boolean reciveEvent(NodeDetectionEvent eventInfo) {
 		if(eventInfo == null) {
-=======
-	public boolean reciveEvent() {
-		NodeDetectionEvent eventInfo = null;
-		if((eventInfo = nscEventReceiver.getEvent()) == null) {
->>>>>>> 7b633e20ce67b38f21b226dff618fc6ac817880e
 			clusterLogger.log(Level.SEVERE, "Not Given Network State Change Event", new Exception("Not Given Network State Change Event"));
 			return false;
 		}
-		if(masterIp != null && !masterIp.equals(eventInfo.DHCPIp)) {	//마스터가 아니였다가 마스터가 될때 마스터프로세스를 종료시켜준다.(잔존 프로세스 제거)
+		if(masterIp != null && !masterIp.equals(eventInfo.masterIP.getHostAddress())) {	//마스터가 아니였다가 마스터가 될때 마스터프로세스를 종료시켜준다.(잔존 프로세스 제거)
 			sparkManager.stopSparkMaster();
 			sparkManager.stopSparkWorker();
 		}
-		this.isMaster = eventInfo.isDHCP;
-		this.masterIp = eventInfo.DHCPIp;
+		this.isMaster = eventInfo.isMaster;
+		this.masterIp = eventInfo.masterIP.getHostAddress();
 		this.connectState = eventInfo.state;
 		
 		return true;

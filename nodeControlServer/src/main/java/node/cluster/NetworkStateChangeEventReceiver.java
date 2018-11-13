@@ -1,12 +1,7 @@
 package node.cluster;
 
-<<<<<<< HEAD
-import java.util.logging.Level;
-
-import node.detection.NetworkStateChangeEvent;
-=======
 import node.detection.NodeDetectionEvent;
->>>>>>> 7b633e20ce67b38f21b226dff618fc6ac817880e
+
 import node.util.observer.Observable;
 import node.util.observer.Observer;
 
