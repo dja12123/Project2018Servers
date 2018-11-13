@@ -4,6 +4,7 @@ import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -126,19 +127,23 @@ public class NetworkManager implements IServiceModule
 	@Override
 	public boolean startModule()
 	{
+		logger.log(Level.INFO, "네트워크 메니저 로드");
+		
 		NetworkInterface ni = NetworkUtil.getNetworkInterface(NetworkUtil.getNIC());
-		this.inetAddress = ni.getInetAddresses().nextElement();
+		Enumeration<InetAddress> addrList = ni.getInetAddresses();
+		addrList.nextElement();
+		this.inetAddress = addrList.nextElement();
 		
 		this.rawSocketReceiver.start(this.inetAddress);
 		this.ipJumpBroadcast.start();
-
-		logger.log(Level.INFO, "네트워크 메니저 로드");
 		return true;
 	}
 
 	@Override
 	public void stopModule()
 	{
+		logger.log(Level.INFO, "네트워크 메니저 종료");
+		
 		this.observerMap.clear();
 		this.ipJumpBroadcast.stop();
 		this.rawSocketReceiver.stop();
