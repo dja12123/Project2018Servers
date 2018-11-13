@@ -142,7 +142,7 @@ public class BroadcastSocketReceiver implements Runnable
 				readLen = this.rawSocket.read(packetBuffer, NetworkUtil.broadcastIA(NetworkUtil.DEFAULT_SUBNET).getAddress());
 
 				logger.log(Level.INFO, NetworkUtil.bytesToHex(packetBuffer, readLen));
-				byte[] copyBuf = Arrays.copyOfRange(packetBuffer, 8, readLen - 8);
+				byte[] copyBuf = Arrays.copyOfRange(packetBuffer, 14, readLen - 14);
 				//해더 버림
 				this.receiveCallback.accept(NetworkUtil.broadcastIA(NetworkUtil.DEFAULT_SUBNET), copyBuf);
 			}
