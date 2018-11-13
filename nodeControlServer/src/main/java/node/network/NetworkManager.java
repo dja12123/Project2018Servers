@@ -1,6 +1,7 @@
 package node.network;
 
 import java.net.InetAddress;
+import java.net.NetworkInterface;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -10,7 +11,6 @@ import java.util.logging.Logger;
 import node.IServiceModule;
 import node.NodeControlCore;
 import node.bash.CommandExecutor;
-import node.db.DB_Handler;
 import node.device.DeviceInfoManager;
 import node.log.LogWriter;
 import node.network.NetworkEvent;
@@ -25,19 +25,14 @@ public class NetworkManager implements IServiceModule
 {
 	public static final Logger logger = LogWriter.createLogger(NetworkManager.class, "network");
 	
-	public static final String PROP_INFOBROADCAST_PORT = "infoBroadcastPort";
-	public static final String PROP_INTERFACE = "networkInterface";
-	
 	public final DeviceInfoManager deviceInfoManager;
 	
 	private final IPJumpBroadcast ipJumpBroadcast;
 	private BroadcastSocketReceiver rawSocketReceiver;
 	
 	private HashMap<String, Observable<NetworkEvent>> observerMap;
-
-	private static String nic = null;
-	private static int port;
 	
+	private InetAddress inetAddress;
 	
 	public NetworkManager(DeviceInfoManager deviceInfoManager)
 	{
@@ -47,6 +42,8 @@ public class NetworkManager implements IServiceModule
 		this.rawSocketReceiver = new BroadcastSocketReceiver(this::socketReadCallback);
 		
 		this.observerMap = new HashMap<String, Observable<NetworkEvent>>();
+		
+		this.inetAddress = null;
 
 	}
 	
@@ -120,13 +117,19 @@ public class NetworkManager implements IServiceModule
 		NetworkEvent event = new NetworkEvent(eventKey, addr, packetObj);
 		observable.notifyObservers(NodeControlCore.mainThreadPool, event);
 	}
+	
+	public InetAddress getMyAddr()
+	{
+		return this.inetAddress;
+	}
 
 	@Override
 	public boolean startModule()
 	{
-		nic = NodeControlCore.getProp(PROP_INTERFACE);
+		NetworkInterface ni = NetworkUtil.getNetworkInterface(NetworkUtil.getNIC());
+		this.inetAddress = ni.getInetAddresses().nextElement();
 		
-		this.rawSocketReceiver.start();
+		this.rawSocketReceiver.start(this.inetAddress);
 		this.ipJumpBroadcast.start();
 
 		logger.log(Level.INFO, "네트워크 메니저 로드");
@@ -141,18 +144,9 @@ public class NetworkManager implements IServiceModule
 		this.rawSocketReceiver.stop();
 	}
 	
-	public static void main(String[] args) throws UnknownHostException
-	{
-		/*NodeControlCore.init();
-		NetworkManager networkManager = new NetworkManager();
-		networkManager.startModule();
-		networkManager.setInetAddr(InetAddress.getByName("192.168.0.99"));*/
-	}
-	
 	public void setInetAddr(InetAddress inetAddress)
 	{
 		ArrayList<String> command = new ArrayList<String>();
-		
 		
 		byte[] myAddrByte = inetAddress.getAddress();
 		myAddrByte[3] = 1;
@@ -168,9 +162,9 @@ public class NetworkManager implements IServiceModule
 		}
 		command.add(String.format("ifdown -a"));
 
-		command.add(String.format("ip addr flush dev %s", nic));
-		command.add(String.format("ip addr add %s/24 brd + dev %s", inetAddress.getHostAddress(), nic));
-		command.add(String.format("ifconfig %s:0 %s/24", nic, "192.168.0.251"));
+		command.add(String.format("ip addr flush dev %s", NetworkUtil.getNIC()));
+		command.add(String.format("ip addr add %s/24 brd + dev %s", inetAddress.getHostAddress(), NetworkUtil.getNIC()));
+		command.add(String.format("ifconfig %s:0 %s/24", NetworkUtil.getNIC(), "192.168.0.251"));
 		
 		command.add(String.format("ip route add default via %s", gatewayAddr));
 		command.add(String.format("ifup -a"));
@@ -189,14 +183,10 @@ public class NetworkManager implements IServiceModule
 				e.printStackTrace();
 			}
 			this.ipJumpBroadcast.start();
-			this.rawSocketReceiver.start();
+			this.rawSocketReceiver.start(this.inetAddress);
 			logger.log(Level.INFO, "IP변경 완료");
 		}
 		
-	}
-	
-	public static String getNIC()
-	{
-		return nic;
+		this.inetAddress = inetAddress;
 	}
 }

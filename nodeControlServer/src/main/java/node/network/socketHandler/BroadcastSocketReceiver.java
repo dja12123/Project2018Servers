@@ -5,6 +5,7 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.net.NetworkInterface;
 import java.net.SocketAddress;
 import java.net.SocketException;
 import java.util.Arrays;
@@ -42,7 +43,7 @@ public class BroadcastSocketReceiver implements Runnable
 		this.dgramSocket = null;
 	}
 
-	public void start()
+	public void start(InetAddress addr)
 	{
 		if(this.isWork) return;
 		this.isWork = true;
@@ -51,7 +52,9 @@ public class BroadcastSocketReceiver implements Runnable
 		
 		try
 		{
-			this.dgramSocket = new DatagramSocket(NetworkUtil.broadcastPort());
+			this.dgramSocket = new DatagramSocket(null);
+			
+			this.dgramSocket.bind(new InetSocketAddress(addr, NetworkUtil.broadcastPort()));
 			this.dgramSocket.setBroadcast(true);
 		}
 		catch (SocketException e)

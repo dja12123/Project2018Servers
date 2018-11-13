@@ -77,7 +77,7 @@ public class IPJumpBroadcast
 			{
 				this.nowIP = this.ipStart;
 			}
-			String ipSetCommand = String.format("ifconfig %s:%s %s/24", NetworkManager.getNIC(), VNIC, nowAddr);
+			String ipSetCommand = String.format("ifconfig %s:%s %s/24", NetworkUtil.getNIC(), VNIC, nowAddr);
 			try
 			{
 				CommandExecutor.executeCommand(ipSetCommand);
