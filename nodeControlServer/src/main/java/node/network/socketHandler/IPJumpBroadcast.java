@@ -107,7 +107,7 @@ public class IPJumpBroadcast
 		DatagramPacket packet = new DatagramPacket(data, data.length);
 		packet.setAddress(NetworkUtil.broadcastIA(NetworkUtil.DEFAULT_SUBNET));
 		packet.setPort(NetworkUtil.broadcastPort());
-		logger.log(Level.INFO, "브로드케스트.." + NetworkUtil.bytesToHex(data, data.length));
+		logger.log(Level.INFO, "브로드케스트..");
 		try
 		{
 			this.socket.send(packet);

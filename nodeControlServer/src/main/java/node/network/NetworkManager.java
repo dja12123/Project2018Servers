@@ -106,6 +106,7 @@ public class NetworkManager implements IServiceModule
 		}
 		
 		Packet packetObj = new Packet(packetBuffer);
+		System.out.println(packetObj.toString());
 		
 		String eventKey = packetObj.getKey();
 		
