@@ -94,7 +94,7 @@ public class NetworkManager implements IServiceModule
 	{
 		if(packet.isBroadcast())
 		{
-			this.ipJumpBroadcast.sendMessage(true, packet.getDataByte());
+			this.ipJumpBroadcast.sendMessage(true, packet.getNativeArr());
 		}
 	}
 	
