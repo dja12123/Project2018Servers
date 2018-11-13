@@ -15,16 +15,31 @@ public class DetectionUtil
 	public static final String PROP_delayMasterNodeBroadcast = "delayMasterNodeBroadcast";
 	public static final String PROP_delayWorkerBroadcast = "delayWorkerBroadcast";
 	public static final String PROP_masternodeIP = "masternodeIP";
+	public static final String PROP_worknodeDefaultIP = "worknodeDefaultIP";
 	
 	private static InetAddress masterAddr;
+	private static InetAddress workDefaultAddr;
 	
 	static
 	{
 		String masterIP = NodeControlCore.getProp(PROP_masternodeIP);
+		
 		String fullIP = String.format("%s.%s", NetworkUtil.DEFAULT_SUBNET, masterIP);
 		try
 		{
 			masterAddr = InetAddress.getByName(fullIP);
+		}
+		catch (UnknownHostException e)
+		{
+			e.printStackTrace();
+		}
+		
+		String workDefaultIP = NodeControlCore.getProp(PROP_worknodeDefaultIP);
+		
+		fullIP = String.format("%s.%s", NetworkUtil.DEFAULT_SUBNET, workDefaultIP);
+		try
+		{
+			workDefaultAddr = InetAddress.getByName(fullIP);
 		}
 		catch (UnknownHostException e)
 		{
@@ -35,6 +50,11 @@ public class DetectionUtil
 	public static InetAddress masterAddr()
 	{
 		return masterAddr;
+	}
+	
+	public static InetAddress workDefaultAddr()
+	{
+		return workDefaultAddr;
 	}
 	
 	public static boolean isChangeMasterNode(NodeInfoProtocol anotherMasterNodeInfo, UUID masterNode, DeviceInfoManager deviceInfoManager)

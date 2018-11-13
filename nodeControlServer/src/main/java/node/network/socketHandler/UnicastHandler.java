@@ -60,7 +60,7 @@ public class UnicastHandler
 		this.worker.start();
 	}
 	
-	public synchronized void sendMessage(byte[] data)
+	public synchronized void sendMessage(byte[] data, InetAddress addr)
 	{
 		if(!this.isWork)
 		{
@@ -69,8 +69,8 @@ public class UnicastHandler
 		}
 		
 		DatagramPacket packet = new DatagramPacket(data, data.length);
-		packet.setAddress(NetworkUtil.broadcastIA(NetworkUtil.DEFAULT_SUBNET));
-		packet.setPort(NetworkUtil.broadcastPort());
+		packet.setAddress(addr);
+		packet.setPort(NetworkUtil.unicastPort());
 		try
 		{
 			this.socket.send(packet);
@@ -95,11 +95,10 @@ public class UnicastHandler
 				this.socket.receive(dgramPacket);
 				byte[] copyBuf = Arrays.copyOf(packetBuffer, dgramPacket.getLength());
 				this.receiveCallback.accept(dgramPacket.getAddress(), copyBuf);
-				logger.log(Level.INFO, dgramPacket.getAddress().toString());
 			}
 			catch (IOException e)
 			{
-				logger.log(Level.SEVERE, "수신 실패", e);
+				continue;
 			}
 		}
 		logger.log(Level.INFO, "유니캐스트 송수신기 종료");
@@ -115,6 +114,5 @@ public class UnicastHandler
 			this.socket.close();
 		}
 		this.worker.interrupt();
-		
 	}
 }

@@ -80,7 +80,7 @@ public class IPJumpBroadcast
 			String ipSetCommand = String.format("ifconfig %s:%s %s/24", NetworkUtil.getNIC(), VNIC, nowAddr);
 			try
 			{
-				CommandExecutor.executeCommand(ipSetCommand);
+				CommandExecutor.executeCommand(ipSetCommand, false);
 			}
 			catch (Exception e)
 			{
@@ -107,7 +107,6 @@ public class IPJumpBroadcast
 		DatagramPacket packet = new DatagramPacket(data, data.length);
 		packet.setAddress(NetworkUtil.broadcastIA(NetworkUtil.DEFAULT_SUBNET));
 		packet.setPort(NetworkUtil.broadcastPort());
-		logger.log(Level.INFO, "브로드케스트..");
 		try
 		{
 			this.socket.send(packet);

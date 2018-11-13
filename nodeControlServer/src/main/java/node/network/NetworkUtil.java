@@ -16,11 +16,11 @@ public class NetworkUtil
 	
 	public static final String PROP_broadcastPort = "broadcastPort";
 	public static final String PROP_unicastPort = "unicastPort";
-	
-	public static final String PROP_UNICAST_PORT = "unicastPort";
-	public static final String PROP_INTERFACE = "networkInterface";
+	public static final String PROP_networkInterface = "networkInterface";
+	public static final String PROP_defaultAddr = "defaultAddr";
 	
 	private static String Subnet = null;
+	private static InetAddress defaultAddr = null;
 	private static InetAddress BROADCAST_IA = null;
 	private static InetAddress ALL_IA = null;
 	private static String nic = null;
@@ -29,12 +29,14 @@ public class NetworkUtil
 	
 	static
 	{
+		String defaultInet = String.format("%s.%s",DEFAULT_SUBNET, NodeControlCore.getProp(PROP_defaultAddr));
 		try
 		{
+			defaultAddr = InetAddress.getByName(defaultInet);
 			ALL_IA = InetAddress.getByName("0.0.0.0");
 			broadcastPort = Integer.parseInt(NodeControlCore.getProp(PROP_broadcastPort));
 			unicastPort = Integer.parseInt(NodeControlCore.getProp(PROP_unicastPort));
-			nic = NodeControlCore.getProp(PROP_INTERFACE);
+			nic = NodeControlCore.getProp(PROP_networkInterface);
 		}
 		catch (UnknownHostException e)
 		{
@@ -50,6 +52,11 @@ public class NetworkUtil
 			return false;
 		}
 		return true;
+	}
+	
+	public static InetAddress defaultAddr()
+	{
+		return defaultAddr;
 	}
 	
 	public static InetAddress broadcastIA(String subnet)

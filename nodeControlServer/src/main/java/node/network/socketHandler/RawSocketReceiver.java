@@ -26,9 +26,9 @@ import node.network.NetworkManager;
 import node.network.NetworkUtil;
 import node.network.packet.PacketUtil;
 
-public class BroadcastSocketReceiver implements Runnable
+public class RawSocketReceiver implements Runnable
 {
-	public static final Logger logger = LogWriter.createLogger(BroadcastSocketReceiver.class, "rawsocket");
+	public static final Logger logger = LogWriter.createLogger(RawSocketReceiver.class, "rawsocket");
 	
 	private Thread worker;
 	private boolean isWork;
@@ -42,7 +42,7 @@ public class BroadcastSocketReceiver implements Runnable
 	
 	private BiConsumer<InetAddress, byte[]> receiveCallback;
 	
-	public BroadcastSocketReceiver(BiConsumer<InetAddress, byte[]> receiveCallback)
+	public RawSocketReceiver(BiConsumer<InetAddress, byte[]> receiveCallback)
 	{
 		this.receiveCallback = receiveCallback;
 		this.rawSocket = null;

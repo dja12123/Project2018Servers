@@ -12,12 +12,13 @@ import java.util.logging.Logger;
 import node.IServiceModule;
 import node.NodeControlCore;
 import node.bash.CommandExecutor;
+import node.device.Device;
 import node.device.DeviceInfoManager;
 import node.log.LogWriter;
 import node.network.NetworkEvent;
 import node.network.packet.Packet;
 import node.network.packet.PacketUtil;
-import node.network.socketHandler.BroadcastSocketReceiver;
+import node.network.socketHandler.RawSocketReceiver;
 import node.network.socketHandler.IPJumpBroadcast;
 import node.network.socketHandler.UnicastHandler;
 import node.util.observer.Observable;
@@ -30,7 +31,7 @@ public class NetworkManager implements IServiceModule
 	public final DeviceInfoManager deviceInfoManager;
 	
 	private final IPJumpBroadcast ipJumpBroadcast;
-	private final BroadcastSocketReceiver rawSocketReceiver;
+	private final RawSocketReceiver rawSocketReceiver;
 	private final UnicastHandler unicastHandler;
 	
 	private HashMap<String, Observable<NetworkEvent>> observerMap;
@@ -42,7 +43,7 @@ public class NetworkManager implements IServiceModule
 		this.deviceInfoManager = deviceInfoManager;
 
 		this.ipJumpBroadcast = new IPJumpBroadcast(this::socketReadCallback);
-		this.rawSocketReceiver = new BroadcastSocketReceiver(this::socketReadCallback);
+		this.rawSocketReceiver = new RawSocketReceiver(this::socketReadCallback);
 		this.unicastHandler = new UnicastHandler(this::socketReadCallback);
 		
 		this.observerMap = new HashMap<String, Observable<NetworkEvent>>();
@@ -99,6 +100,15 @@ public class NetworkManager implements IServiceModule
 		{
 			this.ipJumpBroadcast.sendMessage(true, packet.getNativeArr());
 		}
+		else
+		{
+			Device d = this.deviceInfoManager.getDevice(packet.getReceiver());
+			if(d == null || d.getInetAddr() == null)
+			{
+				return;
+			}
+			this.unicastHandler.sendMessage(packet.getNativeArr(), d.getInetAddr());
+		}
 	}
 	
 	public void socketReadCallback(InetAddress addr, byte[] packetBuffer)
@@ -130,12 +140,10 @@ public class NetworkManager implements IServiceModule
 	@Override
 	public boolean startModule()
 	{
-		logger.log(Level.INFO, "네트워크 메니저 로드");
+		logger.log(Level.INFO, "네트워크 매니저 로드");
 		
-		NetworkInterface ni = NetworkUtil.getNetworkInterface(NetworkUtil.getNIC());
-		Enumeration<InetAddress> addrList = ni.getInetAddresses();
-		addrList.nextElement();
-		this.inetAddress = addrList.nextElement();
+		this.inetAddress = NetworkUtil.defaultAddr();
+		this.setInetAddr(this.inetAddress);
 		
 		this.unicastHandler.start(this.inetAddress);
 		this.rawSocketReceiver.start();
@@ -146,7 +154,7 @@ public class NetworkManager implements IServiceModule
 	@Override
 	public void stopModule()
 	{
-		logger.log(Level.INFO, "네트워크 메니저 종료");
+		logger.log(Level.INFO, "네트워크 매니저 종료");
 		
 		this.observerMap.clear();
 		this.unicastHandler.stop();
