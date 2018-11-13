@@ -50,7 +50,7 @@ public class RaspbianGpioOutput {
         // console.emptyLine();
         // console.box("The GPIO output pin states will cycle HIGH and LOW states now.");
         // console.emptyLine();
-
+/*
         console.println("--> [" + output.toString() + "] state was provisioned with state = " +
                 ConsoleColor.conditional(
                         output.getState().isHigh(), // conditional expression
@@ -82,7 +82,7 @@ public class RaspbianGpioOutput {
         console.println("Pulsing output pin state HIGH for 1 second.");
         output.pulse(1000, true); // set second argument to 'true' use a blocking call
         Thread.sleep(50);
-
+*/
         console.emptyLine();
         console.println("Blinking output pin state between HIGH and LOW for 3 seconds with a blink rate of 250ms.");
         Future future = output.blink(250, 3000);
