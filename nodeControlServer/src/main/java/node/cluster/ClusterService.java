@@ -7,11 +7,9 @@ import java.net.UnknownHostException;
 
 import node.IServiceModule;
 import node.cluster.spark.SparkManager;
-import node.db.DB_Handler;
 import node.log.LogWriter;
 import node.detection.NodeDetectionEvent;
 import node.detection.NodeDetectionService;
-import node.network.NetworkManager;
 
 public class ClusterService implements IServiceModule {
 	public static final int SPARK_INSTALLED = 0;
