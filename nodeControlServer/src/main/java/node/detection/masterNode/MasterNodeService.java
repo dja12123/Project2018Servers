@@ -1,4 +1,4 @@
-package node.detection;
+package node.detection.masterNode;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -7,6 +7,10 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import node.NodeControlCore;
+import node.detection.DetectionUtil;
+import node.detection.NodeDetectionService;
+import node.detection.NodeInfoProtocol;
+import node.detection.workNode.WorkNodeService;
 import node.device.Device;
 import node.device.DeviceInfoManager;
 import node.device.DeviceChangeEvent;

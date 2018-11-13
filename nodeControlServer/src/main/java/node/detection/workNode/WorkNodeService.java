@@ -1,4 +1,4 @@
-package node.detection;
+package node.detection.workNode;
 
 import java.net.InetAddress;
 import java.util.ArrayList;
@@ -8,6 +8,10 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import node.NodeControlCore;
+import node.detection.DetectionUtil;
+import node.detection.NodeDetectionService;
+import node.detection.NodeInfoProtocol;
+import node.detection.masterNode.MasterNodeService;
 import node.device.Device;
 import node.device.DeviceInfoManager;
 import node.device.DeviceChangeEvent;
@@ -114,7 +118,6 @@ public class WorkNodeService implements Runnable
 		this.processFromMasterNodePacket(nodeInfoProtocol);
 		
 		this.masterNode = nodeInfoProtocol.getMasterNode();
-		System.out.println(NodeControlCore.getProp(DetectionUtil.PROP_delayWorkerBroadcast));
 		this.broadCastDelay = Integer.parseInt(NodeControlCore.getProp(DetectionUtil.PROP_delayWorkerBroadcast));
 		
 		this.isRun = true;

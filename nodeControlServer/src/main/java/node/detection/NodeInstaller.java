@@ -6,6 +6,7 @@ import java.util.logging.Logger;
 
 import node.network.NetworkManager;
 import node.NodeControlCore;
+import node.detection.masterNode.MasterNodeService;
 import node.log.LogWriter;
 import node.network.NetworkEvent;
 import node.util.observer.Observable;

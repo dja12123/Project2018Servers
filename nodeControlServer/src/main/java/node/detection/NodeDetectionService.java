@@ -6,6 +6,8 @@ import java.util.logging.Logger;
 
 import node.IServiceModule;
 import node.db.DB_Handler;
+import node.detection.masterNode.MasterNodeService;
+import node.detection.workNode.WorkNodeService;
 import node.device.DeviceInfoManager;
 import node.log.LogWriter;
 import node.network.NetworkManager;
