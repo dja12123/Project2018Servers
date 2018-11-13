@@ -115,14 +115,10 @@ public class MasterNodeService implements Runnable
 			}
 			if(data.key.equals(WorkNodeService.KPROTO_NODE_INFO_MSG))
 			{
-				logger.log(Level.INFO, "노드 접근2");
 				if(this.deviceInfoManager.deviceExist(sender))
 				{// 기존 노드일때
-					logger.log(Level.INFO, "노드 접근3");
 					Device device = this.deviceInfoManager.getDevice(sender);
-					logger.log(Level.INFO, "노드 접근4");
 					InetAddress deviceInet = this.ipManager.getInetAddr(sender);
-					logger.log(Level.INFO, "노드 접근5");
 					if(device.getInetAddr() == null || deviceInet == null)
 					{// ip가 없을때 ip를 새로 할당
 						deviceInet = this.ipManager.assignmentInetAddr(sender);
@@ -161,7 +157,8 @@ public class MasterNodeService implements Runnable
 			InetAddress deviceInetAddr = data.device.getInetAddr();
 			if(deviceInetAddr != null)
 			{
-				logger.log(Level.INFO, String.format("IP할당 해제 (%s)", data.device.uuid.toString()));
+				logger.log(Level.INFO, String.format("IP할당 해제 (%s %s)",
+						data.device.uuid.toString(), data.device.getInetAddr().getHostAddress()));
 				this.ipManager.removeInetAddr(data.device.uuid);
 			}
 			logger.log(Level.INFO, String.format("노드 연결 끊김  (%s)", data.device.uuid));

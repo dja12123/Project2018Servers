@@ -143,10 +143,8 @@ public class NetworkManager implements IServiceModule
 	{
 		logger.log(Level.INFO, "네트워크 매니저 로드");
 		
-		NetworkInterface ni = NetworkUtil.getNetworkInterface(NetworkUtil.getNIC());
-		Enumeration<InetAddress> addrList = ni.getInetAddresses();
-		addrList.nextElement();
-		this.inetAddress = addrList.nextElement();
+		this.inetAddress = NetworkUtil.defaultAddr();
+		this.setInetAddr(this.inetAddress);
 		
 		this.unicastHandler.start(this.inetAddress);
 		this.rawSocketReceiver.start();
