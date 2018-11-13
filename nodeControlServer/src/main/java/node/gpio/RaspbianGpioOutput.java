@@ -27,15 +27,15 @@ public class RaspbianGpioOutput {
 
         Pin pin7 = CommandArgumentParser.getPin(
                 RaspiPin.class,    // pin provider class to obtain pin instance from
-                RaspiPin.GPIO_07,  // default pin if no pin argument found
+                RaspiPin.GPIO_00,  // default pin if no pin argument found
                 args);             // argument array to search in
         Pin pin8 = CommandArgumentParser.getPin(
                 RaspiPin.class,    // pin provider class to obtain pin instance from
-                RaspiPin.GPIO_08,  // default pin if no pin argument found
+                RaspiPin.GPIO_02,  // default pin if no pin argument found
                 args);             // argument array to search in
         Pin pin9 = CommandArgumentParser.getPin(
                 RaspiPin.class,    // pin provider class to obtain pin instance from
-                RaspiPin.GPIO_09,  // default pin if no pin argument found
+                RaspiPin.GPIO_03,  // default pin if no pin argument found
                 args);             // argument array to search in
 
         
