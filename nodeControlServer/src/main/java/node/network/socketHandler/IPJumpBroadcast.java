@@ -20,7 +20,7 @@ import node.network.packet.PacketUtil;
 
 public class IPJumpBroadcast
 {
-	public static final Logger logger = LogWriter.createLogger(IPJumpBroadcast.class, "broadcast");
+	public static final Logger logger = LogWriter.createLogger(IPJumpBroadcast.class, "broadcastS");
 	
 	private static final String PROP_BroadcastIPstart = "broadcastIPstart";
 	private static final String PROP_BroadcastIPend = "broadcastIPend";
@@ -52,12 +52,14 @@ public class IPJumpBroadcast
 		if(this.isWork) return;
 		this.isWork = true;
 		
+		logger.log(Level.INFO, "브로드캐스트 송신기 로드");
+		
 		this.ipStart = Integer.parseInt(NodeControlCore.getProp(PROP_BroadcastIPstart));
 		this.ipEnd = Integer.parseInt(NodeControlCore.getProp(PROP_BroadcastIPend));
 		
 		this.nowIP = this.ipStart;
 
-		logger.log(Level.INFO, "브로드캐스트 소켓 전송기 로드");
+		
 		this.port = Integer.parseInt(NodeControlCore.getProp(NetworkManager.PROP_INFOBROADCAST_PORT));
 
 	}
@@ -150,6 +152,8 @@ public class IPJumpBroadcast
 	{
 		if(!this.isWork) return;
 		this.isWork = false;
+		
+		logger.log(Level.INFO, "브로드캐스트 송신기 종료");
 		
 		if(this.socket != null && !this.socket.isClosed())
 		{

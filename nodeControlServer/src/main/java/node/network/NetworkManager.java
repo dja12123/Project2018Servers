@@ -16,7 +16,7 @@ import node.log.LogWriter;
 import node.network.NetworkEvent;
 import node.network.packet.Packet;
 import node.network.packet.PacketUtil;
-import node.network.socketHandler.RawSocketReceiver;
+import node.network.socketHandler.BroadcastSocketReceiver;
 import node.network.socketHandler.IPJumpBroadcast;
 import node.util.observer.Observable;
 import node.util.observer.Observer;
@@ -31,7 +31,7 @@ public class NetworkManager implements IServiceModule
 	public final DeviceInfoManager deviceInfoManager;
 	
 	private final IPJumpBroadcast ipJumpBroadcast;
-	private RawSocketReceiver rawSocketReceiver;
+	private BroadcastSocketReceiver rawSocketReceiver;
 	
 	private HashMap<String, Observable<NetworkEvent>> observerMap;
 
@@ -44,7 +44,7 @@ public class NetworkManager implements IServiceModule
 		this.deviceInfoManager = deviceInfoManager;
 
 		this.ipJumpBroadcast = new IPJumpBroadcast(this::socketReadCallback);
-		this.rawSocketReceiver = new RawSocketReceiver(this::socketReadCallback);
+		this.rawSocketReceiver = new BroadcastSocketReceiver(this::socketReadCallback);
 		
 		this.observerMap = new HashMap<String, Observable<NetworkEvent>>();
 
