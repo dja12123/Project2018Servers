@@ -69,6 +69,12 @@ public class CommandExecutor {
 	//명령을 mv -r /df /fd 하고 싶으면 매개변수로 ("mv -r /df /fd") 이런식으로 넘기면 명령줄 실행
 	public static String executeCommand(String cmd) throws Exception {
 
+        return executeCommand(cmd, true);
+	}
+	
+	//명령을 mv -r /df /fd 하고 싶으면 매개변수로 ("mv -r /df /fd") 이런식으로 넘기면 명령줄 실행
+	public static String executeCommand(String cmd, boolean isPrint) throws Exception {
+
 		BufferedReader successBufferReader = null;
 		BufferedReader errorBufferReader = null;
 		String msg = null;
@@ -80,19 +86,25 @@ public class CommandExecutor {
         //pb.inheritIO();
         
         //Process process = pb.start();
-		cmdlogger.log(Level.INFO, "명령 실행: " + cmd);
+		if(isPrint) {
+			cmdlogger.log(Level.INFO, "명령 실행: " + cmd);
+		}
 		
 		Process process = runtime.exec(cmd);
 		
         successBufferReader = new BufferedReader(new InputStreamReader(process.getInputStream(), "UTF-8"));
         while((msg = successBufferReader.readLine()) != null) {
-        	cmdlogger.log(Level.INFO, "실행 결과: " + msg);
+        	if(isPrint) {
+        		cmdlogger.log(Level.INFO, "실행 결과: " + msg);
+        	}
         	resultMsg.append(msg + lineSeparator);
         }
         errorBufferReader = new BufferedReader(new InputStreamReader(process.getErrorStream(), "UTF-8"));
 
         while((msg = errorBufferReader.readLine()) != null) {
-        	cmdlogger.log(Level.INFO, "실행 오류: " +msg);
+        	if(isPrint) {
+        		cmdlogger.log(Level.INFO, "실행 오류: " +msg);
+        	}
         	resultMsg.append(msg + lineSeparator);
         }
         
