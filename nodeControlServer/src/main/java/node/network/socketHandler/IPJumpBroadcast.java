@@ -7,6 +7,7 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.util.Arrays;
+import java.util.Random;
 import java.util.function.BiConsumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -38,12 +39,16 @@ public class IPJumpBroadcast
 
 	private BiConsumer<InetAddress, byte[]> receiveCallback;
 	
+	private Random random;
+	
 	public IPJumpBroadcast(BiConsumer<InetAddress, byte[]> receiveCallback)
 	{
 		this.receiveCallback = receiveCallback;
 		
 		this.socket = null;
 		this.isWork = false;
+		
+		this.random = new Random();
 	}
 	
 	public void start()
@@ -56,8 +61,7 @@ public class IPJumpBroadcast
 		this.ipStart = Integer.parseInt(NodeControlCore.getProp(PROP_BroadcastIPstart));
 		this.ipEnd = Integer.parseInt(NodeControlCore.getProp(PROP_BroadcastIPend));
 		
-		this.nowIP = this.ipStart;
-
+		this.nowIP = this.ipStart + this.random.nextInt(this.ipEnd - this.ipStart + 1);
 	}
 	
 	public synchronized void sendMessage(boolean jump, byte[] data)
@@ -72,11 +76,7 @@ public class IPJumpBroadcast
 		
 		if(jump)
 		{
-			++this.nowIP;
-			if(this.nowIP > this.ipEnd)
-			{
-				this.nowIP = this.ipStart;
-			}
+			this.nowIP = this.ipStart + this.random.nextInt(this.ipEnd - this.ipStart + 1);
 			String ipSetCommand = String.format("ifconfig %s:%s %s/24", NetworkUtil.getNIC(), VNIC, nowAddr);
 			try
 			{
