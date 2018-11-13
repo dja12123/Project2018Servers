@@ -40,7 +40,7 @@ public class RaspbianGpioOutput {
                console.println(" --> GPIO PIN STATE CHANGE: " + event.getPin() + " = " +
                         ConsoleColor.conditional(
                                 event.getState().isHigh(), // conditional expression
-                                ConsoleColor.GREEN,        // positive conditional color
+                                ConsoleColor.WHITE,        // positive conditional color
                                 ConsoleColor.RED,          // negative conditional color
                                 event.getState()));        // text to display
             }
@@ -54,7 +54,7 @@ public class RaspbianGpioOutput {
         console.println("--> [" + output.toString() + "] state was provisioned with state = " +
                 ConsoleColor.conditional(
                         output.getState().isHigh(), // conditional expression
-                        ConsoleColor.GREEN,         // positive conditional color
+                        ConsoleColor.WHITE,         // positive conditional color
                         ConsoleColor.RED,           // negative conditional color
                         output.getState()));        // text to display
 
