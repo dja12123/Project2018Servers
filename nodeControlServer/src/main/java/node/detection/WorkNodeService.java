@@ -24,7 +24,6 @@ public class WorkNodeService implements Runnable
 {
 	public static final Logger logger = LogWriter.createLogger(WorkNodeService.class, "workNodeService");
 	
-	public static final String PROP_DELAY_INFOMSG = "delayInitBroadcast";
 	public static final String KPROTO_NODE_INFO_MSG = "workNodeAlert";
 	
 	private final NodeDetectionService nodeDetectionService;
@@ -116,7 +115,7 @@ public class WorkNodeService implements Runnable
 		
 		this.masterNode = nodeInfoProtocol.getMasterNode();
 		
-		this.broadCastDelay = Integer.parseInt(NodeControlCore.getProp(PROP_DELAY_INFOMSG));
+		this.broadCastDelay = Integer.parseInt(NodeControlCore.getProp(DetectionUtil.PROP_delayWorkerBroadcast));
 		
 		this.isRun = true;
 		this.broadcastThread = new Thread(this);

@@ -11,10 +11,12 @@ import node.network.NetworkUtil;
 
 public class DetectionUtil
 {
-	private static InetAddress masterAddr;
-	
+	public static final String PROP_delayInit = "delayInit";
 	public static final String PROP_delayMasterNodeBroadcast = "delayMasterNodeBroadcast";
+	public static final String PROP_delayWorkerBroadcast = "delayWorkerBroadcast";
 	public static final String PROP_masternodeIP = "masternodeIP";
+	
+	private static InetAddress masterAddr;
 	
 	static
 	{
