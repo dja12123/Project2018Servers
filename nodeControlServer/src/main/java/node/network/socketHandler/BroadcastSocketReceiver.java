@@ -48,7 +48,7 @@ public class BroadcastSocketReceiver implements Runnable
 		if(this.isWork) return;
 		this.isWork = true;
 		
-		logger.log(Level.INFO, String.format("브로드캐스트 송신기 로드(%s)", addr.getHostAddress()));
+		logger.log(Level.INFO, String.format("브로드캐스트 수신기 로드(%s)", addr.getHostAddress()));
 		
 		try
 		{
@@ -90,6 +90,7 @@ public class BroadcastSocketReceiver implements Runnable
 			dgramPacket = new DatagramPacket(packetBuffer, packetBuffer.length);
 			try
 			{
+				System.out.println("receive start");
 				this.dgramSocket.receive(dgramPacket);
 				System.out.println("UDPRECEIVE " + dgramPacket.getLength());
 			}
@@ -97,7 +98,6 @@ public class BroadcastSocketReceiver implements Runnable
 			{
 				continue;
 			}
-			
 		}
 		logger.log(Level.INFO, "브로드캐스트 수신기 종료");
 	}
