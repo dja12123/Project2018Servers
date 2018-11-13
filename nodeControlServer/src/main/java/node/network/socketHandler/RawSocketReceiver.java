@@ -34,7 +34,6 @@ public class RawSocketReceiver implements Runnable
 	private boolean isWork;
 	private DatagramSocket dgramSocket;
 	
-	//private DatagramSocket socket;
 	private RawSocket rawSocket;
 
 	private int port;
@@ -54,41 +53,14 @@ public class RawSocketReceiver implements Runnable
 		if(this.isWork) return;
 		this.isWork = true;
 		
-		logger.log(Level.INFO, "로우 소켓 핸들러 로드");
-		/*try
-		{
-			//this.dgramSocket = new DatagramSocket(null);
-			//SocketAddress addr = new InetSocketAddress(NetworkUtil.listenIA(NetworkUtil.DEFAULT_SUBNET), 49800);
-			//this.dgramSocket.bind(addr);
-			//this.dgramSocket.setBroadcast(true);
-		}
-		catch (SocketException e1)
-		{
-			e1.printStackTrace();
-		}*/
 		this.rawSocket = new RawSocket();
 		this.worker = new Thread(this);
 		
 		try
 		{
-			//this.port = Integer.parseInt(NodeControlCore.getProp(NetworkManager.PROP_INFOBROADCAST_PORT));
-			//this.nic = NodeControlCore.getProp(NetworkManager.PROP_INTERFACE);
-			//logger.log(Level.INFO, String.format("바인딩 인터페이스 (%s)", this.nic));
-			//String interfaceStr = NodeControlCore.getProp(NetworkManager.PROP_INTERFACE);
 			this.rawSocket.open(RawSocket.PF_INET, RawSocket.getProtocolByName("UDP"));
 			this.rawSocket.bindDevice(NetworkUtil.getNIC());
 			logger.log(Level.INFO, String.format("바인드:(%s)", NetworkUtil.getNIC()));
-			
-			//this.rawSocket.bindDevice(this.nic);
-			//this.rawSocket.setIPHeaderInclude(true);
-			
-			//NetworkUtil.getNetworkInterface(interfaceStr);
-			//this.socket = new DatagramSocket(NetworkManager.PROP_SOCKET_INTERFACE)
-			//this.socket = new DatagramSocket(49800);
-
-			//this.socket.setReuseAddress(false);
-			
-			//this.socket.setBroadcast(true);
 		}
 		catch (IllegalStateException | IOException e)
 		{
@@ -107,7 +79,6 @@ public class RawSocketReceiver implements Runnable
 		
 		try
 		{
-			//this.dgramSocket.close();
 			this.rawSocket.close();
 		}
 		catch (IOException e)
@@ -120,23 +91,12 @@ public class RawSocketReceiver implements Runnable
 	@Override
 	public void run()
 	{
-		logger.log(Level.INFO, "네트워크 수신 시작");
+		logger.log(Level.INFO, "로우 소켓 수신 시작");
 		byte[] packetBuffer = new byte[PacketUtil.HEADER_SIZE + PacketUtil.MAX_SIZE_KEY + PacketUtil.MAX_SIZE_DATA];
 		int readLen = 0;
 		
 		while(this.isWork)
 		{
-			/*dgramPacket = new DatagramPacket(packetBuffer, packetBuffer.length);
-			try
-			{
-				this.dgramSocket.receive(dgramPacket);
-				System.out.println("UDPRECEIVE " + dgramPacket.getLength());
-			}
-			catch (IOException e)
-			{
-				continue;
-			}*/
-			
 			try
 			{
 				readLen = this.rawSocket.read(packetBuffer, NetworkUtil.broadcastIA(NetworkUtil.DEFAULT_SUBNET).getAddress());
@@ -159,40 +119,7 @@ public class RawSocketReceiver implements Runnable
 			}
 			
 		}
-		logger.log(Level.INFO, "소켓 핸들러 종료");
-	}
-	public static void main(String[] args)
-	{
-		byte[] data = "Hello World!!".getBytes();
-		
-		/*
-		UDPPacket udp = new UDPPacket(1);
-		byte[] packet = new byte[20 + UDPPacket.LENGTH_UDP_HEADER + data.length];
-		System.arraycopy(data, 0, packet, 20 + UDPPacket.LENGTH_UDP_HEADER, data.length);
-		udp.setData(packet);
-		
-		udp.setIPVersion(4);
-		udp.setIPHeaderLength(5);
-		udp.setIPPacketLength(packet.length);
-		udp.setFragmentOffset(0x0400);
-		udp.setTTL(0x64);
-		udp.setProtocol(IPPacket.PROTOCOL_UDP);
-		System.arraycopy(NetworkUtil.broadcastIA().getAddress(), 0, packet, IPPacket.OFFSET_DESTINATION_ADDRESS, 4);
-		
-		udp.setSourcePort(33333);
-		udp.setDestinationPort(33333);
-		udp.setUDPPacketLength(UDPPacket.LENGTH_UDP_HEADER + data.length);
-		
-		udp.computeUDPChecksum();
-		udp.computeIPChecksum();
-		
-		System.out.println(NetworkUtil.bytesToHex(packet, packet.length));
-		System.out.println(udp.getUDPPacketLength() + " " + data.length);
-		
-		*/
-		NodeControlICMP icmp = new NodeControlICMP(data);
-		System.out.println(NetworkUtil.bytesToHex(icmp.getData(), icmp.size()));
-		
+		logger.log(Level.INFO, "로우 소켓 수신 종료");
 	}
 }
 

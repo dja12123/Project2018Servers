@@ -120,32 +120,6 @@ public class IPJumpBroadcast
 			logger.log(Level.SEVERE, "브로드캐스트 실패", e);
 		}
 	}
-	
-	public void run()
-	{
-		/*logger.log(Level.INFO, "네트워크 수신 시작");
-		byte[] packetBuffer = new byte[PacketUtil.HEADER_SIZE + PacketUtil.MAX_SIZE_KEY + PacketUtil.MAX_SIZE_DATA];
-		DatagramPacket dgramPacket;
-		
-		while(this.isWork)
-		{
-			dgramPacket = new DatagramPacket(packetBuffer, packetBuffer.length);
-
-			try
-			{
-				this.socket.receive(dgramPacket);
-				byte[] copyBuf = Arrays.copyOf(packetBuffer, dgramPacket.getLength());
-				this.receiveCallback.accept(dgramPacket.getAddress(), copyBuf);
-				logger.log(Level.INFO, dgramPacket.getAddress().toString());
-			}
-			catch (IOException e)
-			{
-				
-				logger.log(Level.SEVERE, "수신 실패", e);
-			}
-		}
-		logger.log(Level.WARNING, "브로드캐스트 소켓 전송기 중지");*/
-	}
 
 	public void stop()
 	{
@@ -158,6 +132,5 @@ public class IPJumpBroadcast
 		{
 			this.socket.close();
 		}
-		
 	}
 }
