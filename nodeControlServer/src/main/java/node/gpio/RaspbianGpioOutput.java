@@ -83,7 +83,7 @@ public class RaspbianGpioOutput {
         output.pulse(1000, true); // set second argument to 'true' use a blocking call
         Thread.sleep(50);
 */
-        console.emptyLine();
+       // console.emptyLine();
         console.println("Blinking output pin state between HIGH and LOW for 3 seconds with a blink rate of 250ms.");
         Future future = output.blink(250, 3000);
 
