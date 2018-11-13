@@ -99,7 +99,7 @@ public class UnicastHandler
 			}
 			catch (IOException e)
 			{
-				logger.log(Level.SEVERE, "수신 실패", e);
+				continue;
 			}
 		}
 		logger.log(Level.INFO, "유니캐스트 송수신기 종료");
