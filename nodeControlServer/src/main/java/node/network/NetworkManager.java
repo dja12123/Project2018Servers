@@ -82,6 +82,7 @@ public class NetworkManager implements IServiceModule
 	public void removeObserver(Observer<NetworkEvent> observer)
 	{
 		Observable<NetworkEvent> observable;
+		ArrayList<String> removeObservableKey = new ArrayList<>();
 		for(String key : this.observerMap.keySet())
 		{
 			observable = this.observerMap.get(key);
@@ -89,8 +90,13 @@ public class NetworkManager implements IServiceModule
 			
 			if(observable.size() == 0)
 			{
-				this.observerMap.remove(key);
+				removeObservableKey.add(key);
 			}
+		}
+		
+		for(int i = 0; i < removeObservableKey.size(); ++i)
+		{
+			this.observerMap.remove(removeObservableKey.get(i));
 		}
 	}
 	
