@@ -99,6 +99,10 @@ public class NetworkManager implements IServiceModule
 		{
 			this.ipJumpBroadcast.sendMessage(true, packet.getNativeArr());
 		}
+		else
+		{
+			this.unicastHandler.sendMessage(packet.getNativeArr());
+		}
 	}
 	
 	public void socketReadCallback(InetAddress addr, byte[] packetBuffer)
@@ -130,7 +134,7 @@ public class NetworkManager implements IServiceModule
 	@Override
 	public boolean startModule()
 	{
-		logger.log(Level.INFO, "네트워크 메니저 로드");
+		logger.log(Level.INFO, "네트워크 매니저 로드");
 		
 		NetworkInterface ni = NetworkUtil.getNetworkInterface(NetworkUtil.getNIC());
 		Enumeration<InetAddress> addrList = ni.getInetAddresses();
@@ -146,7 +150,7 @@ public class NetworkManager implements IServiceModule
 	@Override
 	public void stopModule()
 	{
-		logger.log(Level.INFO, "네트워크 메니저 종료");
+		logger.log(Level.INFO, "네트워크 매니저 종료");
 		
 		this.observerMap.clear();
 		this.unicastHandler.stop();

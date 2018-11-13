@@ -115,6 +115,5 @@ public class UnicastHandler
 			this.socket.close();
 		}
 		this.worker.interrupt();
-		
 	}
 }
