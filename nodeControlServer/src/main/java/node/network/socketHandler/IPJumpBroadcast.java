@@ -25,7 +25,7 @@ public class IPJumpBroadcast
 	private static final String PROP_BroadcastIPstart = "broadcastIPstart";
 	private static final String PROP_BroadcastIPend = "broadcastIPend";
 	
-	private static final String VNIC = "node_broadcast";
+	private static final String VNIC = "node_echo";
 	
 	private int ipStart;
 	private int ipEnd;
