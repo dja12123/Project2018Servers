@@ -9,7 +9,7 @@ import node.IServiceModule;
 import node.cluster.spark.SparkManager;
 import node.db.DB_Handler;
 import node.log.LogWriter;
-import node.detection.NetworkStateChangeEvent;
+import node.detection.NodeDetectionEvent;
 import node.detection.NodeDetectionService;
 import node.network.NetworkManager;
 
@@ -32,7 +32,7 @@ public class ClusterService implements IServiceModule {
 	public ClusterService(NodeDetectionService nds) {
 		this.isMaster = false;
 		this.instFlag = SPARK_NOT_INSTALLED;
-		this.connectState = NetworkStateChangeEvent.STATE_FAIL;
+		this.connectState = NodeDetectionEvent.STATE_FAIL;
 		this.nds = nds;
 		nds.addObserver(nscEventReceiver);
 		this.masterIp = null;
@@ -57,8 +57,14 @@ public class ClusterService implements IServiceModule {
 		}
 		
 	}
+<<<<<<< HEAD
 	public boolean reciveEvent(NetworkStateChangeEvent eventInfo) {
 		if(eventInfo == null) {
+=======
+	public boolean reciveEvent() {
+		NodeDetectionEvent eventInfo = null;
+		if((eventInfo = nscEventReceiver.getEvent()) == null) {
+>>>>>>> 7b633e20ce67b38f21b226dff618fc6ac817880e
 			clusterLogger.log(Level.SEVERE, "Not Given Network State Change Event", new Exception("Not Given Network State Change Event"));
 			return false;
 		}

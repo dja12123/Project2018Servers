@@ -5,15 +5,17 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import node.IServiceModule;
+import node.NodeControlCore;
 import node.db.DB_Handler;
 import node.detection.masterNode.MasterNodeService;
 import node.detection.workNode.WorkNodeService;
+import node.device.Device;
 import node.device.DeviceInfoManager;
 import node.log.LogWriter;
 import node.network.NetworkManager;
 import node.util.observer.Observable;
 
-public class NodeDetectionService extends Observable<NetworkStateChangeEvent> implements IServiceModule
+public class NodeDetectionService extends Observable<NodeDetectionEvent> implements IServiceModule
 {// 마스터 노드 변경 관련 서비스.
 	public static final Logger logger = LogWriter.createLogger(NodeDetectionService.class, "nodeDetection");
 	
@@ -54,6 +56,9 @@ public class NodeDetectionService extends Observable<NetworkStateChangeEvent> im
 		this.workNodeService.stop();
 		this.nodeInstaller.start();
 		this.masterNode = null;
+		
+		NodeDetectionEvent e = new NodeDetectionEvent(null, false, NodeDetectionEvent.STATE_FAIL);
+		this.notifyObservers(NodeControlCore.mainThreadPool, e);
 	}
 	
 	public synchronized void workNodeSelectionCallback(NodeInfoProtocol nodeInfoProtocol)
@@ -64,6 +69,9 @@ public class NodeDetectionService extends Observable<NetworkStateChangeEvent> im
 		this.workNodeService.start(nodeInfoProtocol);
 		this.masterNode = nodeInfoProtocol.getMasterNode();
 		
+		Device masterNode = this.deviceInfoManager.getDevice(this.masterNode);
+		NodeDetectionEvent e = new NodeDetectionEvent(masterNode.getInetAddr(), false, NodeDetectionEvent.STATE_UPLINK);
+		this.notifyObservers(NodeControlCore.mainThreadPool, e);
 	}
 	
 	public synchronized void masterNodeSelectionCallback()
@@ -73,6 +81,10 @@ public class NodeDetectionService extends Observable<NetworkStateChangeEvent> im
 		this.workNodeService.stop();
 		this.masterNodeService.start();
 		this.masterNode = this.deviceInfoManager.getMyDevice().uuid;
+		
+		Device masterNode = this.deviceInfoManager.getDevice(this.masterNode);
+		NodeDetectionEvent e = new NodeDetectionEvent(masterNode.getInetAddr(), true, NodeDetectionEvent.STATE_UPLINK);
+		this.notifyObservers(NodeControlCore.mainThreadPool, e);
 	}
 	
 	public UUID getMasterNode()
