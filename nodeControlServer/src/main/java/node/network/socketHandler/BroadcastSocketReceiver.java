@@ -140,10 +140,12 @@ public class BroadcastSocketReceiver implements Runnable
 			try
 			{
 				readLen = this.rawSocket.read(packetBuffer, NetworkUtil.broadcastIA(NetworkUtil.DEFAULT_SUBNET).getAddress());
-
+				if(readLen < 28)
+				{
+					continue;
+				}
 				byte[] copyBuf = Arrays.copyOfRange(packetBuffer, 28, readLen);
-				System.out.println(NetworkUtil.bytesToHex(copyBuf, copyBuf.length));
-				//해더 버림
+			
 				this.receiveCallback.accept(NetworkUtil.broadcastIA(NetworkUtil.DEFAULT_SUBNET), copyBuf);
 			}
 			catch (IOException e)
