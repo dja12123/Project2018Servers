@@ -114,7 +114,7 @@ public class WorkNodeService implements Runnable
 		this.processFromMasterNodePacket(nodeInfoProtocol);
 		
 		this.masterNode = nodeInfoProtocol.getMasterNode();
-		
+		System.out.println(NodeControlCore.getProp(DetectionUtil.PROP_delayWorkerBroadcast));
 		this.broadCastDelay = Integer.parseInt(NodeControlCore.getProp(DetectionUtil.PROP_delayWorkerBroadcast));
 		
 		this.isRun = true;
