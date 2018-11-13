@@ -15,6 +15,9 @@ public class NodeDetectionService extends Observable<NetworkStateChangeEvent> im
 {// 마스터 노드 변경 관련 서비스.
 	public static final Logger logger = LogWriter.createLogger(NodeDetectionService.class, "nodeDetection");
 	
+	public static final String PROP_delayMasterNodeBroadcast = "delayMasterNodeBroadcast";
+	public static final String PROP_masternodeIP = "masternodeIP";
+	
 	public static final int STATE_INIT = 0;
 	public static final int STATE_WORKNODE = 1;
 	public static final int STATE_MASTERNODE = 2;

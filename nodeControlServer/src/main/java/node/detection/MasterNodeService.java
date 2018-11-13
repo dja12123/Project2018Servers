@@ -12,6 +12,7 @@ import node.device.DeviceInfoManager;
 import node.device.DeviceChangeEvent;
 import node.log.LogWriter;
 import node.network.NetworkManager;
+import node.network.NetworkUtil;
 import node.network.NetworkEvent;
 import node.network.packet.Packet;
 import node.network.packet.PacketBuildFailureException;
@@ -23,23 +24,9 @@ public class MasterNodeService implements Runnable
 {	
 	public static final Logger logger = LogWriter.createLogger(MasterNodeService.class, "masterNodeService");
 	
-	public static final String PROP_DELAY_MASTER_MSG = "delayMasterNodeBroadcast";
+
+	
 	public static final String KPROTO_MASTER_BROADCAST = "masterNodeBroadcast";
-	
-	private static InetAddress masterInetAddr;
-	
-	static
-	{
-		try
-		{
-			masterInetAddr = InetAddress.getByName("192.168.0.99");
-		}
-		catch (UnknownHostException e)
-		{
-			e.printStackTrace();
-		}
-	}
-	
 	private NodeDetectionService nodeDetectionService;
 	private DeviceInfoManager deviceInfoManager;
 	private NetworkManager networkManager;
@@ -91,13 +78,13 @@ public class MasterNodeService implements Runnable
 		if(this.isRun) return;
 		this.isRun = true;
 		logger.log(Level.INFO, "마스터 노드 서비스 시작");
-		this.deviceInfoManager.updateDevice(this.deviceInfoManager.getMyDevice().uuid, masterInetAddr, true);
-		this.networkManager.setInetAddr(masterInetAddr);
+		this.deviceInfoManager.updateDevice(this.deviceInfoManager.getMyDevice().uuid, DetectionUtil.masterAddr(), true);
+		this.networkManager.setInetAddr(DetectionUtil.masterAddr());
 		this.networkManager.addObserver(WorkNodeService.KPROTO_NODE_INFO_MSG, this.networkObserverFunc);
 		this.networkManager.addObserver(KPROTO_MASTER_BROADCAST, this.networkObserverFunc);
 		this.deviceInfoManager.addObserver(this.deviceObserverFunc);
 		this.ipManager.clear();
-		this.broadCastDelay = Integer.parseInt(NodeControlCore.getProp(PROP_DELAY_MASTER_MSG));
+		this.broadCastDelay = Integer.parseInt(NodeControlCore.getProp(DetectionUtil.PROP_delayMasterNodeBroadcast));
 		this.broadcastThread = new Thread(this);
 		this.broadcastThread.start();
 		return;

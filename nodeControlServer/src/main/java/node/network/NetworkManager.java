@@ -17,7 +17,7 @@ import node.network.NetworkEvent;
 import node.network.packet.Packet;
 import node.network.packet.PacketUtil;
 import node.network.socketHandler.RawSocketReceiver;
-import node.network.socketHandler.UDPBroadcast;
+import node.network.socketHandler.IPJumpBroadcast;
 import node.util.observer.Observable;
 import node.util.observer.Observer;
 
@@ -30,7 +30,7 @@ public class NetworkManager implements IServiceModule
 	
 	public final DeviceInfoManager deviceInfoManager;
 	
-	private final UDPBroadcast udpBroadcast;
+	private final IPJumpBroadcast ipJumpBroadcast;
 	private RawSocketReceiver rawSocketReceiver;
 	
 	private HashMap<String, Observable<NetworkEvent>> observerMap;
@@ -43,7 +43,7 @@ public class NetworkManager implements IServiceModule
 	{
 		this.deviceInfoManager = deviceInfoManager;
 
-		this.udpBroadcast = new UDPBroadcast(this::socketReadCallback);
+		this.ipJumpBroadcast = new IPJumpBroadcast(this::socketReadCallback);
 		this.rawSocketReceiver = new RawSocketReceiver(this::socketReadCallback);
 		
 		this.observerMap = new HashMap<String, Observable<NetworkEvent>>();
@@ -96,7 +96,7 @@ public class NetworkManager implements IServiceModule
 	{
 		if(packet.isBroadcast())
 		{
-			this.udpBroadcast.sendMessage(packet.getDataByte());
+			this.ipJumpBroadcast.sendMessage(true, packet.getDataByte());
 		}
 	}
 	
@@ -126,16 +126,7 @@ public class NetworkManager implements IServiceModule
 	{
 		nic = NodeControlCore.getProp(PROP_INTERFACE);
 		this.rawSocketReceiver.start();
-		this.udpBroadcast.start();
-		try
-		{
-			CommandExecutor.executeCommand(String.format("ifconfig %s:0 %s/24", nic, NetworkUtil.listenIA(NetworkUtil.DEFAULT_SUBNET).getHostAddress()));
-		}
-		catch (Exception e)
-		{
-			logger.log(Level.SEVERE, "가상NIC설정 실패", e);
-			return false;
-		}
+		this.ipJumpBroadcast.start();
 		logger.log(Level.INFO, "네트워크 메니저 로드");
 		return true;
 	}
@@ -144,7 +135,7 @@ public class NetworkManager implements IServiceModule
 	public void stopModule()
 	{
 		this.observerMap.clear();
-		this.udpBroadcast.stop();
+		this.ipJumpBroadcast.stop();
 		this.rawSocketReceiver.stop();
 	}
 	
@@ -184,7 +175,7 @@ public class NetworkManager implements IServiceModule
 		synchronized (this)
 		{
 			logger.log(Level.INFO, "IP변경 시작");
-			this.udpBroadcast.stop();
+			this.ipJumpBroadcast.stop();
 			this.rawSocketReceiver.stop();
 			try
 			{
@@ -194,7 +185,7 @@ public class NetworkManager implements IServiceModule
 			{
 				e.printStackTrace();
 			}
-			this.udpBroadcast.start();
+			this.ipJumpBroadcast.start();
 			this.rawSocketReceiver.start();
 			logger.log(Level.INFO, "IP변경 완료");
 		}

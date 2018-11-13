@@ -14,7 +14,6 @@ public class NetworkUtil
 	
 	private static String Subnet = null;
 	private static InetAddress BROADCAST_IA = null;
-	private static InetAddress LISTEN_IA = null;
 	private static InetAddress ALL_IA = null;
 	
 	static
@@ -53,22 +52,6 @@ public class NetworkUtil
 			}
 		}
 		return BROADCAST_IA;
-	}
-	
-	public static InetAddress listenIA(String subnet)
-	{
-		if(!isSetSubnet(subnet) || LISTEN_IA == null)
-		{
-			try
-			{
-				LISTEN_IA = InetAddress.getByName(Subnet + ".250");
-			}
-			catch (UnknownHostException e)
-			{
-				e.printStackTrace();
-			}
-		}
-		return LISTEN_IA;
 	}
 	
 	public static InetAddress allIA()

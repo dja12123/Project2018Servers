@@ -12,31 +12,39 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import node.NodeControlCore;
+import node.bash.CommandExecutor;
 import node.log.LogWriter;
 import node.network.NetworkManager;
 import node.network.NetworkUtil;
 import node.network.packet.PacketUtil;
 
-public class UDPBroadcast
+public class IPJumpBroadcast
 {
-	public static final Logger logger = LogWriter.createLogger(UDPBroadcast.class, "broadcast");
+	public static final Logger logger = LogWriter.createLogger(IPJumpBroadcast.class, "broadcast");
+	
+	private static final String PROP_BroadcastIPstart = "broadcastIPstart";
+	private static final String PROP_BroadcastIPend = "broadcastIPend";
+	
+	private static final String VNIC = "node_broadcast";
+	
+	private int ipStart;
+	private int ipEnd;
+	
+	private int nowIP;
 	
 	private DatagramSocket socket;
 	private int port;
 
 	private boolean isWork;
 
-	private Thread worker;
-
 	private BiConsumer<InetAddress, byte[]> receiveCallback;
 	
-	public UDPBroadcast(BiConsumer<InetAddress, byte[]> receiveCallback)
+	public IPJumpBroadcast(BiConsumer<InetAddress, byte[]> receiveCallback)
 	{
 		this.receiveCallback = receiveCallback;
 		
 		this.socket = null;
 		this.isWork = false;
-		this.worker = null;
 	}
 	
 	public void start()
@@ -44,35 +52,56 @@ public class UDPBroadcast
 		if(this.isWork) return;
 		this.isWork = true;
 		
-		this.worker = new Thread(this::run);
+		this.ipStart = Integer.parseInt(NodeControlCore.getProp(PROP_BroadcastIPstart));
+		this.ipEnd = Integer.parseInt(NodeControlCore.getProp(PROP_BroadcastIPend));
 		
+		this.nowIP = this.ipStart;
+
 		logger.log(Level.INFO, "브로드캐스트 소켓 전송기 로드");
-
-		try
-		{
-			this.port = Integer.parseInt(NodeControlCore.getProp(NetworkManager.PROP_INFOBROADCAST_PORT));
-
-			this.socket = new DatagramSocket(null);
-			SocketAddress addr = new InetSocketAddress(NetworkUtil.listenIA(NetworkUtil.DEFAULT_SUBNET), 49800);
-			logger.log(Level.INFO, String.format("바인딩(%s)", addr.toString()));
-			this.socket.bind(addr);
-			this.socket.setBroadcast(true);
-		}
-		catch (IllegalStateException | IOException e)
-		{
-			logger.log(Level.SEVERE, "소켓 열기 실패", e);
-			return;
-		}
+		this.port = Integer.parseInt(NodeControlCore.getProp(NetworkManager.PROP_INFOBROADCAST_PORT));
 
 	}
 	
-	public void sendMessage(byte[] stream)
+	public synchronized void sendMessage(boolean jump, byte[] stream)
 	{
 		if(!this.isWork)
 		{
 			logger.log(Level.WARNING, "소켓 닫힘");
 			return;
 		}
+		
+		String nowAddr = String.format("%s.%d", NetworkUtil.DEFAULT_SUBNET, this.nowIP);
+		
+		if(jump)
+		{
+			++this.nowIP;
+			if(this.nowIP > this.ipEnd)
+			{
+				this.nowIP = this.ipStart;
+			}
+			String ipSetCommand = String.format("ifconfig %s:%s %s/24", NetworkManager.getNIC(), VNIC, nowAddr);
+			try
+			{
+				CommandExecutor.executeCommand(ipSetCommand);
+			}
+			catch (Exception e)
+			{
+				logger.log(Level.SEVERE, "가상NIC설정 실패", e);
+				return;
+			}
+			try
+			{
+				this.socket = new DatagramSocket(null);
+				this.socket.bind(new InetSocketAddress(nowAddr, this.port));
+				this.socket.setBroadcast(true);
+			}
+			catch (IllegalStateException | IOException e)
+			{
+				logger.log(Level.SEVERE, "소켓 열기 실패", e);
+				return;
+			}
+		}
+		
 		DatagramPacket packet = new DatagramPacket(stream, stream.length);
 		packet.setAddress(NetworkUtil.broadcastIA(NetworkUtil.DEFAULT_SUBNET));
 		packet.setPort(this.port);
@@ -117,9 +146,6 @@ public class UDPBroadcast
 	{
 		if(!this.isWork) return;
 		this.isWork = false;
-		this.worker.interrupt();
-		
-		
 		
 		this.socket.close();
 		
