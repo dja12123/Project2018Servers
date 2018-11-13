@@ -107,7 +107,6 @@ public class NetworkManager implements IServiceModule
 			{
 				return;
 			}
-			logger.log(Level.INFO, "패킷 전송 " + d.getInetAddr().getHostAddress());
 			this.unicastHandler.sendMessage(packet.getNativeArr(), d.getInetAddr());
 		}
 	}

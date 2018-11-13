@@ -95,7 +95,6 @@ public class UnicastHandler
 				this.socket.receive(dgramPacket);
 				byte[] copyBuf = Arrays.copyOf(packetBuffer, dgramPacket.getLength());
 				this.receiveCallback.accept(dgramPacket.getAddress(), copyBuf);
-				logger.log(Level.INFO, dgramPacket.getAddress().toString());
 			}
 			catch (IOException e)
 			{
