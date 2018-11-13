@@ -147,7 +147,10 @@ public class IPJumpBroadcast
 		if(!this.isWork) return;
 		this.isWork = false;
 		
-		this.socket.close();
+		if(this.socket != null || !this.socket.isClosed())
+		{
+			this.socket.close();
+		}
 		
 	}
 }
