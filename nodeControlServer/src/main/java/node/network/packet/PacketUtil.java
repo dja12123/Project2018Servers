@@ -16,7 +16,7 @@ import java.util.UUID;
   */
 public class PacketUtil
 {
-	public static final byte[] MAGIC_NO_START = new byte[] {-0x1F, -0x1F, 0x30, 0x37, 0x6D, 0x68};
+	public static final byte[] MAGIC_NO_START = new byte[] {-0x7F, -0x7F, 0x30, 0x37, 0x6D, 0x68};
 	// 메직넘버(C507mh)
 	public static final byte[] MAGIC_NO_END = new byte[] {0x00, 0x45, 0x4E, 0x44};
 	// 메직넘버(ENDP)
