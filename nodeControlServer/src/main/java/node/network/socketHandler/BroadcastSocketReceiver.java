@@ -55,12 +55,15 @@ public class BroadcastSocketReceiver implements Runnable
 		try
 		{
 			this.dgramSocket = new DatagramSocket();
+			this.dgramSocket.setBroadcast(true);
 		}
 		catch (SocketException e)
 		{
 			logger.log(Level.SEVERE, "소캣 열기 실패", e);
 			return;
 		}
+		
+		
 		this.worker = new Thread(this);
 
 		this.worker.start();
@@ -92,7 +95,6 @@ public class BroadcastSocketReceiver implements Runnable
 			}
 			catch (IOException e)
 			{
-				logger.log(Level.INFO, "소캣 읽기 오류");
 				continue;
 			}
 			
