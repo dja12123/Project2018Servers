@@ -19,6 +19,7 @@ import node.network.packet.Packet;
 import node.network.packet.PacketUtil;
 import node.network.socketHandler.BroadcastSocketReceiver;
 import node.network.socketHandler.IPJumpBroadcast;
+import node.network.socketHandler.UnicastHandler;
 import node.util.observer.Observable;
 import node.util.observer.Observer;
 
@@ -29,7 +30,8 @@ public class NetworkManager implements IServiceModule
 	public final DeviceInfoManager deviceInfoManager;
 	
 	private final IPJumpBroadcast ipJumpBroadcast;
-	private BroadcastSocketReceiver rawSocketReceiver;
+	private final BroadcastSocketReceiver rawSocketReceiver;
+	private final UnicastHandler unicastHandler;
 	
 	private HashMap<String, Observable<NetworkEvent>> observerMap;
 	
@@ -41,6 +43,7 @@ public class NetworkManager implements IServiceModule
 
 		this.ipJumpBroadcast = new IPJumpBroadcast(this::socketReadCallback);
 		this.rawSocketReceiver = new BroadcastSocketReceiver(this::socketReadCallback);
+		this.unicastHandler = new UnicastHandler(this::socketReadCallback);
 		
 		this.observerMap = new HashMap<String, Observable<NetworkEvent>>();
 		
@@ -134,6 +137,7 @@ public class NetworkManager implements IServiceModule
 		addrList.nextElement();
 		this.inetAddress = addrList.nextElement();
 		
+		this.unicastHandler.start(this.inetAddress);
 		this.rawSocketReceiver.start();
 		this.ipJumpBroadcast.start();
 		return true;
@@ -145,6 +149,7 @@ public class NetworkManager implements IServiceModule
 		logger.log(Level.INFO, "네트워크 메니저 종료");
 		
 		this.observerMap.clear();
+		this.unicastHandler.stop();
 		this.ipJumpBroadcast.stop();
 		this.rawSocketReceiver.stop();
 	}
@@ -176,6 +181,7 @@ public class NetworkManager implements IServiceModule
 		synchronized (this)
 		{
 			logger.log(Level.INFO, "IP변경 시작");
+			this.unicastHandler.stop();
 			this.ipJumpBroadcast.stop();
 			this.rawSocketReceiver.stop();
 			try
@@ -186,6 +192,7 @@ public class NetworkManager implements IServiceModule
 			{
 				e.printStackTrace();
 			}
+			this.unicastHandler.start(this.inetAddress);
 			this.ipJumpBroadcast.start();
 			this.rawSocketReceiver.start();
 			logger.log(Level.INFO, String.format("IP변경 완료(%s)", inetAddress.getHostAddress()));

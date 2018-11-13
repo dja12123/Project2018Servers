@@ -14,7 +14,10 @@ public class NetworkUtil
 {
 	public static final String DEFAULT_SUBNET = "192.168.0";
 	
-	public static final String PROP_INFOBROADCAST_PORT = "infoBroadcastPort";
+	public static final String PROP_broadcastPort = "broadcastPort";
+	public static final String PROP_unicastPort = "unicastPort";
+	
+	public static final String PROP_UNICAST_PORT = "unicastPort";
 	public static final String PROP_INTERFACE = "networkInterface";
 	
 	private static String Subnet = null;
@@ -22,13 +25,15 @@ public class NetworkUtil
 	private static InetAddress ALL_IA = null;
 	private static String nic = null;
 	private static int broadcastPort;
+	private static int unicastPort;
 	
 	static
 	{
 		try
 		{
 			ALL_IA = InetAddress.getByName("0.0.0.0");
-			broadcastPort = Integer.parseInt(NodeControlCore.getProp(PROP_INFOBROADCAST_PORT));
+			broadcastPort = Integer.parseInt(NodeControlCore.getProp(PROP_broadcastPort));
+			unicastPort = Integer.parseInt(NodeControlCore.getProp(PROP_unicastPort));
 			nic = NodeControlCore.getProp(PROP_INTERFACE);
 		}
 		catch (UnknownHostException e)
@@ -76,6 +81,11 @@ public class NetworkUtil
 	public static int broadcastPort()
 	{
 		return broadcastPort;
+	}
+	
+	public static int unicastPort()
+	{
+		return unicastPort;
 	}
 	
 	public static NetworkInterface getNetworkInterface(String name)
