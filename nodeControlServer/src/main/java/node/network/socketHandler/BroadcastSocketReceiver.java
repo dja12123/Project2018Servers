@@ -5,7 +5,6 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
-import java.net.NetworkInterface;
 import java.net.SocketAddress;
 import java.net.SocketException;
 import java.util.Arrays;
@@ -29,42 +28,74 @@ import node.network.packet.PacketUtil;
 
 public class BroadcastSocketReceiver implements Runnable
 {
-	public static final Logger logger = LogWriter.createLogger(BroadcastSocketReceiver.class, "broadcastR");
+	public static final Logger logger = LogWriter.createLogger(BroadcastSocketReceiver.class, "rawsocket");
 	
 	private Thread worker;
 	private boolean isWork;
 	private DatagramSocket dgramSocket;
+	
+	//private DatagramSocket socket;
+	private RawSocket rawSocket;
+
+	private int port;
+	private String nic;
 	
 	private BiConsumer<InetAddress, byte[]> receiveCallback;
 	
 	public BroadcastSocketReceiver(BiConsumer<InetAddress, byte[]> receiveCallback)
 	{
 		this.receiveCallback = receiveCallback;
+		this.rawSocket = null;
 		this.dgramSocket = null;
 	}
 
-	public void start(InetAddress addr)
+	public void start()
 	{
 		if(this.isWork) return;
 		this.isWork = true;
 		
-		logger.log(Level.INFO, String.format("브로드캐스트 수신기 로드(%s)", addr.getHostAddress()));
+		logger.log(Level.INFO, "로우 소켓 핸들러 로드");
+		/*try
+		{
+			//this.dgramSocket = new DatagramSocket(null);
+			//SocketAddress addr = new InetSocketAddress(NetworkUtil.listenIA(NetworkUtil.DEFAULT_SUBNET), 49800);
+			//this.dgramSocket.bind(addr);
+			//this.dgramSocket.setBroadcast(true);
+		}
+		catch (SocketException e1)
+		{
+			e1.printStackTrace();
+		}*/
+		this.rawSocket = new RawSocket();
+		this.worker = new Thread(this);
 		
 		try
 		{
-			this.dgramSocket = new DatagramSocket(null);
-			this.dgramSocket.bind(new InetSocketAddress(addr, NetworkUtil.broadcastPort()));
-			this.dgramSocket.setBroadcast(true);
+			//this.port = Integer.parseInt(NodeControlCore.getProp(NetworkManager.PROP_INFOBROADCAST_PORT));
+			//this.nic = NodeControlCore.getProp(NetworkManager.PROP_INTERFACE);
+			//logger.log(Level.INFO, String.format("바인딩 인터페이스 (%s)", this.nic));
+			//String interfaceStr = NodeControlCore.getProp(NetworkManager.PROP_INTERFACE);
+			this.rawSocket.open(RawSocket.PF_INET, RawSocket.getProtocolByName("UDP"));
+			this.rawSocket.bindDevice(NetworkUtil.getNIC());
+			logger.log(Level.INFO, String.format("바인드:(%s)", NetworkUtil.getNIC()));
+			
+			//this.rawSocket.bindDevice(this.nic);
+			//this.rawSocket.setIPHeaderInclude(true);
+			
+			//NetworkUtil.getNetworkInterface(interfaceStr);
+			//this.socket = new DatagramSocket(NetworkManager.PROP_SOCKET_INTERFACE)
+			//this.socket = new DatagramSocket(49800);
+
+			//this.socket.setReuseAddress(false);
+			
+			//this.socket.setBroadcast(true);
 		}
-		catch (SocketException e)
+		catch (IllegalStateException | IOException e)
 		{
-			logger.log(Level.SEVERE, "소캣 열기 실패", e);
+			logger.log(Level.SEVERE, "소켓 열기 실패", e);
 			return;
 		}
 		
-		
-		this.worker = new Thread(this);
-
 		this.worker.start();
 		return;
 	}
@@ -74,31 +105,58 @@ public class BroadcastSocketReceiver implements Runnable
 		if(!this.isWork) return;
 		this.isWork = false;
 		
-		this.dgramSocket.close();
+		try
+		{
+			//this.dgramSocket.close();
+			this.rawSocket.close();
+		}
+		catch (IOException e)
+		{
+			logger.log(Level.SEVERE, "로우 소켓 종료중 오류", e);
+		}
 		this.worker.interrupt();
 	}
 
 	@Override
 	public void run()
 	{
+		logger.log(Level.INFO, "네트워크 수신 시작");
 		byte[] packetBuffer = new byte[PacketUtil.HEADER_SIZE + PacketUtil.MAX_SIZE_KEY + PacketUtil.MAX_SIZE_DATA];
-		DatagramPacket dgramPacket;
+		int readLen = 0;
 		
 		while(this.isWork)
 		{
-			dgramPacket = new DatagramPacket(packetBuffer, packetBuffer.length);
+			/*dgramPacket = new DatagramPacket(packetBuffer, packetBuffer.length);
 			try
 			{
-				System.out.println("receive start");
 				this.dgramSocket.receive(dgramPacket);
 				System.out.println("UDPRECEIVE " + dgramPacket.getLength());
 			}
 			catch (IOException e)
 			{
 				continue;
+			}*/
+			
+			try
+			{
+				readLen = this.rawSocket.read(packetBuffer, NetworkUtil.broadcastIA(NetworkUtil.DEFAULT_SUBNET).getAddress());
+
+				logger.log(Level.INFO, NetworkUtil.bytesToHex(packetBuffer, readLen));
+				byte[] copyBuf = Arrays.copyOf(packetBuffer, readLen);
+				this.receiveCallback.accept(NetworkUtil.broadcastIA(NetworkUtil.DEFAULT_SUBNET), copyBuf);
 			}
+			catch (IOException e)
+			{
+				if(!this.rawSocket.isOpen())
+				{
+					logger.log(Level.INFO, "소켓 종료");
+					return;
+				}
+				logger.log(Level.SEVERE, "수신 실패", e);
+			}
+			
 		}
-		logger.log(Level.INFO, "브로드캐스트 수신기 종료");
+		logger.log(Level.INFO, "소켓 핸들러 종료");
 	}
 	public static void main(String[] args)
 	{

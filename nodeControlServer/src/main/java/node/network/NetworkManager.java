@@ -134,7 +134,7 @@ public class NetworkManager implements IServiceModule
 		addrList.nextElement();
 		this.inetAddress = addrList.nextElement();
 		
-		this.rawSocketReceiver.start(this.inetAddress);
+		this.rawSocketReceiver.start();
 		this.ipJumpBroadcast.start();
 		return true;
 	}
@@ -187,7 +187,7 @@ public class NetworkManager implements IServiceModule
 				e.printStackTrace();
 			}
 			this.ipJumpBroadcast.start();
-			this.rawSocketReceiver.start(this.inetAddress);
+			this.rawSocketReceiver.start();
 			logger.log(Level.INFO, String.format("IP변경 완료(%s)", inetAddress.getHostAddress()));
 		}
 		

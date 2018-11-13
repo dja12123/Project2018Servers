@@ -93,8 +93,8 @@ public class IPJumpBroadcast
 				{
 					this.socket.close();
 				}
-				this.socket = new DatagramSocket();
-				//this.socket.bind(new InetSocketAddress(nowAddr, NetworkUtil.broadcastPort()));
+				this.socket = new DatagramSocket(null);
+				this.socket.bind(new InetSocketAddress(nowAddr, NetworkUtil.broadcastPort()));
 				this.socket.setBroadcast(true);
 			}
 			catch (IllegalStateException | IOException e)
