@@ -90,6 +90,7 @@ public class RaspbianGpioOutput {
         while(!future.isDone()){
             Thread.sleep(50);
         }
+        gpio.low();
         gpio.shutdown();
     }
 }
