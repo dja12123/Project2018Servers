@@ -12,6 +12,7 @@ import java.util.logging.Logger;
 import node.IServiceModule;
 import node.NodeControlCore;
 import node.bash.CommandExecutor;
+import node.device.Device;
 import node.device.DeviceInfoManager;
 import node.log.LogWriter;
 import node.network.NetworkEvent;
@@ -101,7 +102,13 @@ public class NetworkManager implements IServiceModule
 		}
 		else
 		{
-			this.unicastHandler.sendMessage(packet.getNativeArr());
+			Device d = this.deviceInfoManager.getDevice(packet.getReceiver());
+			if(d == null || d.getInetAddr() == null)
+			{
+				return;
+			}
+			logger.log(Level.INFO, "패킷 전송 " + d.getInetAddr().getHostAddress());
+			this.unicastHandler.sendMessage(packet.getNativeArr(), d.getInetAddr());
 		}
 	}
 	

@@ -60,7 +60,7 @@ public class UnicastHandler
 		this.worker.start();
 	}
 	
-	public synchronized void sendMessage(byte[] data)
+	public synchronized void sendMessage(byte[] data, InetAddress addr)
 	{
 		if(!this.isWork)
 		{
@@ -69,8 +69,8 @@ public class UnicastHandler
 		}
 		
 		DatagramPacket packet = new DatagramPacket(data, data.length);
-		packet.setAddress(NetworkUtil.broadcastIA(NetworkUtil.DEFAULT_SUBNET));
-		packet.setPort(NetworkUtil.broadcastPort());
+		packet.setAddress(addr);
+		packet.setPort(NetworkUtil.unicastPort());
 		try
 		{
 			this.socket.send(packet);
