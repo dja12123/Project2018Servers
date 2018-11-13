@@ -36,8 +36,8 @@ public class NetworkManager implements IServiceModule
 	private HashMap<String, Observable<NetworkEvent>> observerMap;
 
 	private static String nic = null;
-
-
+	private static int port;
+	
 	
 	public NetworkManager(DeviceInfoManager deviceInfoManager)
 	{

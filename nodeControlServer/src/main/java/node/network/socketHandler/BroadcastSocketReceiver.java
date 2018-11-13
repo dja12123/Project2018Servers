@@ -33,9 +33,6 @@ public class BroadcastSocketReceiver implements Runnable
 	private Thread worker;
 	private boolean isWork;
 	private DatagramSocket dgramSocket;
-
-	private int port;
-	private String nic;
 	
 	private BiConsumer<InetAddress, byte[]> receiveCallback;
 	
@@ -54,7 +51,7 @@ public class BroadcastSocketReceiver implements Runnable
 		
 		try
 		{
-			this.dgramSocket = new DatagramSocket();
+			this.dgramSocket = new DatagramSocket(NetworkUtil.port());
 			this.dgramSocket.setBroadcast(true);
 		}
 		catch (SocketException e)

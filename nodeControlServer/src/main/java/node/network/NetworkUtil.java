@@ -8,6 +8,8 @@ import java.net.UnknownHostException;
 import java.util.Enumeration;
 import java.util.logging.Level;
 
+import node.NodeControlCore;
+
 public class NetworkUtil
 {
 	public static final String DEFAULT_SUBNET = "192.168.0";
@@ -15,12 +17,14 @@ public class NetworkUtil
 	private static String Subnet = null;
 	private static InetAddress BROADCAST_IA = null;
 	private static InetAddress ALL_IA = null;
+	private static int port;
 	
 	static
 	{
 		try
 		{
 			ALL_IA = InetAddress.getByName("0.0.0.0");
+			port = Integer.parseInt(NodeControlCore.getProp(NetworkManager.PROP_INFOBROADCAST_PORT));
 		}
 		catch (UnknownHostException e)
 		{
@@ -57,6 +61,11 @@ public class NetworkUtil
 	public static InetAddress allIA()
 	{
 		return ALL_IA;
+	}
+	
+	public static int port()
+	{
+		return port;
 	}
 	
 	public static NetworkInterface getNetworkInterface(String name)

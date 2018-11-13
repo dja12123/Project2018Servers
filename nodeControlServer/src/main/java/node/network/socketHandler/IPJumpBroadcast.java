@@ -33,7 +33,6 @@ public class IPJumpBroadcast
 	private int nowIP;
 	
 	private DatagramSocket socket;
-	private int port;
 
 	private boolean isWork;
 
@@ -58,9 +57,6 @@ public class IPJumpBroadcast
 		this.ipEnd = Integer.parseInt(NodeControlCore.getProp(PROP_BroadcastIPend));
 		
 		this.nowIP = this.ipStart;
-
-		
-		this.port = Integer.parseInt(NodeControlCore.getProp(NetworkManager.PROP_INFOBROADCAST_PORT));
 
 	}
 	
@@ -98,7 +94,7 @@ public class IPJumpBroadcast
 					this.socket.close();
 				}
 				this.socket = new DatagramSocket(null);
-				this.socket.bind(new InetSocketAddress(nowAddr, this.port));
+				this.socket.bind(new InetSocketAddress(nowAddr, NetworkUtil.port()));
 				this.socket.setBroadcast(true);
 			}
 			catch (IllegalStateException | IOException e)
@@ -110,7 +106,7 @@ public class IPJumpBroadcast
 		
 		DatagramPacket packet = new DatagramPacket(stream, stream.length);
 		packet.setAddress(NetworkUtil.broadcastIA(NetworkUtil.DEFAULT_SUBNET));
-		packet.setPort(this.port);
+		packet.setPort(NetworkUtil.port());
 		logger.log(Level.INFO, "브로드케스트..");
 		try
 		{
