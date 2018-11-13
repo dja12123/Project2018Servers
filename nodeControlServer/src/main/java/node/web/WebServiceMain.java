@@ -12,7 +12,8 @@ import fi.iki.elonen.util.ServerRunner;
 
 enum MIME_TYPE
 {
-	IMAGE_JPEG("image/jpeg");
+	IMAGE_JPEG("image/jpeg"),
+	IMAGE_PNG("image/png");
 
 	String typeString;
 
@@ -32,8 +33,8 @@ public class WebServiceMain extends NanoHTTPD implements IServiceModule
 {
 	private static final Logger LOG = LogWriter.createLogger(WebServiceMain.class, "WebServiceMain");
 	// private static final int MAXIMUM_SIZE_OF_IMAGE = 1000000;
-	public static final String rootDirectory = "/root/Project2018Servers/nodeControlServer/resources/www";
-
+	public static final String rootDirectory = FileHandler.getExtResourceFile("www").toString();
+	
 	public WebServiceMain()
 	{
 		super(80);
@@ -66,15 +67,33 @@ public class WebServiceMain extends NanoHTTPD implements IServiceModule
 		// url이용해서 어떤 요청인지 구분 ->
 		// refer::
 		// https://github.com/Teaonly/android-eye/blob/master/src/teaonly/droideye/TeaServer.java
-
+		
+		//System.out.println("root >> " + rootDirectory);
+		//
 		String msg = "";
 		if (uri.startsWith("/"))
 		{ // Root Mapping
 			if (uri.contains(".jpg"))
 			{
-				return WebServiceMain.serveImage(MIME_TYPE.IMAGE_JPEG, rootDirectory + uri);
+				//System.out.println("uri path >> " + (rootDirectory + uri));
+				return WebServiceMain.serveImage(MIME_TYPE.IMAGE_JPEG, "www" + uri);
 			}
-			msg = FileHandler.readFileString("/www/index.html");
+			else if (uri.contains(".png")) 
+			{
+				return WebServiceMain.serveImage(MIME_TYPE.IMAGE_PNG, "www" + uri);
+			}
+			else if (uri.contains(".js"))
+			{
+				msg = FileHandler.readFileString("www/index.js");
+			}
+			else if (uri.contains(".css"))
+			{
+				msg = FileHandler.readFileString("www/index.css");
+			}
+			else 
+			{
+				msg = FileHandler.readFileString("www/index.html");
+			}
 		}
 
 		System.out.println("Response Data Recieve...");

@@ -54,6 +54,15 @@ task moveResult(type: Copy){
     }
 }
 
+task deleteJunk(type: Delete) {
+    onlyIf
+    {
+        projects.hasProperty 'mainClass'
+        delete "${buildDir}/libs/test/" + mainClass + "/test/"
+        followSymlinks = true
+    }
+}
+
 task buildtest(type: Jar, dependsOn: ':build'){
     onlyIf
     {
@@ -79,9 +88,12 @@ task buildtest(type: Jar, dependsOn: ':build'){
         println "------------------------------------------------"
     }
 }
-buildtest.finalizedBy moveres
+
+//buildtest.finalizedBy moveres
 buildtest.finalizedBy moveResult
-build.finalizedBy moveres
+moveResult.finalizedBy deleteJunk
+//build.finalizedBy moveres
+
 
 jar
 {

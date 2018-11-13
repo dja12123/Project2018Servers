@@ -33,6 +33,11 @@ public class Packet
 		this.isStringData = PacketUtil.checkOption(option, PacketUtil.OPT_ISSTRINGDATA);
 	}
 	
+	public byte[] getNativeArr()
+	{
+		return this.source.array();
+	}
+	
 	public boolean isBroadcast()
 	{
 		return this.isBroadcast;

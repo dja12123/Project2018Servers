@@ -40,8 +40,12 @@ public class DB_Handler implements IServiceModule
 
 	public static final Logger databaseLogger = LogWriter.createLogger(DB_Handler.class, "db");
 
-	private static final String Variable_Property_Schema = "CREATE TABLE deviceInfo(" + "class_path varchar(128), "
-			+ "key varchar(128), " + "value varchar(128))";
+	private static final String Variable_Property_Schema =
+					"CREATE TABLE variable_property(" +
+					"module varchar(128), " +
+					"key varchar(128), " +
+					"value varchar(128), " +
+					"primary key(module, key))";
 
 	private Connection connection;
 	private SQLiteConfig config;
@@ -65,18 +69,15 @@ public class DB_Handler implements IServiceModule
 	{
 		NodeControlCore.init();
 		DB_Handler db = new DB_Handler();
+		//printResultSet(db.query("select * from sqlite_master;"));
 		db.startModule();
-    
-        System.out.println(db.isOpened);
-		db.executeQuery(Variable_Property_Schema);
-		printResultSet(db.query("select * from sqlite_master;"));
-
-		DB_Installer installer = new DB_Installer(db);
-
-		installer.checkAndCreateTable(Variable_Property_Schema);
-
-		installer.complete();
-		printResultSet(db.query("select * from sqlite_master;"));
+		
+		//db.installer.complete();
+		
+		
+		//db.setVariableProperty(DB_Handler.class, "test", "test");
+		//String str = db.getOrSetDefaultVariableProperty(DB_Handler.class, "test", "test");
+		//System.out.println(str);
 	}
 
 	public DB_Handler()
@@ -182,7 +183,10 @@ public class DB_Handler implements IServiceModule
 		this.isOpened = true;
 		this.installer = new DB_Installer(this);
 		
-		// this.checkAndCreateTable(Variable_Property_Schema);
+		this.installer.checkAndCreateTable(Variable_Property_Schema);
+        
+        this.installer.complete();
+        
 		return true;
 	}
 
@@ -204,11 +208,40 @@ public class DB_Handler implements IServiceModule
 		this.isOpened = false;
 	}
 
-	public void storeKeyValue(Class<?> classPath, String key, String value)
+	public void setVariableProperty(Class<?> classPath, String key, String value)
 	{
 		String module = classPath.toString();
-
-		// this.executeQuery("insert into ")
+		CachedRowSet set = this.query(String.format("select module, key from variable_property where module='%s' and key='%s'", module, key));
+		if(set.size() == 0)
+		{
+			this.executeQuery(String.format("insert into variable_property values('%s','%s','%s')", module, key, value));
+		}
+		else
+		{
+			this.executeQuery(String.format("update variable_property set value='%s' where module='%s' and key='%s'", value, module, key));
+		}
+		
+	}
+	
+	public String getOrSetDefaultVariableProperty(Class<?> classPath, String key, String defaultValue)
+	{
+		String module = classPath.toString();
+		CachedRowSet set = this.query(String.format("select value from variable_property where module='%s' and key='%s'", module, key));
+		if(set.size() == 0)
+		{
+			this.executeQuery(String.format("insert into variable_property values('%s','%s','%s')", module, key, defaultValue));
+			return defaultValue;
+		}
+		try
+		{
+			set.next();
+			return set.getString(1);
+		}
+		catch (SQLException e)
+		{
+			databaseLogger.log(Level.SEVERE, "가변 프로퍼티 가져오기 실패.", e);
+			return null;
+		}
 	}
 
 	public static void printResultSet(CachedRowSet rs)

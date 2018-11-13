@@ -1,5 +1,7 @@
 package node.network.packet;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.UUID;
@@ -14,8 +16,10 @@ import java.util.UUID;
   */
 public class PacketUtil
 {
-	public static final byte[] MAGIC_NO = new byte[] {0x43, 0x35, 0x30, 0x37, 0x6D, 0x68};
+	public static final byte[] MAGIC_NO_START = new byte[] {0x11, 0x11, 0x30, 0x37, 0x6D, 0x68};
 	// 메직넘버(C507mh)
+	public static final byte[] MAGIC_NO_END = new byte[] {0x00, 0x45, 0x44, 0x44};
+	// 메직넘버(ENDP)
 	public static final byte[] BROADCAST_RECEIVER = new byte[]
 			{-0x7F, -0x7F, -0x7F, -0x7F, -0x7F, -0x7F, -0x7F, -0x7F, -0x7F, -0x7F, -0x7F, -0x7F, -0x7F, -0x7F, -0x7F, -0x7F};
 	
@@ -34,6 +38,7 @@ public class PacketUtil
 	public static final int RANGE_DATALEN = 4;
 	public static final int START_SENDER = 16;
 	public static final int START_RECEIVER = 32;
+	public static final int RANGE_MAGICNOEND = 4;
 
 	public static final int MAX_SIZE_KEY = 8192;
 	public static final int MAX_SIZE_DATA = 1048576;
@@ -42,19 +47,8 @@ public class PacketUtil
 	public static final int OPT_HASDATA = 2;
 	public static final int OPT_ISSTRINGDATA = 3;
 	
-	public static String printPacket(byte[] rawPacket)
-	{
-		StringBuffer strBuf = new StringBuffer();
-		ByteBuffer packet = ByteBuffer.wrap(rawPacket);
-		byte[] addrBuf = new byte[ADDR_SIZE];
-		UUID sender, receiver;
-		
-		packet.get(addrBuf, START_SENDER, ADDR_SIZE);
-	//(addrBuf);
-		
-		
-		return strBuf.toString();
-	}
+	public static final String DPROTO_SEP_COL = ",";
+	public static final String DPROTO_SEP_ROW = "/\n";
 	
 	public static boolean checkOption(short optionArea, int option)
 	{
@@ -91,21 +85,49 @@ public class PacketUtil
 	
 	public static boolean isPacket(byte[] arr)
 	{
-		if(arr.length < PacketUtil.HEADER_SIZE)
+		if(arr.length < HEADER_SIZE + RANGE_MAGICNOEND)
 			return false;
-		
 		ByteBuffer buf;
-		buf = ByteBuffer.wrap(arr, PacketUtil.START_MAGICNO, PacketUtil.RANGE_MAGICNO);
-		
-		if(!buf.equals(ByteBuffer.wrap(PacketUtil.MAGIC_NO)))
-			return false;
-		
+		buf = ByteBuffer.wrap(arr, START_MAGICNO, RANGE_MAGICNO);
+
+		for(int i = 0; i < RANGE_MAGICNO; ++i)
+		{
+			byte b = buf.get();
+			if(b != MAGIC_NO_START[i])
+			{
+				return false;
+			}
+		}
 		buf = ByteBuffer.wrap(arr);
-		
-		if(buf.getInt(PacketUtil.START_KEYLEN) + buf.getInt(PacketUtil.START_DATALEN) + PacketUtil.HEADER_SIZE != arr.length)
-			return false;
-		
+		buf.position(START_KEYLEN);
+		int keyLen = buf.getInt();
+		buf.position(START_DATALEN);
+		int dataLen = buf.getInt();
+		buf.position(HEADER_SIZE + keyLen + dataLen);
+		for(int i = 0; i < RANGE_MAGICNOEND; ++i)
+		{
+			byte b = buf.get();
+			if(b != MAGIC_NO_END[i])
+			{
+				return false;
+			}
+		}
 		return true;
+	}
+	
+	public static String[][] getDataArray(Packet packet)
+	{
+		if(!packet.isStringData()) return null;
+		
+		String fullData = packet.getDataString();
+		String[] rowArr = fullData.split(DPROTO_SEP_ROW);
+		String[][] returnArr = new String[rowArr.length][];
+		for(int i = 0; i < rowArr.length; ++i)
+		{
+			String[] colArr = rowArr[i].split(DPROTO_SEP_COL);
+			returnArr[i] = colArr;
+		}
+		return returnArr;
 	}
 	
 	public static byte[] clonePacketByte(byte[] packetBuffer)
@@ -119,7 +141,7 @@ public class PacketUtil
 		byteBuffer.position(START_DATALEN);
 		dataSize = byteBuffer.getInt();
 		
-		copyBuffer = Arrays.copyOf(packetBuffer, HEADER_SIZE + keySize + dataSize);
+		copyBuffer = Arrays.copyOf(packetBuffer, HEADER_SIZE + keySize + dataSize + RANGE_MAGICNOEND);
 		
 		return copyBuffer;
 	}

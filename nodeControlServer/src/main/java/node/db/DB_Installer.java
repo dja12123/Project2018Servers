@@ -12,39 +12,39 @@ import node.db.DB_Handler;
 
 public class DB_Installer
 {
-    private final String TABLE_SEARCH_QUERY = "select * from sqlite_master %s;";
+	private final String TABLE_SEARCH_QUERY = "select * from sqlite_master %s;";
 	private final String TABLE_CHECK_QUERY = "PRAGMA table_info(%s);";
-    
-    public static final Logger databaseLogger = LogWriter.createLogger(DB_Installer.class, "db_install");
-    
-    private DB_Handler instance = null;
-    private ArrayList<String> _LtableName = new ArrayList<>();
-    
-    DB_Installer(DB_Handler instance)
-    {
-        this.instance = instance;
-        getDBTableList();
-    }
-    
-    private void getDBTableList()
-    {
-        CachedRowSet rs = instance.query(String.format(TABLE_SEARCH_QUERY, ""));
-        try
-        {
-            rs.beforeFirst();
-                                         
-            while(rs.next())
-            {
-                _LtableName.add(rs.getString(3));
-            }
-        }
-        catch(SQLException e)
-        {
-            e.printStackTrace();
-        }
-    }
-    
-    private String getTableName(String rawQuery)
+
+	public static final Logger databaseLogger = LogWriter.createLogger(DB_Installer.class, "db_install");
+
+	private DB_Handler instance = null;
+	private ArrayList<String> _LtableName = new ArrayList<>();
+
+	DB_Installer(DB_Handler instance)
+	{
+		this.instance = instance;
+		getDBTableList();
+	}
+
+	private void getDBTableList()
+	{
+		CachedRowSet rs = instance.query(String.format(TABLE_SEARCH_QUERY, "where type = 'table'"));
+		try
+		{
+			rs.beforeFirst();
+
+			while (rs.next())
+			{
+				_LtableName.add(rs.getString(3));
+			}
+		}
+		catch (SQLException e)
+		{
+			e.printStackTrace();
+		}
+	}
+
+	private String getTableName(String rawQuery)
 	{
 		rawQuery = rawQuery.replaceAll("\\s+", " ");
 		try
@@ -129,37 +129,39 @@ public class DB_Installer
 		}
 		return true;
 	}
-     
+
 	public void checkAndCreateTable(String schema)
 	{
-        databaseLogger.log(Level.INFO, "테이블 확인(" + schema + ")");
-        String tableName = getTableName(schema);
-        if(_LtableName.contains(tableName))
-            _LtableName.remove(tableName);
-        
+		databaseLogger.log(Level.INFO, "테이블 확인(" + schema + ")");
+		String tableName = getTableName(schema);
+		if (_LtableName.contains(tableName))
+			_LtableName.remove(tableName);
+
 		if (checkTable(schema))
 		{
-            if(!checkStruct(schema))
-            {
-                instance.executeQuery(String.format("drop table %s", getTableName(schema)));
-                instance.executeQuery(schema);
-                databaseLogger.log(Level.INFO, "테이블 재생성(" + schema + ")");
-            }
-            return;
+			if (!checkStruct(schema))
+			{
+				instance.executeQuery(String.format("drop table %s", getTableName(schema)));
+				instance.executeQuery(schema);
+				databaseLogger.log(Level.INFO, "테이블 재생성(" + schema + ")");
+			}
+			return;
 		}
-        instance.executeQuery(schema);
-        databaseLogger.log(Level.INFO, "테이블 생성(" + schema + ")");
+		instance.executeQuery(schema);
+		databaseLogger.log(Level.INFO, "테이블 생성(" + schema + ")");
 	}
-    
-    public void complete()
-    {
-        String[] appArray = new String[_LtableName.size()];
-        appArray = _LtableName.toArray(appArray);
-            
-        for(String var : appArray)
-            instance.executeQuery(String.format("DROP TABLE IF EXISTS " + var));
-        
-        
-        databaseLogger.log(Level.INFO, "불필요 테이블 삭제 완료.");
-    }
+
+	public void complete()
+	{
+		String[] appArray = new String[_LtableName.size()];
+		appArray = _LtableName.toArray(appArray);
+
+		for (String var : appArray)
+		{
+			databaseLogger.log(Level.INFO, String.format("테이블 삭제: %s", var));
+			instance.executeQuery(String.format("DROP TABLE IF EXISTS %s", var));
+		}
+
+		databaseLogger.log(Level.INFO, "DB모듈 초기화 완료.");
+	}
 }

@@ -1,4 +1,4 @@
-if [ $# -ne 1 & -z "$1" ]; then
+if [ -z "$1" ]; then
 	exit 1
 fi
 

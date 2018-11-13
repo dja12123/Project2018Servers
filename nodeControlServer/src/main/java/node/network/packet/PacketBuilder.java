@@ -144,9 +144,9 @@ public class PacketBuilder
 			dataLen = data.length;
 		}
 		
-		ByteBuffer buffer = ByteBuffer.allocate(PacketUtil.HEADER_SIZE + keyLen + dataLen);
+		ByteBuffer buffer = ByteBuffer.allocate(PacketUtil.HEADER_SIZE + keyLen + dataLen + PacketUtil.RANGE_MAGICNOEND);
 		
-		buffer.put(PacketUtil.MAGIC_NO);
+		buffer.put(PacketUtil.MAGIC_NO_START);
 		buffer.putShort(this.option);
 		buffer.putInt(keyLen);
 		buffer.putInt(dataLen);
@@ -156,8 +156,8 @@ public class PacketBuilder
 		else
 			buffer.put(PacketUtil.BROADCAST_RECEIVER);
 		buffer.put(this.key);
-		buffer.put(this.data);
-		
+		if(this.data != null) buffer.put(this.data);
+		buffer.put(PacketUtil.MAGIC_NO_END);
 		
 		Packet createdPacket = new Packet(buffer.array());
 		
