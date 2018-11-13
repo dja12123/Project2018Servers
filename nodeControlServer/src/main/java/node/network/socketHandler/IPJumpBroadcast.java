@@ -7,6 +7,7 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.util.Arrays;
+import java.util.Random;
 import java.util.function.BiConsumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -38,12 +39,16 @@ public class IPJumpBroadcast
 
 	private BiConsumer<InetAddress, byte[]> receiveCallback;
 	
+	private Random random;
+	
 	public IPJumpBroadcast(BiConsumer<InetAddress, byte[]> receiveCallback)
 	{
 		this.receiveCallback = receiveCallback;
 		
 		this.socket = null;
 		this.isWork = false;
+		
+		this.random = new Random();
 	}
 	
 	public void start()
@@ -56,8 +61,7 @@ public class IPJumpBroadcast
 		this.ipStart = Integer.parseInt(NodeControlCore.getProp(PROP_BroadcastIPstart));
 		this.ipEnd = Integer.parseInt(NodeControlCore.getProp(PROP_BroadcastIPend));
 		
-		this.nowIP = this.ipStart;
-
+		this.nowIP = this.ipStart + this.random.nextInt(this.ipEnd - this.ipStart + 1);
 	}
 	
 	public synchronized void sendMessage(boolean jump, byte[] data)
@@ -72,11 +76,11 @@ public class IPJumpBroadcast
 		
 		if(jump)
 		{
-			++this.nowIP;
-			if(this.nowIP > this.ipEnd)
-			{
-				this.nowIP = this.ipStart;
-			}
+			int beforeIP = this.nowIP;
+			this.nowIP = this.ipStart + this.random.nextInt(this.ipEnd - this.ipStart);
+			if(this.nowIP >= beforeIP) ++this.nowIP;
+			//IP이전꺼랑 안겹치게 랜덤 점프 하는 로직
+			
 			String ipSetCommand = String.format("ifconfig %s:%s %s/24", NetworkUtil.getNIC(), VNIC, nowAddr);
 			try
 			{
@@ -116,32 +120,6 @@ public class IPJumpBroadcast
 			logger.log(Level.SEVERE, "브로드캐스트 실패", e);
 		}
 	}
-	
-	public void run()
-	{
-		/*logger.log(Level.INFO, "네트워크 수신 시작");
-		byte[] packetBuffer = new byte[PacketUtil.HEADER_SIZE + PacketUtil.MAX_SIZE_KEY + PacketUtil.MAX_SIZE_DATA];
-		DatagramPacket dgramPacket;
-		
-		while(this.isWork)
-		{
-			dgramPacket = new DatagramPacket(packetBuffer, packetBuffer.length);
-
-			try
-			{
-				this.socket.receive(dgramPacket);
-				byte[] copyBuf = Arrays.copyOf(packetBuffer, dgramPacket.getLength());
-				this.receiveCallback.accept(dgramPacket.getAddress(), copyBuf);
-				logger.log(Level.INFO, dgramPacket.getAddress().toString());
-			}
-			catch (IOException e)
-			{
-				
-				logger.log(Level.SEVERE, "수신 실패", e);
-			}
-		}
-		logger.log(Level.WARNING, "브로드캐스트 소켓 전송기 중지");*/
-	}
 
 	public void stop()
 	{
@@ -154,6 +132,5 @@ public class IPJumpBroadcast
 		{
 			this.socket.close();
 		}
-		
 	}
 }

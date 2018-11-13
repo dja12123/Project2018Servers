@@ -1,12 +1,13 @@
 package node.cluster;
 
-import node.detection.NetworkStateChangeEvent;
+import node.detection.NodeDetectionEvent;
+
 import node.util.observer.Observable;
 import node.util.observer.Observer;
 
-public class NetworkStateChangeEventReceiver implements Observer<NetworkStateChangeEvent>{
+public class NetworkStateChangeEventReceiver implements Observer<NodeDetectionEvent>{
 
-	private NetworkStateChangeEvent event = null;
+	private NodeDetectionEvent event = null;
 	private ClusterService mainModule;
 	
 	public NetworkStateChangeEventReceiver(ClusterService mainModule) {
@@ -14,12 +15,12 @@ public class NetworkStateChangeEventReceiver implements Observer<NetworkStateCha
 		this.mainModule = mainModule;
 	}
 	@Override
-	public void update(Observable<NetworkStateChangeEvent> object, NetworkStateChangeEvent data) {
+	public void update(Observable<NodeDetectionEvent> object, NodeDetectionEvent data) {
 		// TODO Auto-generated method stub
 		event = data;
-		mainModule.reciveEvent();
+		mainModule.reciveEvent(getEvent());
 		mainModule.startSpark();
 	}
-	public NetworkStateChangeEvent getEvent() {	return event;	}
+	public NodeDetectionEvent getEvent() {	return event;	}
 	
 }

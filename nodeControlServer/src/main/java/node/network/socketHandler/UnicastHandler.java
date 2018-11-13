@@ -44,8 +44,6 @@ public class UnicastHandler
 		if(this.isWork) return;
 		this.isWork = true;
 		
-		logger.log(Level.INFO, "유니캐스트 송수신기 로드");
-		
 		try
 		{
 			this.socket = new DatagramSocket(null);
@@ -83,6 +81,7 @@ public class UnicastHandler
 	
 	public void run()
 	{
+		logger.log(Level.INFO, "유니캐스트 송수신기 로드");
 		byte[] packetBuffer = new byte[PacketUtil.HEADER_SIZE + PacketUtil.MAX_SIZE_KEY + PacketUtil.MAX_SIZE_DATA];
 		DatagramPacket dgramPacket;
 		
