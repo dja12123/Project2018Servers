@@ -1,6 +1,7 @@
 package node.cluster;
 
 import node.detection.NodeDetectionEvent;
+
 import node.util.observer.Observable;
 import node.util.observer.Observer;
 
@@ -17,7 +18,7 @@ public class NetworkStateChangeEventReceiver implements Observer<NodeDetectionEv
 	public void update(Observable<NodeDetectionEvent> object, NodeDetectionEvent data) {
 		// TODO Auto-generated method stub
 		event = data;
-		mainModule.reciveEvent();
+		mainModule.reciveEvent(getEvent());
 		mainModule.startSpark();
 	}
 	public NodeDetectionEvent getEvent() {	return event;	}
