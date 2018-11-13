@@ -76,7 +76,11 @@ public class IPJumpBroadcast
 		
 		if(jump)
 		{
-			this.nowIP = this.ipStart + this.random.nextInt(this.ipEnd - this.ipStart + 1);
+			int beforeIP = this.nowIP;
+			this.nowIP = this.ipStart + this.random.nextInt(this.ipEnd - this.ipStart);
+			if(this.nowIP >= beforeIP) ++this.nowIP;
+			//IP이전꺼랑 안겹치게 랜덤 점프 하는 로직
+			
 			String ipSetCommand = String.format("ifconfig %s:%s %s/24", NetworkUtil.getNIC(), VNIC, nowAddr);
 			try
 			{
