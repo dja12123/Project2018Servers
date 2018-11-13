@@ -48,7 +48,7 @@ public class BroadcastSocketReceiver implements Runnable
 		if(this.isWork) return;
 		this.isWork = true;
 		
-		logger.log(Level.INFO, "브로드캐스트 수신기 로드");
+		logger.log(Level.INFO, String.format("브로드캐스트 송신기 로드(%s)", addr.getHostAddress()));
 		
 		try
 		{
