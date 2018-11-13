@@ -88,7 +88,6 @@ public class UnicastHandler
 		
 		while(this.isWork)
 		{
-			logger.log(Level.INFO, "읽음");
 			dgramPacket = new DatagramPacket(packetBuffer, packetBuffer.length);
 
 			try
