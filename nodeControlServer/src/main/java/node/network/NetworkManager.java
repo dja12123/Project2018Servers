@@ -169,7 +169,6 @@ public class NetworkManager implements IServiceModule
 
 		command.add(String.format("ip addr flush dev %s", NetworkUtil.getNIC()));
 		command.add(String.format("ip addr add %s/24 brd + dev %s", inetAddress.getHostAddress(), NetworkUtil.getNIC()));
-		command.add(String.format("ifconfig %s:0 %s/24", NetworkUtil.getNIC(), "192.168.0.251"));
 		
 		command.add(String.format("ip route add default via %s", gatewayAddr));
 		command.add(String.format("ifup -a"));
@@ -189,7 +188,7 @@ public class NetworkManager implements IServiceModule
 			}
 			this.ipJumpBroadcast.start();
 			this.rawSocketReceiver.start(this.inetAddress);
-			logger.log(Level.INFO, "IP변경 완료");
+			logger.log(Level.INFO, String.format("IP변경 완료(%s)", inetAddress.getHostAddress()));
 		}
 		
 		this.inetAddress = inetAddress;
