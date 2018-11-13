@@ -111,7 +111,11 @@ public class WorkNodeService implements Runnable
 			this.processFromMasterNodePacket(nodeInfoProtocol);
 		}*/
 		if(this.isRun) return;
+		this.isRun = true;
+		
 		logger.log(Level.INFO, "워커 노드 서비스 시작");
+		
+		this.networkManager.setInetAddr(DetectionUtil.workDefaultAddr());
 		this.networkManager.addObserver(MasterNodeService.KPROTO_MASTER_BROADCAST, this.networkObserverFunc);
 		this.deviceInfoManager.addObserver(this.deviceStateObserverFunc);
 		
@@ -120,7 +124,7 @@ public class WorkNodeService implements Runnable
 		this.masterNode = nodeInfoProtocol.getMasterNode();
 		this.broadCastDelay = Integer.parseInt(NodeControlCore.getProp(DetectionUtil.PROP_delayWorkerBroadcast));
 		
-		this.isRun = true;
+		
 		this.broadcastThread = new Thread(this);
 		this.broadcastThread.start();
 		return;
