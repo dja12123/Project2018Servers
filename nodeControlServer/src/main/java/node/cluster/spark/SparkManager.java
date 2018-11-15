@@ -11,7 +11,7 @@ import node.cluster.ClusterService;
 import node.log.LogWriter;
 
 public class SparkManager {
-	private String sparkHome;
+	private String sparkInstDir;
 	
 	private String sparkPort;
 	private String sparkWebPort;
@@ -60,7 +60,7 @@ public class SparkManager {
 	
 	protected void confSpark() {
 		sparkLogger.log(Level.INFO, "스파크 property 설정중..");
-		sparkHome = NodeControlCore.getProp("sparkHome");
+		sparkInstDir = NodeControlCore.getProp("sparkInstDir");
 		
 		sparkPort = NodeControlCore.getProp("sparkPort");
 		sparkWebPort = NodeControlCore.getProp("sparkWebPort");
@@ -76,6 +76,6 @@ public class SparkManager {
 	public void instSpark() {
 		sparkLogger.log(Level.INFO, "스파크 설치중..");
 		confSpark();
-		BashSet.execSh(BashSet.install_spark, sparkHome);
+		BashSet.execSh(BashSet.install_spark, sparkInstDir);
 	}
 }
