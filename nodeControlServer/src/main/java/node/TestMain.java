@@ -27,11 +27,10 @@ public class TestMain extends Observable<NodeDetectionEvent>
 		
 		ClusterService cs = new ClusterService(tm);
 		InetAddress ip = InetAddress.getLocalHost();
-		
-		NodeDetectionEvent nde = new NodeDetectionEvent(ip, true, 0);
-		
-		
-		tm.notifyObservers(nde);
+		while(true) {
+			NodeDetectionEvent nde = new NodeDetectionEvent(ip, true, 0);
+			tm.notifyObservers(nde);
+		}
 		/*
 		RawSocket rawSocket = new RawSocket();
 		try
