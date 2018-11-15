@@ -1,4 +1,4 @@
-package node.detection;
+package node.detection.workNode;
 
 import java.net.InetAddress;
 import java.util.ArrayList;
@@ -8,6 +8,10 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import node.NodeControlCore;
+import node.detection.DetectionUtil;
+import node.detection.NodeDetectionService;
+import node.detection.NodeInfoProtocol;
+import node.detection.masterNode.MasterNodeService;
 import node.device.Device;
 import node.device.DeviceInfoManager;
 import node.device.DeviceChangeEvent;
@@ -24,7 +28,6 @@ public class WorkNodeService implements Runnable
 {
 	public static final Logger logger = LogWriter.createLogger(WorkNodeService.class, "workNodeService");
 	
-	public static final String PROP_DELAY_INFOMSG = "delayInitBroadcast";
 	public static final String KPROTO_NODE_INFO_MSG = "workNodeAlert";
 	
 	private final NodeDetectionService nodeDetectionService;
@@ -74,8 +77,7 @@ public class WorkNodeService implements Runnable
 						logger.log(Level.SEVERE, "마스터노드에게 알리는 패킷 생성중 오류.", e);
 						return;
 					}
-					logger.log(Level.SEVERE, "워커 노드 알림");
-					this.networkManager.socketHandler.sendMessage(packet);
+					this.networkManager.sendMessage(packet);
 				}
 			}
 			catch(Exception e)
@@ -108,17 +110,20 @@ public class WorkNodeService implements Runnable
 			this.processFromMasterNodePacket(nodeInfoProtocol);
 		}*/
 		if(this.isRun) return;
+		this.isRun = true;
+		
 		logger.log(Level.INFO, "워커 노드 서비스 시작");
+		
+		this.networkManager.setInetAddr(DetectionUtil.workDefaultAddr());
 		this.networkManager.addObserver(MasterNodeService.KPROTO_MASTER_BROADCAST, this.networkObserverFunc);
 		this.deviceInfoManager.addObserver(this.deviceStateObserverFunc);
 		
 		this.processFromMasterNodePacket(nodeInfoProtocol);
 		
 		this.masterNode = nodeInfoProtocol.getMasterNode();
+		this.broadCastDelay = Integer.parseInt(NodeControlCore.getProp(DetectionUtil.PROP_delayWorkerBroadcast));
 		
-		this.broadCastDelay = Integer.parseInt(NodeControlCore.getProp(PROP_DELAY_INFOMSG));
 		
-		this.isRun = true;
 		this.broadcastThread = new Thread(this);
 		this.broadcastThread.start();
 		return;

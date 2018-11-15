@@ -5,6 +5,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import node.network.NetworkManager;
+import node.NodeControlCore;
+import node.detection.masterNode.MasterNodeService;
 import node.log.LogWriter;
 import node.network.NetworkEvent;
 import node.util.observer.Observable;
@@ -14,14 +16,15 @@ public class NodeInstaller implements Runnable
 {
 	public static final Logger logger = LogWriter.createLogger(NodeInstaller.class, "nodeInstaller");
 	
-	private static final int DEFAULT_WAIT_TIME = 5000;
-	private static final int RANDOM_WAIT_TIME = 5000;
 	private NetworkManager networkManager;
 	private Thread waitThread;
 	private NodeDetectionService nodeDetectionService;
 	private NodeInfoProtocol masterNodeData;
 	private Observer<NetworkEvent> networkObserverFunc;
 	private boolean isRun;
+	
+	private int defaultWaitTime;
+	private int randomWaitTime;
 
 	public NodeInstaller(NodeDetectionService nodeDetectionService, NetworkManager networkManager)
 	{
@@ -49,6 +52,11 @@ public class NodeInstaller implements Runnable
 	{
 		if(this.isRun) return;
 		logger.log(Level.INFO, "노드 초기화 활성화");
+		
+		int broadcastDelay = Integer.parseInt(NodeControlCore.getProp(DetectionUtil.PROP_delayMasterNodeBroadcast));
+		this.defaultWaitTime = broadcastDelay * 3;
+		this.randomWaitTime = broadcastDelay;
+		
 		this.waitThread = new Thread(this);
 		this.waitThread.start();
 		this.networkManager.addObserver(MasterNodeService.KPROTO_MASTER_BROADCAST, this.networkObserverFunc);
@@ -68,7 +76,7 @@ public class NodeInstaller implements Runnable
 	{
 		try
 		{
-			Thread.sleep(DEFAULT_WAIT_TIME);
+			Thread.sleep(this.defaultWaitTime);
 		}
 		catch (InterruptedException e)
 		{
@@ -78,7 +86,7 @@ public class NodeInstaller implements Runnable
 			this.stop();
 			return;
 		}
-		int randomWaitTime = (int)(Math.random() * RANDOM_WAIT_TIME);
+		int randomWaitTime = (int)(Math.random() * this.randomWaitTime);
 		logger.log(Level.INFO, String.format("마스터 노드 미감지, 랜덤한 시간 대기 (%dms)", randomWaitTime));
 		try
 		{

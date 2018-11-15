@@ -36,8 +36,11 @@ public class DeviceInfoManager extends Observable<DeviceChangeEvent> implements 
 		+		")";
 	
 	
-	public static final int CHECK_INTERVAL = 5000;
-	public static final int TIMEOUT = 3000;
+	public static final String PROP_checkInterval = "checkInterval";
+	public static final String PROP_nodeTimeout = "nodeTimeout";
+	
+	private int checkInterval;
+	private int timeOut;
 	
 	private Device myDevice;
 	private DB_Handler dbHandler;
@@ -89,14 +92,20 @@ public class DeviceInfoManager extends Observable<DeviceChangeEvent> implements 
 	public boolean startModule()
 	{
 		if(this.isRun) return true;
+		this.isRun = true;
+		
 		logger.log(Level.INFO, "노드 정보 관리 서비스 시작");
+		
+		this.checkInterval = Integer.parseInt(NodeControlCore.getProp(PROP_checkInterval));
+		this.timeOut = Integer.parseInt(NodeControlCore.getProp(PROP_nodeTimeout));
+		
 		String uidStr = this.dbHandler.getOrSetDefaultVariableProperty(this.getClass(), VP_MYDEVICE_INFO, UUID.randomUUID().toString());
 		UUID myUUID = UUID.fromString(uidStr);
 		logger.log(Level.INFO, String.format("my UUID: %s", myUUID.toString()));
 		this.myDevice = new Device(myUUID);
 		this.deviceMap.put(this.myDevice.uuid, this.myDevice);
 		
-		this.isRun = true;
+		
 		this.manageThread = new Thread(this);
 		this.manageThread.start();
 		return true;
@@ -187,7 +196,7 @@ public class DeviceInfoManager extends Observable<DeviceChangeEvent> implements 
 		{
 			synchronized (this)
 			{
-				compareTime = new Date(System.currentTimeMillis() - TIMEOUT);
+				compareTime = new Date(System.currentTimeMillis() - this.timeOut);
 				removeDevices.clear();
 				
 				for(Device device : this.getDevices())
@@ -210,7 +219,7 @@ public class DeviceInfoManager extends Observable<DeviceChangeEvent> implements 
 
 			try
 			{
-				Thread.sleep(CHECK_INTERVAL);
+				Thread.sleep(this.checkInterval);
 			}
 			catch (InterruptedException e)
 			{

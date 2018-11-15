@@ -1,7 +1,10 @@
 package node;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.InputStream;
+import java.io.PrintWriter;
 import java.lang.reflect.Field;
 import java.util.Properties;
 import java.util.concurrent.ExecutorService;
@@ -16,7 +19,6 @@ import node.detection.NodeDetectionService;
 import node.device.DeviceInfoManager;
 import node.fileIO.FileHandler;
 import node.log.LogWriter;
-import node.network.DHCPService;
 import node.network.NetworkManager;
 
 /**
@@ -38,7 +40,6 @@ public class NodeControlCore
 	
 	private final DB_Handler dbHandler;
 	private final NetworkManager networkManager;
-	private final DHCPService dhcp;
 	private final DeviceInfoManager deviceInfoManager;
 	private final NodeDetectionService nodeDetectionService;
 	private final ClusterService clusterService;
@@ -48,7 +49,6 @@ public class NodeControlCore
 		this.dbHandler = new DB_Handler();
 		this.deviceInfoManager = new DeviceInfoManager(this.dbHandler);
 		this.networkManager = new NetworkManager(this.deviceInfoManager);
-		this.dhcp = new DHCPService();
 		this.nodeDetectionService = new NodeDetectionService(this.dbHandler, this.deviceInfoManager, this.networkManager);
 		this.clusterService = new ClusterService(this.nodeDetectionService);
 	}
@@ -84,20 +84,27 @@ public class NodeControlCore
 		}
 		logger.log(Level.INFO, "config 로드");
 		
+		/*String cmdresult;
 		//환경 변수 설정 부분
 		try
 		{
-			String javaHome = CommandExecutor.executeCommand("echo","$JAVA_HOME");
-			if(javaHome.equals(""))
+			cmdresult = System.getenv("JAVA_HOME");
+			if(cmdresult == null)
 			{// 환경 변수가 설정되지 않았을경우
 				logger.log(Level.INFO, "환경변수(JAVA_HOME) 설정");
+				cmdresult = CommandExecutor.executeCommand("readlink -f /usr/bin/javac");
+				cmdresult = cmdresult.replace("/bin/javac", "");
+				PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter("/etc/profile")), true);
+				pw.append("export JAVA_HOME=" + cmdresult);
+				pw.println();
+				pw.close();
 			}
 		}
 		catch (Exception e)
 		{
 			logger.log(Level.SEVERE, "환경변수 변경 명령 실행중 오류", e);
 			return false;
-		}
+		}*/
 		
 		
 		//JNI링크 부분

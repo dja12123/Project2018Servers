@@ -1,4 +1,4 @@
-package node.detection;
+package node.detection.masterNode;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -6,13 +6,25 @@ import java.util.HashMap;
 import java.util.UUID;
 import java.util.logging.Level;
 
+import node.NodeControlCore;
+import node.detection.NodeDetectionService;
+
 public class IPManager
 {
+	public static final String PROP_ipAssignStart = "ipAssignStart";
+	public static final String PROP_ipAssignEnd = "ipAssignEnd";
+	
+	private int assignStart;
+	private int assignEnd;
+	
 	private HashMap<UUID, InetAddress> ipMap;
 	private UUID[] ipArr;
 	
 	public IPManager()
 	{
+		this.assignStart = Integer.parseInt(NodeControlCore.getProp(PROP_ipAssignStart));
+		this.assignEnd = Integer.parseInt(NodeControlCore.getProp(PROP_ipAssignEnd));
+		
 		this.ipMap = new HashMap<>();
 		this.ipArr = new UUID[255];
 		this.clear();
@@ -21,7 +33,7 @@ public class IPManager
 	public void clear()
 	{
 		this.ipMap.clear();
-		for(int i = 0; i < 255; ++i)
+		for(int i = assignStart; i < assignEnd; ++i)
 		{
 			this.ipArr[i] = null;
 		}
@@ -30,7 +42,7 @@ public class IPManager
 	public InetAddress assignmentInetAddr(UUID uuid)
 	{
 		InetAddress addr = null;
-		for(int i = 100; i < 255; ++i)
+		for(int i = assignStart; i <= assignEnd; ++i)
 		{
 			if(this.ipArr[i] == null)
 			{

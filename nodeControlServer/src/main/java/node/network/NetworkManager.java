@@ -1,8 +1,10 @@
 package node.network;
 
 import java.net.InetAddress;
+import java.net.NetworkInterface;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -10,13 +12,15 @@ import java.util.logging.Logger;
 import node.IServiceModule;
 import node.NodeControlCore;
 import node.bash.CommandExecutor;
-import node.db.DB_Handler;
+import node.device.Device;
 import node.device.DeviceInfoManager;
 import node.log.LogWriter;
 import node.network.NetworkEvent;
-import node.network.UDPSocketHandler;
 import node.network.packet.Packet;
 import node.network.packet.PacketUtil;
+import node.network.socketHandler.RawSocketReceiver;
+import node.network.socketHandler.IPJumpBroadcast;
+import node.network.socketHandler.UnicastHandler;
 import node.util.observer.Observable;
 import node.util.observer.Observer;
 
@@ -24,20 +28,28 @@ public class NetworkManager implements IServiceModule
 {
 	public static final Logger logger = LogWriter.createLogger(NetworkManager.class, "network");
 	
-	public static final String PROP_INFOBROADCAST_PORT = "infoBroadcastPort";
-	public static final String PROP_INTERFACE = "networkInterface";
-	
 	public final DeviceInfoManager deviceInfoManager;
-	public final UDPSocketHandler socketHandler;
+	
+	private final IPJumpBroadcast ipJumpBroadcast;
+	private final RawSocketReceiver rawSocketReceiver;
+	private final UnicastHandler unicastHandler;
 	
 	private HashMap<String, Observable<NetworkEvent>> observerMap;
+	
+	private InetAddress inetAddress;
 	
 	public NetworkManager(DeviceInfoManager deviceInfoManager)
 	{
 		this.deviceInfoManager = deviceInfoManager;
 
-		this.socketHandler = new UDPSocketHandler(this, this.deviceInfoManager);
+		this.ipJumpBroadcast = new IPJumpBroadcast(this::socketReadCallback);
+		this.rawSocketReceiver = new RawSocketReceiver(this::socketReadCallback);
+		this.unicastHandler = new UnicastHandler(this::socketReadCallback);
+		
 		this.observerMap = new HashMap<String, Observable<NetworkEvent>>();
+		
+		this.inetAddress = null;
+
 	}
 	
 	public void addObserver(String key, Observer<NetworkEvent> observer)
@@ -70,6 +82,7 @@ public class NetworkManager implements IServiceModule
 	public void removeObserver(Observer<NetworkEvent> observer)
 	{
 		Observable<NetworkEvent> observable;
+		ArrayList<String> removeObservableKey = new ArrayList<>();
 		for(String key : this.observerMap.keySet())
 		{
 			observable = this.observerMap.get(key);
@@ -77,12 +90,34 @@ public class NetworkManager implements IServiceModule
 			
 			if(observable.size() == 0)
 			{
-				this.observerMap.remove(key);
+				removeObservableKey.add(key);
 			}
+		}
+		
+		for(int i = 0; i < removeObservableKey.size(); ++i)
+		{
+			this.observerMap.remove(removeObservableKey.get(i));
 		}
 	}
 	
-	void socketReadCallback(InetAddress addr, byte[] packetBuffer)
+	public void sendMessage(Packet packet)
+	{
+		if(packet.isBroadcast())
+		{
+			this.ipJumpBroadcast.sendMessage(true, packet.getNativeArr());
+		}
+		else
+		{
+			Device d = this.deviceInfoManager.getDevice(packet.getReceiver());
+			if(d == null || d.getInetAddr() == null)
+			{
+				return;
+			}
+			this.unicastHandler.sendMessage(packet.getNativeArr(), d.getInetAddr());
+		}
+	}
+	
+	public void socketReadCallback(InetAddress addr, byte[] packetBuffer)
 	{
 		if(!PacketUtil.isPacket(packetBuffer))
 		{
@@ -102,34 +137,40 @@ public class NetworkManager implements IServiceModule
 		NetworkEvent event = new NetworkEvent(eventKey, addr, packetObj);
 		observable.notifyObservers(NodeControlCore.mainThreadPool, event);
 	}
+	
+	public InetAddress getMyAddr()
+	{
+		return this.inetAddress;
+	}
 
 	@Override
 	public boolean startModule()
 	{
-		this.socketHandler.start();
+		logger.log(Level.INFO, "네트워크 매니저 로드");
+		
+		this.inetAddress = NetworkUtil.defaultAddr();
+		this.setInetAddr(this.inetAddress);
+		
+		this.unicastHandler.start(this.inetAddress);
+		this.rawSocketReceiver.start();
+		this.ipJumpBroadcast.start();
 		return true;
 	}
 
 	@Override
 	public void stopModule()
 	{
+		logger.log(Level.INFO, "네트워크 매니저 종료");
+		
 		this.observerMap.clear();
-		this.socketHandler.stop();
-	}
-	
-	public static void main(String[] args) throws UnknownHostException
-	{
-		/*NodeControlCore.init();
-		NetworkManager networkManager = new NetworkManager();
-		networkManager.startModule();
-		networkManager.setInetAddr(InetAddress.getByName("192.168.0.99"));*/
+		this.unicastHandler.stop();
+		this.ipJumpBroadcast.stop();
+		this.rawSocketReceiver.stop();
 	}
 	
 	public void setInetAddr(InetAddress inetAddress)
 	{
 		ArrayList<String> command = new ArrayList<String>();
-		String iface = NodeControlCore.getProp(PROP_INTERFACE);
-		System.out.println("interface: " + iface);
 		
 		byte[] myAddrByte = inetAddress.getAddress();
 		myAddrByte[3] = 1;
@@ -143,17 +184,20 @@ public class NetworkManager implements IServiceModule
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		System.out.println(gatewayAddr);
-		command.add(String.format("ifdown %s", iface));
-		command.add(String.format("ip addr flush dev %s", iface));
-		command.add(String.format("ip addr change dev %s %s/24", iface, inetAddress.getHostAddress()));
-		command.add(String.format("ip route add default via %s", gatewayAddr));
-		command.add(String.format("ifup %s", iface));
+		command.add(String.format("ifdown -a"));
+
+		command.add(String.format("ip addr flush dev %s", NetworkUtil.getNIC()));
+		command.add(String.format("ip addr add %s/24 brd + dev %s", inetAddress.getHostAddress(), NetworkUtil.getNIC()));
 		
-		synchronized (this.socketHandler)
+		command.add(String.format("ip route add default via %s", gatewayAddr));
+		command.add(String.format("ifup -a"));
+		
+		synchronized (this)
 		{
-			logger.log(Level.INFO, "IP�옱�븷�떦...");
-			this.socketHandler.stop();
+			logger.log(Level.INFO, "IP변경 시작");
+			this.unicastHandler.stop();
+			this.ipJumpBroadcast.stop();
+			this.rawSocketReceiver.stop();
 			try
 			{
 				CommandExecutor.executeBash(command);
@@ -162,9 +206,12 @@ public class NetworkManager implements IServiceModule
 			{
 				e.printStackTrace();
 			}
-			this.socketHandler.start();
-			logger.log(Level.INFO, "�셿猷�");
+			this.unicastHandler.start(this.inetAddress);
+			this.ipJumpBroadcast.start();
+			this.rawSocketReceiver.start();
+			logger.log(Level.INFO, String.format("IP변경 완료(%s)", inetAddress.getHostAddress()));
 		}
 		
+		this.inetAddress = inetAddress;
 	}
 }

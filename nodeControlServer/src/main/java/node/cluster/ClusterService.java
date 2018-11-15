@@ -7,11 +7,9 @@ import java.net.UnknownHostException;
 
 import node.IServiceModule;
 import node.cluster.spark.SparkManager;
-import node.db.DB_Handler;
 import node.log.LogWriter;
-import node.detection.NetworkStateChangeEvent;
+import node.detection.NodeDetectionEvent;
 import node.detection.NodeDetectionService;
-import node.network.NetworkManager;
 
 public class ClusterService implements IServiceModule {
 	public static final int SPARK_INSTALLED = 0;
@@ -32,7 +30,7 @@ public class ClusterService implements IServiceModule {
 	public ClusterService(NodeDetectionService nds) {
 		this.isMaster = false;
 		this.instFlag = SPARK_NOT_INSTALLED;
-		this.connectState = NetworkStateChangeEvent.STATE_FAIL;
+		this.connectState = NodeDetectionEvent.STATE_FAIL;
 		this.nds = nds;
 		nds.addObserver(nscEventReceiver);
 		this.masterIp = null;
@@ -57,18 +55,18 @@ public class ClusterService implements IServiceModule {
 		}
 		
 	}
-	public boolean reciveEvent() {
-		NetworkStateChangeEvent eventInfo = null;
-		if((eventInfo = nscEventReceiver.getEvent()) == null) {
+
+	public boolean reciveEvent(NodeDetectionEvent eventInfo) {
+		if(eventInfo == null) {
 			clusterLogger.log(Level.SEVERE, "Not Given Network State Change Event", new Exception("Not Given Network State Change Event"));
 			return false;
 		}
-		if(masterIp != null && !masterIp.equals(eventInfo.DHCPIp)) {	//마스터가 아니였다가 마스터가 될때 마스터프로세스를 종료시켜준다.(잔존 프로세스 제거)
+		if(masterIp != null && !masterIp.equals(eventInfo.masterIP.getHostAddress())) {	//마스터가 아니였다가 마스터가 될때 마스터프로세스를 종료시켜준다.(잔존 프로세스 제거)
 			sparkManager.stopSparkMaster();
 			sparkManager.stopSparkWorker();
 		}
-		this.isMaster = eventInfo.isDHCP;
-		this.masterIp = eventInfo.DHCPIp;
+		this.isMaster = eventInfo.isMaster;
+		this.masterIp = eventInfo.masterIP.getHostAddress();
 		this.connectState = eventInfo.state;
 		
 		return true;
