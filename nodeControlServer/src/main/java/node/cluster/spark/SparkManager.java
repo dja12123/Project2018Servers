@@ -2,10 +2,13 @@ package node.cluster.spark;
 
 import java.util.HashMap;
 import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import node.NodeControlCore;
 import node.bash.BashSet;
 import node.cluster.ClusterService;
+import node.log.LogWriter;
 
 public class SparkManager {
 	private String sparkHome;
@@ -17,10 +20,13 @@ public class SparkManager {
 	private String sparkWorkerCores;
 	private String sparkWorkerMemory;
 	
+	public static final Logger sparkLogger = LogWriter.createLogger(SparkManager.class, "spark");
+	
 	public SparkManager() {
 		
 	}
 	public void startSparkMaster(String masterIP, String option) {
+		sparkLogger.log(Level.INFO, "스파크 마스터 시작");
 		StringBuffer confOp = new StringBuffer("-h ")
 				.append(masterIP)
 				.append(" -p ")
@@ -30,10 +36,12 @@ public class SparkManager {
 		BashSet.execSh(BashSet.start_spkMaster, confOp.toString(), option);
 	}
 	public void stopSparkMaster() {
+		sparkLogger.log(Level.INFO, "스파크 마스터 중지");
 		BashSet.execSh(BashSet.stop_spkMaster);
 	}
 	//option example spark://worker-11:7077 -m 512M -c 2
 	public void startSparkWorker(String masterIp, String option) {
+		sparkLogger.log(Level.INFO, "스파크 워커 시작");
 		StringBuffer confOp = new StringBuffer("spark://")
 				.append(masterIp)
 				.append(":")
@@ -46,10 +54,12 @@ public class SparkManager {
 		BashSet.execSh(BashSet.start_spkMaster, confOp.toString(), option);
 	}
 	public void stopSparkWorker() {
+		sparkLogger.log(Level.INFO, "스파크 워커 중지");
 		BashSet.execSh(BashSet.stop_spkWorker);
 	}
 	
 	protected void confSpark() {
+		sparkLogger.log(Level.INFO, "스파크 property 설정중..");
 		sparkHome = NodeControlCore.getProp("sparkHome");
 		
 		sparkPort = NodeControlCore.getProp("sparkPort");
@@ -64,6 +74,7 @@ public class SparkManager {
 	
 	
 	public void instSpark() {
+		sparkLogger.log(Level.INFO, "스파크 설치중..");
 		confSpark();
 		BashSet.execSh(BashSet.install_spark, sparkHome);
 	}
