@@ -20,13 +20,18 @@ import node.util.observer.Observable;
 public class TestMain extends Observable<NodeDetectionEvent>
 {
 	
-	
 	public static void main(String[] args) throws Exception
 	{
 		NodeControlCore.init();
+		TestMain tm = new TestMain();
 		
-		ClusterService cs = ;
+		ClusterService cs = new ClusterService(tm);
+		InetAddress ip = InetAddress.getLocalHost();
 		
+		NodeDetectionEvent nde = new NodeDetectionEvent(ip, true, 0);
+		
+		
+		tm.notifyObservers(nde);
 		/*
 		RawSocket rawSocket = new RawSocket();
 		try
