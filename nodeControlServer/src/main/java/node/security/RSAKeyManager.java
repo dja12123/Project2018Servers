@@ -1,13 +1,10 @@
 package node.security;
 
 import java.security.Key;
-import java.security.KeyFactory;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.PrivateKey;
 import java.security.PublicKey;
-import java.security.spec.X509EncodedKeySpec;
-import java.util.Base64;
 
 public class RSAKeyManager
 {
@@ -36,32 +33,6 @@ public class RSAKeyManager
 		}
     }
     
-    public Key getPublicKey()
-    {
-        return publicKey;
-    }
-
-    public Key getPrivateKey()
-    {
-        return privateKey;
-    }
-    
-    public String getPublicB64()
-    {
-        if(b64PublicKey == null)
-            b64PublicKey = convertKeyToB64(publicKey);
-        
-        return b64PublicKey;
-    }
-    
-    public String getPrivateB64()
-    {
-        if(b64PrivateKey == null)
-            b64PrivateKey = convertKeyToB64(privateKey);
-        
-        return b64PrivateKey;
-    }
-    
     public static RSAKeyManager getInstance()
     {
         if(instance == null)
@@ -70,25 +41,23 @@ public class RSAKeyManager
         return instance;
     }
     
-    public static String convertKeyToB64(Key key)
+    public Key getPublicKey() { return publicKey; }
+
+    public Key getPrivateKey() { return privateKey; }
+    
+    public String getPublicB64()
     {
-        return Base64.getEncoder().encodeToString(key.getEncoded());
+        if(b64PublicKey == null)
+            b64PublicKey = RSAKeyUtill.convertKeyToB64(publicKey);
+        
+        return b64PublicKey;
     }
     
-    public static Key convertB64StringToKey(String B64str)
+    public String getPrivateB64()
     {
-    	try
-    	{
-    		byte[] data = Base64.getDecoder().decode((B64str.getBytes()));
-       		X509EncodedKeySpec spec = new X509EncodedKeySpec(data);
-       		KeyFactory fact = KeyFactory.getInstance("RSA");
-       		return fact.generatePublic(spec);
-    	}
-    	catch (Exception e) 
-    	{
-    		e.printStackTrace();
-    		
-    		return null;
-		}
+        if(b64PrivateKey == null)
+            b64PrivateKey = RSAKeyUtill.convertKeyToB64(privateKey);
+        
+        return b64PrivateKey;
     }
 }
