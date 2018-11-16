@@ -27,6 +27,7 @@ public class TestMain extends Observable<NodeDetectionEvent>
 		
 		ClusterService cs = new ClusterService(tm);
 		InetAddress ip = InetAddress.getLocalHost();
+		cs.startModule();
 		
 		NodeDetectionEvent nde = new NodeDetectionEvent(ip, true, 0);
 		tm.notifyObservers(nde);
