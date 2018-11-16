@@ -18,7 +18,7 @@ public class NodeDetectionEventReceiver implements Observer<NodeDetectionEvent>{
 	public void update(Observable<NodeDetectionEvent> object, NodeDetectionEvent data) {
 		// TODO Auto-generated method stub
 		event = data;
-		mainModule.reciveEvent(getEvent());
+		mainModule.reciveEvent(data);
 		mainModule.startSpark();
 	}
 	public NodeDetectionEvent getEvent() {	return event;	}
