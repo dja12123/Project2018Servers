@@ -77,6 +77,6 @@ public class SparkManager {
 		sparkLogger.log(Level.INFO, "스파크 설치중..");
 		confSpark();
 		BashSet.execSh(BashSet.all_change_unix, "");
-		//BashSet.execSh(BashSet.install_spark, sparkInstDir);
+		BashSet.execSh(BashSet.install_spark, sparkInstDir);
 	}
 }
