@@ -41,9 +41,17 @@ public class ClusterService implements IServiceModule {
 		instSpark();
 	}
 	public void instSpark() {
-		clusterLogger.log(Level.INFO, "스파크 설치");
+		clusterLogger.log(Level.INFO, "스파크 설치확인");
 		sparkManager.instSpark();
-		instFlag = SPARK_INSTALLED;
+		try {
+			String result = CommandExecutor.executeCommand("echo $SPARK_HOME");
+			if(!result.equals("" + CommandExecutor.lineSeparator)) {
+				instFlag = SPARK_INSTALLED;
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}                                  
 	
 	public boolean cmpMaster() {
@@ -100,15 +108,6 @@ public class ClusterService implements IServiceModule {
 	public boolean startModule() {		//객체 초기화 생성및 쓰레드 초기화 생성
 		// TODO Auto-generated method stub
 		
-		try {
-			String result = CommandExecutor.executeCommand("echo $SPARK_HOME");
-			if(!result.equals("" + CommandExecutor.lineSeparator)) {
-				instFlag = SPARK_INSTALLED;
-			}
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 		if(this.instFlag == SPARK_NOT_INSTALLED) {
 			clusterLogger.log(Level.SEVERE, "Not Installed Spark", new Exception("Not Installed Spark"));
 			
