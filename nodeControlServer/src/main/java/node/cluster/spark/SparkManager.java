@@ -7,6 +7,7 @@ import java.util.logging.Logger;
 
 import node.NodeControlCore;
 import node.bash.BashSet;
+import node.bash.CommandExecutor;
 import node.cluster.ClusterService;
 import node.log.LogWriter;
 
@@ -78,7 +79,7 @@ public class SparkManager {
 		confSpark();
 		String haveSpark = BashSet.execSh(BashSet.check_spark, sparkInstDir);
 		sparkLogger.log(Level.WARNING, haveSpark + " <----- 체크스파크 결과");
-		if(haveSpark == "false") {
+		if(haveSpark == ("false" + CommandExecutor.lineSeparator) ) {
 			return false;
 		}
 		BashSet.execSh(BashSet.all_change_unix, "");
