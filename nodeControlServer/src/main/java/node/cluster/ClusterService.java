@@ -53,20 +53,6 @@ public class ClusterService implements IServiceModule {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-	}                                  
-	
-	public boolean cmpMaster() {
-		try {
-			if(masterIp.equals(InetAddress.getLocalHost().getHostAddress())) {
-				return true;
-			} else {
-				return false;
-			}
-		} catch(UnknownHostException e) {
-			e.printStackTrace();
-			return false;
-		}
-		
 	}
 
 	public boolean reciveEvent(NodeDetectionEvent eventInfo) {
