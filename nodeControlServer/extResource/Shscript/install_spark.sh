@@ -2,9 +2,9 @@ bashrc=/etc/bash.bashrc
 
 if ! grep -q "export SPARK_HOME=$1/spark" $bashrc; then
 
-        wget http://mirror.apache-kr.org/spark/spark-2.4.0/spark-2.4.0-bin-hadoop2.7.tgz
-        tar -xvf spark-2.4.0-bin-hadoop2.7.tgz
-        mv spark-2.4.0-bin-hadoop2.7 $1/spark
+        wget http://mirror.apache-kr.org/spark/spark-2.4.0/spark-2.4.0-bin-hadoop2.7.tgz -P /root/
+        tar -xvf /root/spark-2.4.0-bin-hadoop2.7.tgz
+        mv /root/spark-2.4.0-bin-hadoop2.7 $1/spark
 
         echo "export SPARK_HOME=$1/spark" >> $bashrc
         echo "export JAVA_HOME=/usr/lib/jvm/jdk-8-oracle-arm32-vfp-hflt/jre" >> $bashrc
