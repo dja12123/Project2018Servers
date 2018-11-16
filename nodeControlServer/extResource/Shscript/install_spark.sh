@@ -8,7 +8,9 @@ bashrc=/etc/bash.bashrc
 if ! grep -q "export SPARK_HOME=$1/spark" $bashrc; then
 
 		echo "wget"
-        wget http://mirror.apache-kr.org/spark/spark-2.4.0/spark-2.4.0-bin-hadoop2.7.tgz -P /root/
+		if [ ! -f "/root/spark-2.4.0-bin-hadoop2.7.tgz" ]; then
+        	wget http://mirror.apache-kr.org/spark/spark-2.4.0/spark-2.4.0-bin-hadoop2.7.tgz -P /root/
+        fi
         echo "tar"
         tar -xvf /root/spark-2.4.0-bin-hadoop2.7.tgz -C /root/
         echo "mv"
