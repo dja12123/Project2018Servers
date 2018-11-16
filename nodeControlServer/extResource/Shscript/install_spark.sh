@@ -1,4 +1,4 @@
-if [ $# -eq 1 ]; then
+if [ $# -eq 0 ]; then
 	echo "need input argument"
 	exit 1
 fi
