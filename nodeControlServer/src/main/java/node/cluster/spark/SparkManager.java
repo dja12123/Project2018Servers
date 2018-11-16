@@ -79,7 +79,7 @@ public class SparkManager {
 		confSpark();
 		String haveSpark = BashSet.execSh(BashSet.check_spark, sparkInstDir);
 		sparkLogger.log(Level.WARNING, haveSpark + " <----- 체크스파크 결과");
-		if(haveSpark == ("false" + CommandExecutor.lineSeparator) ) {
+		if(haveSpark.equals("false" + CommandExecutor.lineSeparator) ) {
 			sparkLogger.log(Level.WARNING, "됐다 삐약삐약");
 			return false;
 		}
