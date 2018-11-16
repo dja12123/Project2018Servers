@@ -1,3 +1,7 @@
+if [ $# -le 1 ]; then
+	exit 1
+fi
+
 bashrc=/etc/bash.bashrc
 
 if ! grep -q "export SPARK_HOME=$1/spark" $bashrc; then
