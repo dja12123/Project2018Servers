@@ -19,6 +19,7 @@ public class BashSet {
 	public static String execSh(File shFile, String... arg) {
 		//현재 노드에서 주키퍼 서버 실행
 		StringBuffer cmdline = new StringBuffer();
+		String result = null;
 		
 		cmdline.append(shFile.getAbsolutePath());
 		for(int i = 0; i < arg.length; i++) {
@@ -26,11 +27,11 @@ public class BashSet {
 		}
 			
 		try {
-			return CommandExecutor.executeCommand(cmdline.toString());
+			result = CommandExecutor.executeCommand(cmdline.toString());
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			return "test";
 		}
+		return result;
 	}
 }
