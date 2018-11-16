@@ -35,6 +35,7 @@ public class ClusterService implements IServiceModule {
 		this.connectState = NodeDetectionEvent.STATE_FAIL;
 		this.nds = nds;
 		this.masterIp = null;
+		nds.addObserver(ndEventReceiver);
 		
 		instSpark();
 	}
@@ -97,7 +98,6 @@ public class ClusterService implements IServiceModule {
 	@Override
 	public boolean startModule() {		//객체 초기화 생성및 쓰레드 초기화 생성
 		// TODO Auto-generated method stub
-		nds.addObserver(ndEventReceiver);
 		
 		return true;
 	}
