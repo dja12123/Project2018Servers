@@ -45,6 +45,7 @@ public class ClusterService implements IServiceModule {
 		sparkManager.instSpark();
 		try {
 			String result = CommandExecutor.executeCommand("echo $SPARK_HOME");
+			clusterLogger.log(Level.SEVERE, result);
 			if(!result.equals("" + CommandExecutor.lineSeparator)) {
 				instFlag = SPARK_INSTALLED;
 			}
