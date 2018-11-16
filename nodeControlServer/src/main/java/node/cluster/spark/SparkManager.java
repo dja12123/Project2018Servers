@@ -51,7 +51,7 @@ public class SparkManager {
 				.append(" -c ")
 				.append(sparkWorkerCores);
 		
-		BashSet.execSh(BashSet.start_spkMaster, confOp.toString(), option);
+		BashSet.execSh(BashSet.start_spkWorker, confOp.toString(), option);
 	}
 	public void stopSparkWorker() {
 		sparkLogger.log(Level.INFO, "스파크 워커 중지");
