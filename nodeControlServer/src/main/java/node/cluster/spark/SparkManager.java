@@ -73,9 +73,15 @@ public class SparkManager {
 	}
 	
 	
-	public void instSpark() {
+	public boolean initSpark() {
 		sparkLogger.log(Level.INFO, "스파크 설치중..");
 		confSpark();
+		String haveSpark = BashSet.execSh(BashSet.check_spark, sparkInstDir);
+		sparkLogger.log(Level.WARNING, haveSpark + " <----- 체크스파크 결과");
+		if(haveSpark == "false") {
+			return false;
+		}
 		BashSet.execSh(BashSet.all_change_unix, "");
+		return true;
 	}
 }
