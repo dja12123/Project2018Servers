@@ -77,7 +77,7 @@ public class Packet
 		
 		byte[] data = new byte[this.dataSize];
 		this.source.position(PacketUtil.HEADER_SIZE + this.keySize);
-		source.get(data);
+		this.source.get(data);
 		return data;
 	}
 	

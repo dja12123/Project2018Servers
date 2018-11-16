@@ -1,7 +1,5 @@
 package node.network.packet;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.UUID;
@@ -16,7 +14,7 @@ import java.util.UUID;
   */
 public class PacketUtil
 {
-	public static final byte[] MAGIC_NO_START = new byte[] {0x11, 0x11, 0x30, 0x37, 0x6D, 0x68};
+	public static final byte[] MAGIC_NO_START = new byte[] {0x11, 0x11, 0x30, 0x37, 0x6D, 0x00};
 	// 메직넘버(C507mh)
 	public static final byte[] MAGIC_NO_END = new byte[] {0x00, 0x45, 0x44, 0x44};
 	// 메직넘버(ENDP)
