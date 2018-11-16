@@ -16,23 +16,6 @@ public class SplitPacketAnalyser
 	private HashMap<InetAddress, PacketQueue> packetStack;
 	private HashMap<InetAddress, SplitPacketBuilder> builderStack;
 	
-	public static void main(String[] args)
-	{
-		byte[] src = new byte[]{0x11,0x22,0x11,0x22,0x1E,0x32,0x28,0x11,0x22,0x11,0x22};
-		byte[] pattern = new byte[] {0x11,0x22,0x11,0x22};
-		
-		//System.out.println(findPatternIndex(src, 1, pattern));
-		PacketQueue queue = new PacketQueue(5);
-		for(int i = 0; i < 100; ++i)
-		{
-		
-			queue.enQueue((byte) i);
-			
-			System.out.println(queue.get(1));
-		}
-		System.out.println();
-	}
-	
 	public SplitPacketAnalyser()
 	{
 		this.worker = null;
@@ -62,33 +45,23 @@ public class SplitPacketAnalyser
 		this.builderStack.clear();
 	}
 	
-	private synchronized void analysePacket(InetAddress inetAddr, byte[] copyedBuffer)
+	public synchronized void analysePacket(InetAddress inetAddr, byte[] copyedBuffer)
 	{// 패킷 분석해서 스택에 넣어줌...
 		ByteBuffer orgBuffer = ByteBuffer.wrap(copyedBuffer);
-		PacketQueue targetBuffer = this.packetStack.get(inetAddr);
+		PacketQueue queue = this.packetStack.get(inetAddr);
 		
-		if(targetBuffer == null)
+		if(queue == null)
 		{
-			targetBuffer = new PacketQueue(SplitPacketUtil.FULL_PACKET_LIMIT);
-			this.packetStack.put(inetAddr, targetBuffer);
+			queue = new PacketQueue(SplitPacketUtil.FULL_PACKET_LIMIT);
+			this.packetStack.put(inetAddr, queue);
 		}
 		
-		//int bufStartPos = findPatternIndex(copyedBuffer, 0, SplitPacketUtil.MAGIC_NO_START);
-		//int bufEndPos = findPatternIndex(copyedBuffer, 0, SplitPacketUtil.MAGIC_NO_END);
-		
-		int size = 0;
 		for(int i = 0; i < copyedBuffer.length; ++i)
 		{
-			
-		}
-		
-		
-		int orgBufferSegmentCount = copyedBuffer.length / SplitPacketUtil.SPLIT_SIZE;
-		if(copyedBuffer.length % SplitPacketUtil.SPLIT_SIZE != 0)
-			orgBufferSegmentCount += 1;
-		for(int i = 0;i < orgBufferSegmentCount; ++i)
-		{
-			
+			if(queue.enQueue(copyedBuffer[i]))
+			{
+				System.out.println("패킷이당");
+			}
 		}
 		
 	}
@@ -122,20 +95,26 @@ class PacketQueue
 {
 	private int front;
 	private int rear;
-	private int maxSize;
+	private final int queueSize;
 	private byte itemArray[];
 	
-	private int frontIndex;
-	private PacketQueue isExistFrontCode;
+	private boolean isStart;
+	private boolean isEnd;
 	private int size;
+	
+	private int isStartLife;
+	private int isEndLife;
 
 	@SuppressWarnings("unchecked")
 	public PacketQueue(int queueSize)
 	{
 		this.front = 0;
 		this.rear = 0;
-		this.maxSize = queueSize + 1;
+		this.queueSize = queueSize + 1;
 		this.itemArray = new byte[queueSize + 1];
+		
+		this.isStart = false;
+		this.isEnd = false;
 	}
 
 	// 큐가 비어있는지 확인
@@ -147,108 +126,120 @@ class PacketQueue
 	// 큐가 가득차 있는지 확인
 	public boolean isFull()
 	{
-		return ((this.rear + 1) % this.maxSize == this.front);
+		return this.queueSize - 1 == this.size;
 	}
 
 	// 큐의 삽입 연산
-	public void enQueue(byte item)
+	public boolean enQueue(byte item)
 	{
-		if (isFull())
+		if (this.isFull())
 		{
-			System.out.println("큐가 포화 상태");
-			this.delete();
+			this.front = (this.front + 1) % this.queueSize;
 		}
 		
-		rear = (rear + 1) % (maxSize);
+		this.rear = (this.rear + 1) % (this.queueSize);
 		this.setSize();
-		itemArray[rear] = item;
+		this.itemArray[this.rear] = item;
 		
 		if(this.size >= SplitPacketUtil.MAGIC_NO_START.length)
 		{
-			//this.front + this.size - SplitPacketUtil.MAGIC_NO_START.length;
+			if(this.findPattern((this.front + this.size - SplitPacketUtil.MAGIC_NO_START.length)
+					, SplitPacketUtil.MAGIC_NO_START))
+			{
+				System.out.println("스타트감지");
+				this.isStart = true;
+				this.isStartLife = this.queueSize - SplitPacketUtil.MAGIC_NO_START.length;
+			}
+			
+			if(this.findPattern((this.front + this.size - SplitPacketUtil.MAGIC_NO_END.length)
+					, SplitPacketUtil.MAGIC_NO_END))
+			{
+				
+				this.isEnd = true;
+				this.isEndLife = this.queueSize - SplitPacketUtil.MAGIC_NO_END.length;
+			}
 		}
-	}
-
-	// 큐의 삭제 후 반환 연산
-	public byte deQueue()
-	{
-		if (isEmpty())
-		{
-			System.out.println("큐가 공백 상태");
-			return 0;
-		}
-	
-		front = (front + 1) % maxSize;
-		this.setSize();
-		return itemArray[front];
 		
+		if(this.isStart)
+		{
+			--this.isStartLife;
+			if(this.isStartLife < 0)
+			{
+				this.isStart = false;
+			}
+		}
+		
+		if(this.isEnd)
+		{
+			--this.isEndLife;
+			if(this.isEndLife < 0)
+			{
+				this.isEnd = false;
+			}
+		}
+		
+		if(this.isStart && this.isEnd && this.isStartLife == 0 && this.isEndLife == this.queueSize - SplitPacketUtil.MAGIC_NO_END.length - 1)
+		{
+			return true;
+		}
+		return false;
 	}
 	
 	public byte get(int index)
 	{
-		return this.itemArray[(index + this.front + 1) % this.maxSize];
-	}
-
-	// 큐의 삭제 연산
-	public void delete()
-	{
-		if (isEmpty())
-		{
-			System.out.println("삭제할 큐가 없음");
-		}
-		front = (front + 1) % maxSize;
-		this.setSize();
+		return this.itemArray[(index + this.front + 1) % this.queueSize];
 	}
 
 	// 큐의 현재 front값 출력
 	public byte peek()
 	{
-		if (isEmpty())
+		if (this.isEmpty())
 		{
-			System.out.println("큐가 비어있음");
 			return 0;
 		}
 		else
 		{
-			return itemArray[(front + 1) % maxSize];
+			return this.itemArray[(this.front + 1) % this.queueSize];
 		}
 	}
 	
 	// 전체 큐값 출력
-	public void print()
+	@Override
+	public String toString()
 	{
-		if (isEmpty())
+		if(this.isEmpty())
 		{
-			System.out.println("큐가 비어있음");
+			return "";
 		}
-		else
-		{
-			int f = front;
+		StringBuffer buf = new StringBuffer();
+		int f = this.front;
 
-			while (f != rear)
-			{
-				f = (f + 1) % maxSize;
-				System.out.print(itemArray[f] + " ");
-			}
-			System.out.println();
+		while (f != this.rear)
+		{
+			f = (f + 1) % this.queueSize;
+			buf.append(String.format("%2s ", Integer.toHexString(this.itemArray[f])));
 		}
+		buf.append('\n');
+		return buf.toString();
 	}
 	
 	private void setSize()
 	{
-		this.size = front > rear ? (maxSize - front + rear) : (rear - front);
+		this.size = this.front > this.rear ? 
+				(this.queueSize - this.front + this.rear) : (this.rear - this.front);
 	}
 	
 	private boolean findPattern(int front, byte[] pattern)
 	{
 		int findTargetPointer = 0;
-		for(int i = front; i < front + pattern.length; ++i)
+		
+		for(int i = 0; i < pattern.length; ++i)
 		{
 			if(findTargetPointer == pattern.length)
 			{
 				return true;
 			}
-			if(this.itemArray[(i + front + 1) % this.maxSize] == pattern[findTargetPointer])
+			if(this.itemArray[(i + front + 1) % this.queueSize] == pattern[findTargetPointer])
 			{
 				++findTargetPointer;
 			}

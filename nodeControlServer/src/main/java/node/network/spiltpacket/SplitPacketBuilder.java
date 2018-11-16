@@ -9,15 +9,13 @@ public class SplitPacketBuilder
 {
 	private Stack<byte[]> splitPacket;
 	private int code;
-	
-	private boolean isSetCode;
+	private int nowTaskSegmentNo;
 
-	public SplitPacketBuilder()
+	public SplitPacketBuilder(byte[] rawData, int code)
 	{
-		splitPacket = new Stack<>();
-		this.code = -1;
+		this.splitPacket = new Stack<>();
+		this.code = code;
 		
-		this.isSetCode = false;
 	}
 	
 	public SplitPacketBuilder setFullPacket(byte[] fullPacket) throws SplitPacketBuildFailureException
@@ -50,25 +48,22 @@ public class SplitPacketBuilder
 		return this;
 	}
 	
-	public SplitPacketBuilder addPacket(byte[] rawData)
+	public boolean addPacket(byte[] rawData)
 	{
+		ByteBuffer buf = ByteBuffer.wrap(rawData);
+		buf.position(SplitPacketUtil.START_PACKET_ID);
+		if(buf.getInt() == this.code)
+		{
+			
+		}
 		this.splitPacket.push(rawData);
-		return this;
-	}
-	
-	public SplitPacketBuilder setCode(int code) throws SplitPacketBuildFailureException
-	{
-		if(this.code != -1)
-			throw new SplitPacketBuildFailureException("이미 샛팅된 코드");
-		
-		this.code = code;
-		this.isSetCode = true;
-		return this;
+		return false;
+		//return this;
 	}
 	
 	public SplitPacket getInstance() throws SplitPacketBuildFailureException
 	{
-		if(!this.isSetCode) throw new SplitPacketBuildFailureException("패킷이 완성되지 않았습니다");
+		//if(!this.isSetCode) throw new SplitPacketBuildFailureException("패킷이 완성되지 않았습니다");
 		
 		byte[][] arr = new byte[this.splitPacket.size()][];
 		this.splitPacket.toArray(arr);
