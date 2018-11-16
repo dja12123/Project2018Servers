@@ -109,7 +109,7 @@ public class ClusterService implements IServiceModule {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		System.out.println(instFlag);
+		clusterLogger.log(Level.INFO, "Spark 설치 여부 : " + instFlag);
 		
 		return true;
 	}
