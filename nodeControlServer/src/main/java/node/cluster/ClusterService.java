@@ -44,10 +44,10 @@ public class ClusterService implements IServiceModule {
 		clusterLogger.log(Level.INFO, "스파크 설치확인");
 		sparkManager.instSpark();
 		try {
+			//환경변수를 확인해서 스파크가 깔려있는지 확인
 			String result = CommandExecutor.executeCommand("echo $SPARK_HOME");
 			clusterLogger.log(Level.SEVERE, result);
 			if(!result.equals("" + CommandExecutor.lineSeparator)) {
-				instFlag = SPARK_INSTALLED;
 			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
