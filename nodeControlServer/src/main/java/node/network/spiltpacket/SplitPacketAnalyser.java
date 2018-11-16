@@ -4,7 +4,6 @@ package node.network.spiltpacket;
 import java.net.InetAddress;
 import java.nio.ByteBuffer;
 import java.util.HashMap;
-import java.util.Queue;
 
 public class SplitPacketAnalyser
 {
@@ -166,7 +165,7 @@ class PacketQueue
 		
 		if(this.size >= SplitPacketUtil.MAGIC_NO_START.length)
 		{
-			this.front + this.size - SplitPacketUtil.MAGIC_NO_START.length;
+			//this.front + this.size - SplitPacketUtil.MAGIC_NO_START.length;
 		}
 	}
 
