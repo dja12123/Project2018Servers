@@ -30,7 +30,7 @@ public class BashSet {
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			return null;
+			return "test";
 		}
 	}
 }
