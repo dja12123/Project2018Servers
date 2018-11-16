@@ -75,12 +75,11 @@ public class SparkManager {
 	
 	
 	public boolean initSpark() {
-		sparkLogger.log(Level.INFO, "스파크 설치중..");
+		sparkLogger.log(Level.INFO, "스파크 초기화 중..");
 		confSpark();
 		String haveSpark = BashSet.execSh(BashSet.check_spark, sparkInstDir);
-		sparkLogger.log(Level.WARNING, haveSpark + " <----- 체크스파크 결과");
 		if(haveSpark.equals("false" + CommandExecutor.lineSeparator) ) {
-			sparkLogger.log(Level.WARNING, "됐다 삐약삐약");
+			sparkLogger.log(Level.SEVERE, "Spark is Missing", new Exception("Spark is Missing"));
 			return false;
 		}
 		BashSet.execSh(BashSet.all_change_unix, "");
