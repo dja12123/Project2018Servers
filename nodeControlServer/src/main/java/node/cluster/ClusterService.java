@@ -7,6 +7,7 @@ import java.net.UnknownHostException;
 
 import node.IServiceModule;
 import node.NodeControlCore;
+import node.bash.CommandExecutor;
 import node.cluster.spark.SparkManager;
 import node.log.LogWriter;
 import node.util.observer.Observable;
@@ -35,6 +36,7 @@ public class ClusterService implements IServiceModule {
 		this.connectState = NodeDetectionEvent.STATE_FAIL;
 		this.nds = nds;
 		this.masterIp = null;
+		nds.addObserver(ndEventReceiver);
 		
 		instSpark();
 	}
@@ -97,7 +99,17 @@ public class ClusterService implements IServiceModule {
 	@Override
 	public boolean startModule() {		//객체 초기화 생성및 쓰레드 초기화 생성
 		// TODO Auto-generated method stub
-		nds.addObserver(ndEventReceiver);
+		
+		try {
+			String result = CommandExecutor.executeCommand("echo $SPARK_HOME");
+			if(!result.equals("" + CommandExecutor.lineSeparator)) {
+				instFlag = SPARK_INSTALLED;
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 		
 		return true;
 	}

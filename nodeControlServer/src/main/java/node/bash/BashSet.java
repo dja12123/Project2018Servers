@@ -11,14 +11,13 @@ public class BashSet {
 	public static final File stop_spkMaster = FileHandler.getExtResourceFile("Shscript/stop_spkMaster.sh");
 	public static final File start_spkWorker = FileHandler.getExtResourceFile("Shscript/start_spkWorker.sh");
 	public static final File stop_spkWorker = FileHandler.getExtResourceFile("Shscript/stop_spkWorker.sh");
-	public static final File set_zkServer = FileHandler.getExtResourceFile("Shscript/set_zkServer.sh");
 	public static final File install_spark = FileHandler.getExtResourceFile("Shscript/install_spark.sh");
-	public static final File install_zookeeper = FileHandler.getExtResourceFile("Shscript/install_zookeeper.sh");
+	public static final File all_change_unix = FileHandler.getExtResourceFile("Shscript/all_change_unix.sh");
 	
 	//파일상수, 매개변수(옵션)1, 매개변수(옵션)2,... 이런식으로 사용
 	public static void execSh(File shFile, String... arg) {
 		//현재 노드에서 주키퍼 서버 실행
-		StringBuffer cmdline = new StringBuffer("bash ");
+		StringBuffer cmdline = new StringBuffer();
 		
 		cmdline.append(shFile.getAbsolutePath());
 		for(int i = 0; i < arg.length; i++) {

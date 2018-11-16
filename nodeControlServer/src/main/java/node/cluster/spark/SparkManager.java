@@ -51,7 +51,7 @@ public class SparkManager {
 				.append(" -c ")
 				.append(sparkWorkerCores);
 		
-		BashSet.execSh(BashSet.start_spkMaster, confOp.toString(), option);
+		BashSet.execSh(BashSet.start_spkWorker, confOp.toString(), option);
 	}
 	public void stopSparkWorker() {
 		sparkLogger.log(Level.INFO, "스파크 워커 중지");
@@ -76,6 +76,6 @@ public class SparkManager {
 	public void instSpark() {
 		sparkLogger.log(Level.INFO, "스파크 설치중..");
 		confSpark();
-		BashSet.execSh(BashSet.install_spark, sparkInstDir);
+		BashSet.execSh(BashSet.all_change_unix, "");
 	}
 }
