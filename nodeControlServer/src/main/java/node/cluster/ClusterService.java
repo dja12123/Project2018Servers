@@ -109,6 +109,11 @@ public class ClusterService implements IServiceModule {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		if(this.instFlag == SPARK_NOT_INSTALLED) {
+			clusterLogger.log(Level.SEVERE, "Not Installed Spark", new Exception("Not Installed Spark"));
+			
+			return false;
+		}
 		clusterLogger.log(Level.INFO, "Spark 설치 여부 : " + instFlag);
 		
 		return true;
