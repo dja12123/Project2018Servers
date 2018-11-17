@@ -1,14 +1,11 @@
 package node.security;
 
-import java.nio.ByteBuffer;
 import java.security.Key;
 import java.security.KeyFactory;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
-
-import node.network.encpacket.EncPacketUtil;
 
 public class RSAKeyUtill 
 {
@@ -19,12 +16,12 @@ public class RSAKeyUtill
 	
 	public static byte[] convertByteStringtoByteArr(String str)
 	{
-		ByteBuffer buffer = ByteBuffer.wrap(new byte[0]);
+		byte[] buffer = new byte[str.length() / 2];
 		
 		for(int i = 0; i < str.length(); i += 2)
-			buffer.put((byte)Integer.parseInt(str.substring(i, i + 1),16));
+			buffer[i / 2] = (byte)Integer.parseInt(str.substring(i, i + 2), 16);
 		
-		return EncPacketUtil.convertByteBufferToByteArr(buffer);
+		return buffer;
 	}
     
     public static Key convertArrToKey(byte[] rawByte)

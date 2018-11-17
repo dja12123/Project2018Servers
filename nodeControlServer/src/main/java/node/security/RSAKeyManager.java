@@ -21,7 +21,6 @@ public class RSAKeyManager
     private PrivateKey privateKey;
     
     private byte[] publicKeyByte;
-    private byte[] privateKeyByte;
     
     static
     {
@@ -38,7 +37,6 @@ public class RSAKeyManager
 		} 
 		catch (IOException e) 
 		{
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		//TODO: end.
@@ -49,13 +47,6 @@ public class RSAKeyManager
     	temp = prop.getProperty(RSAKeyUtill.DEFAULT_PRIVATE_KEY_PROP);
     	DEFAULY_PRIVATE_KEY = (PrivateKey)RSAKeyUtill.convertArrToKey(RSAKeyUtill.convertByteStringtoByteArr(temp));
     }
-    
-    public static void main(String[] args)
-    {
-    	System.out.println(DEFAULT_PUBLIC_KEY.toString());
-    	System.out.println(DEFAULY_PRIVATE_KEY.toString());
-    }
-    
     
     private RSAKeyManager() 
     {
@@ -85,20 +76,12 @@ public class RSAKeyManager
     public Key getPublicKey() { return publicKey; }
 
     public Key getPrivateKey() { return privateKey; }
-    /*
-    public String getPublicB64()
+
+    public byte[] getPublicByteArr()
     {
-        if(b64PublicKey == null)
-            b64PublicKey = RSAKeyUtill.convertKeyToB64(publicKey);
+        if(publicKeyByte == null)
+        	publicKeyByte = RSAKeyUtill.convertKeyToArr(publicKey);
         
-        return b64PublicKey;
+        return publicKeyByte;
     }
-    
-    public String getPrivateB64()
-    {
-        if(b64PrivateKey == null)
-            b64PrivateKey = RSAKeyUtill.convertKeyToB64(privateKey);
-        
-        return b64PrivateKey;
-    }*/
 }
