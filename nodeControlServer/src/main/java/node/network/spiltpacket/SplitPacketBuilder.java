@@ -1,72 +1,111 @@
 package node.network.spiltpacket;
 
 import java.nio.ByteBuffer;
+import java.util.Arrays;
+import java.util.Date;
 import java.util.Stack;
-
-import node.network.packet.PacketUtil;
 
 public class SplitPacketBuilder
 {
 	private Stack<byte[]> splitPacket;
-	private int code;
-	private int nowTaskSegmentNo;
+	private byte[] id;
+	private int lastSegNo;
+	private int fullSegmentCount;
+	private Date lastUpdateTime;
 
-	public SplitPacketBuilder(byte[] rawData, int code)
+	public SplitPacketBuilder()
 	{
 		this.splitPacket = new Stack<>();
-		this.code = code;
 		
+		this.id = null;
+		this.lastSegNo = -1;
+		this.fullSegmentCount = -1;
 	}
 	
-	public SplitPacketBuilder setFullPacket(byte[] fullPacket) throws SplitPacketBuildFailureException
+	public SplitPacketBuilder setID(byte[] id) throws SplitPacketBuildFailureException
 	{
-		if(!this.splitPacket.empty())
-			throw new SplitPacketBuildFailureException("이미 샛팅 된 데이터");
-		if(this.code == -1)
-			throw new SplitPacketBuildFailureException("코드가 샛팅되지 않음");
-		
-		int segmentCount = fullPacket.length / SplitPacketUtil.RANGE_PAYLOAD;
-		if(fullPacket.length % SplitPacketUtil.RANGE_PAYLOAD != 0) ++segmentCount;
-		
-		for(int i = 0; i < segmentCount; ++i)
-		{
-			byte[] segment = new byte[SplitPacketUtil.SPLIT_SIZE];
-			this.splitPacket.add(segment);
-			ByteBuffer segmentBuffer = ByteBuffer.wrap(segment);
-			segmentBuffer.put(SplitPacketUtil.MAGIC_NO_START);
-			segmentBuffer.putInt(this.code);
-			segmentBuffer.putInt(i);
-			int payloadStart = i * SplitPacketUtil.RANGE_PAYLOAD;
-			int payloadSize;
-			
-			if(payloadStart + SplitPacketUtil.RANGE_PAYLOAD <= fullPacket.length)
-				payloadSize =  SplitPacketUtil.RANGE_PAYLOAD;
-			else payloadSize = fullPacket.length - payloadStart;
-			segmentBuffer.put(fullPacket, payloadStart, payloadSize);
-			segmentBuffer.put(PacketUtil.MAGIC_NO_END);
-		}
+		if(this.id != null)
+			throw new SplitPacketBuildFailureException("이미 샛팅 된 ID");
+		this.id = Arrays.copyOf(id, id.length);
 		return this;
 	}
 	
-	public boolean addPacket(byte[] rawData)
+	public SplitPacketBuilder setID(long id) throws SplitPacketBuildFailureException
+	{
+		if(this.id != null)
+			throw new SplitPacketBuildFailureException("이미 샛팅 된 ID");
+		this.id = SplitPacketUtil.longToBytes(id);
+		return this;
+	}
+
+	public SplitPacketBuilder setFullSegment(int fullSegment) throws SplitPacketBuildFailureException
+	{
+		if(this.fullSegmentCount != -1)
+			throw new SplitPacketBuildFailureException("이미 샛팅 된 세그먼트 개수");
+		this.fullSegmentCount = fullSegment;
+		return this;
+	}
+	
+	public SplitPacketBuilder addRawPacket(byte[] rawData) throws SplitPacketBuildFailureException
+	{
+		if(this.fullSegmentCount == -1)
+			throw new SplitPacketBuildFailureException("세그먼트 개수가 설정되지 않음");
+		
+		++this.lastSegNo;
+		this.splitPacket.push(rawData);
+		return this;
+	}
+	
+	public void updateTime()
+	{
+		this.lastUpdateTime = new Date(System.currentTimeMillis());
+	}
+	
+	public Date getTime()
+	{
+		return this.lastUpdateTime;
+	}
+	
+	public boolean checkPacket(byte[] rawData) throws SplitPacketBuildFailureException
 	{
 		ByteBuffer buf = ByteBuffer.wrap(rawData);
+		byte[] compareID = new byte[SplitPacketUtil.RANGE_PACKET_ID];
 		buf.position(SplitPacketUtil.START_PACKET_ID);
-		if(buf.getInt() == this.code)
-		{
-			
-		}
-		this.splitPacket.push(rawData);
-		return false;
-		//return this;
+		buf.get(compareID);
+		int fullSegmentSize = buf.getInt();
+		int nowSegmentNo = buf.getInt();
+		
+		if(this.id == null)
+			throw new SplitPacketBuildFailureException("아이디 미설정");
+		
+		if(this.fullSegmentCount <= buf.getInt())
+			throw new SplitPacketBuildFailureException("세그먼트 카운트 어긋남");
+		
+		if(!Arrays.equals(this.id, compareID))
+			return false;
+		
+		if(this.fullSegmentCount != fullSegmentSize)
+			return false;
+		
+		if(this.lastSegNo + 1 != nowSegmentNo)
+			return false;
+		
+		return true;
+	}
+	
+	public boolean isBuilded()
+	{
+		return this.fullSegmentCount != this.lastSegNo + 1;
 	}
 	
 	public SplitPacket getInstance() throws SplitPacketBuildFailureException
 	{
-		//if(!this.isSetCode) throw new SplitPacketBuildFailureException("패킷이 완성되지 않았습니다");
+		if(!this.isBuilded())
+			throw new SplitPacketBuildFailureException("빌드가 모두 완료되지 않음");
 		
 		byte[][] arr = new byte[this.splitPacket.size()][];
 		this.splitPacket.toArray(arr);
-		return new SplitPacket(arr);
+		//return new SplitPacket(arr);
+		return null;
 	}
 }
