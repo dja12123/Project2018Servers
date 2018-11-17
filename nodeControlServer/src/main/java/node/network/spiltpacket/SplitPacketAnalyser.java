@@ -48,9 +48,11 @@ public class SplitPacketAnalyser
 		for(int i = 0; i < p.segCount; ++i)
 		{
 			byte[] seg = p.getSegment(i);
-			buf.put(seg);
 			
 			System.out.println(NetworkUtil.bytesToHex(seg, seg.length));
+			buf.put(seg);
+			
+			
 		}
 
 		analyser.analysePacket(addr1, receiveTest);
@@ -97,12 +99,13 @@ public class SplitPacketAnalyser
 		
 		for(int i = 0; i < copyedBuffer.length; ++i)
 		{
-			System.out.println(queue);
 			if(queue.enQueue(copyedBuffer[i]))
 			{
 				if(queue.getSize() > SplitPacketUtil.PACKET_METADATA_SIZE)
 				{
-					this.processPacket(queue.getSnapShot());
+					byte[] snapShot = queue.getSnapShot(queue.getPacketStartPosition(), SplitPacketUtil.SPLIT_SIZE);
+					this.processPacket(snapShot);
+					System.out.println(NetworkUtil.bytesToHex(snapShot, snapShot.length));
 				}
 			}
 		}
@@ -111,7 +114,7 @@ public class SplitPacketAnalyser
 	private void processPacket(byte[] snapShot)
 	{
 		long id = SplitPacketUtil.headerToLong(snapShot);
-		System.out.println("패킷이당");
+		System.out.println("패킷이당" + id);
 		SplitPacketBuilder builder = this.builderStack.get(id);
 		try
 		{

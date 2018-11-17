@@ -109,7 +109,7 @@ public class SplitPacketBuilder
 	
 	public boolean isBuilded()
 	{
-		return this.fullSegmentCount != this.lastSegNo + 1;
+		return this.fullSegmentCount == this.lastSegNo + 1;
 	}
 	
 	public SplitPacket getInstance() throws SplitPacketBuildFailureException
@@ -119,7 +119,6 @@ public class SplitPacketBuilder
 		
 		byte[][] arr = new byte[this.splitPacket.size()][];
 		this.splitPacket.toArray(arr);
-		//return new SplitPacket(arr);
 		return null;
 	}
 }

@@ -57,9 +57,10 @@ class PacketQueue
 				this.isStart = true;
 				this.isStartLife = this.queueSize - SplitPacketUtil.RANGE_MAGICNO_START - 1;
 			}
-			else if(this.isStart && this.isStartLife == this.queueSize - 1 - this.size &&
+			else if(this.isStart && 
 					this.findPattern((this.front + this.size - SplitPacketUtil.RANGE_MAGIC_NO_END) , SplitPacketUtil.MAGIC_NO_END))
 			{
+				System.out.println(this.isStartLife +" "+ (this.queueSize - 1 - this.size));
 				return true;
 			}
 		}
@@ -81,22 +82,29 @@ class PacketQueue
 		return this.size;
 	}
 	
-	public byte[] getSnapShot()
+	public int getPacketStartPosition()
+	{
+		return this.isStartLife;
+	}
+	
+	public byte[] getSnapShot(int start, int end)
 	{
 		if(this.front == this.rear)
 			return null;
-		byte[] snapShot = new byte[this.size];
+		byte[] snapShot = new byte[end - start];
+		int front = (this.front + start) % this.queueSize;
+		int rear = this.rear - (this.queueSize - end - 1);
+		System.out.printf("F:%d, CF:%d, R:%d, CR:%d\n", this.front, front, this.rear, rear);
 		if(this.front < this.rear)
 		{
-			System.arraycopy(this.itemArray, this.front + 1, snapShot, 0, this.size);
+			System.arraycopy(this.itemArray, front + 1, snapShot, 0, this.size);
 		}
 		else
 		{
-			System.arraycopy(this.itemArray, this.front + 1, snapShot , 0, this.queueSize - 1 - this.front);
-			System.arraycopy(this.itemArray, 0, snapShot , this.queueSize - 1 - this.front, this.rear + 1);
+			System.arraycopy(this.itemArray, front + 1, snapShot, 0, this.queueSize - 1 - front);
+			System.arraycopy(this.itemArray, 0, snapShot, this.queueSize - 1 - front, rear + 1);
 		}
 		return snapShot;
-		
 	}
 	
 	// 전체 큐값 출력
@@ -107,7 +115,7 @@ class PacketQueue
 		{
 			return "";
 		}
-		byte[] snapShot = this.getSnapShot();
+		byte[] snapShot = this.getSnapShot(0, this.queueSize - 1);
 		return NetworkUtil.bytesToHex(snapShot, snapShot.length);
 	}
 	
