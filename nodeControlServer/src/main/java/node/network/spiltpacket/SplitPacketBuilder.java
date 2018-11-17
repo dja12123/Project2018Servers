@@ -1,9 +1,10 @@
 package node.network.spiltpacket;
 
-import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.Stack;
+
+import node.network.NetworkUtil;
 
 public class SplitPacketBuilder
 {
@@ -20,6 +21,8 @@ public class SplitPacketBuilder
 		this.id = null;
 		this.lastSegNo = -1;
 		this.fullSegmentCount = -1;
+		
+		this.updateTime();
 	}
 	
 	public SplitPacketBuilder setID(byte[] id) throws SplitPacketBuildFailureException
@@ -68,27 +71,38 @@ public class SplitPacketBuilder
 	
 	public boolean checkPacket(byte[] rawData) throws SplitPacketBuildFailureException
 	{
-		ByteBuffer buf = ByteBuffer.wrap(rawData);
-		byte[] compareID = new byte[SplitPacketUtil.RANGE_PACKET_ID];
-		buf.position(SplitPacketUtil.START_PACKET_ID);
-		buf.get(compareID);
-		int fullSegmentSize = buf.getInt();
-		int nowSegmentNo = buf.getInt();
+		int fullSegmentSize = SplitPacketUtil.getFullSegmentSize(rawData);
+		int nowSegmentNo = SplitPacketUtil.getNowSegmentNum(rawData);
 		
 		if(this.id == null)
 			throw new SplitPacketBuildFailureException("아이디 미설정");
 		
-		if(this.fullSegmentCount <= buf.getInt())
-			throw new SplitPacketBuildFailureException("세그먼트 카운트 어긋남");
+		if(this.fullSegmentCount == -1)
+			throw new SplitPacketBuildFailureException("full세그먼트 카운트 미설정");
 		
-		if(!Arrays.equals(this.id, compareID))
+		if(this.fullSegmentCount <= nowSegmentNo)
+			throw new SplitPacketBuildFailureException(String.format("세그먼트 카운트 어긋남 (all:%d, now:%d)", this.fullSegmentCount, nowSegmentNo));
+		
+		if(!SplitPacketUtil.comparePacketID(rawData, this.id))
+		{
+			System.out.println("아이디다름");
+			System.out.println(NetworkUtil.bytesToHex(this.id, this.id.length));
 			return false;
+		}
+			
 		
 		if(this.fullSegmentCount != fullSegmentSize)
+		{
+			System.out.println("세그먼트 개수 다름");
 			return false;
+		}
 		
 		if(this.lastSegNo + 1 != nowSegmentNo)
+		{
+			
+			System.out.println(String.format("세그먼트 순서 틀림 (all:%d, now:%d)", this.lastSegNo + 1, nowSegmentNo));
 			return false;
+		}
 		
 		return true;
 	}

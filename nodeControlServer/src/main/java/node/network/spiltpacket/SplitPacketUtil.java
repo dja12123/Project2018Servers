@@ -32,21 +32,10 @@ public class SplitPacketUtil
 	public static long headerToLong(byte[] rawPacket)
 	{
 		long result = 0;
-		for (int i = START_PACKET_ID; i < RANGE_PACKET_ID; i++)
+		for (int i = 0; i < RANGE_PACKET_ID; i++)
 		{
 			result <<= 8;
-			result |= (rawPacket[i] & 0xFF);
-		}
-		return result;
-	}
-
-	public static long bytesToLong(byte[] b)
-	{
-		long result = 0;
-		for (int i = 0; i < 8; i++)
-		{
-			result <<= 8;
-			result |= (b[i] & 0xFF);
+			result |= (rawPacket[i + START_PACKET_ID] & 0xFF);
 		}
 		return result;
 	}
@@ -58,6 +47,40 @@ public class SplitPacketUtil
 		{
 			result[i] = (byte) (l & 0xFF);
 			l >>= 8;
+		}
+		return result;
+	}
+	
+	public static boolean comparePacketID(byte[] rawPacket, byte[] id)
+	{
+		for(int i = 0; i < RANGE_PACKET_ID; ++i)
+		{
+			if(rawPacket[i + START_PACKET_ID] != id[i])
+			{
+				return false;
+			}
+		}
+		return true;
+	}
+	
+	public static int getFullSegmentSize(byte[] rawPacket)
+	{
+		int result = 0;
+		for (int i = 0; i < RANGE_PACKET_FULLSEG; i++)
+		{
+			result <<= 8;
+			result |= (rawPacket[i + START_PACKET_FULLSEG] & 0xFF);
+		}
+		return result;
+	}
+	
+	public static int getNowSegmentNum(byte[] rawPacket)
+	{
+		int result = 0;
+		for (int i = 0; i < RANGE_PACKET_NUM; i++)
+		{
+			result <<= 8;
+			result |= (rawPacket[i + START_PACKET_NUM] & 0xFF);
 		}
 		return result;
 	}
