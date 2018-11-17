@@ -1,24 +1,31 @@
 package node.web;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import fi.iki.elonen.NanoHTTPD.IHTTPSession;
+import org.nanohttpd.protocols.websockets.CloseCode;
+import org.nanohttpd.protocols.websockets.NanoWSD;
+import org.nanohttpd.protocols.websockets.WebSocket;
+import org.nanohttpd.protocols.websockets.WebSocketFrame;
+
+import node.IServiceModule;
 import node.web.WebEvent;
 import node.log.LogWriter;
-import node.network.NetworkManager;
 import node.util.observer.Observable;
 import node.util.observer.Observer;
 
 //nanohttpd websocket 이용
-public class WebSocketManager {
+public class WebSocketManager /*extends NanoWSD*/ implements IServiceModule {
 	public static final Logger logger = LogWriter.createLogger(WebSocketManager.class, "websocket");
 	
 	private HashMap<String, Observable<WebEvent>> observerMap;
 	
-	public WebSocketManager() {
+	public WebSocketManager(int port) {
+		/*super(port);*/
 		this.observerMap = new HashMap<String, Observable<WebEvent>>();
 	}
 	
@@ -68,7 +75,19 @@ public class WebSocketManager {
 		
 	}
 	
-	public void socketReadCallback() {
+	@Override
+	public boolean startModule() {
+		logger.log(Level.INFO, "웹소켓 매니저 로드");
 		
-	}	
+		return true;
+	}
+	
+	@Override
+	public void stopModule() {
+		logger.log(Level.INFO, "웹소켓 매니저 종료");
+		
+		this.observerMap.clear();
+	}
+	
+	
 }
