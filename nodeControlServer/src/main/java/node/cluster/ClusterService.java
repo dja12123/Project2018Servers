@@ -42,31 +42,9 @@ public class ClusterService implements IServiceModule {
 	}
 	public void instSpark() {
 		clusterLogger.log(Level.INFO, "스파크 설치확인");
-		sparkManager.instSpark();
-		try {
-			String result = CommandExecutor.executeCommand("echo $SPARK_HOME");
-			clusterLogger.log(Level.SEVERE, result);
-			if(!result.equals("" + CommandExecutor.lineSeparator)) {
-				instFlag = SPARK_INSTALLED;
-			}
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		if(sparkManager.initSpark()) {
+			instFlag = SPARK_INSTALLED;
 		}
-	}                                  
-	
-	public boolean cmpMaster() {
-		try {
-			if(masterIp.equals(InetAddress.getLocalHost().getHostAddress())) {
-				return true;
-			} else {
-				return false;
-			}
-		} catch(UnknownHostException e) {
-			e.printStackTrace();
-			return false;
-		}
-		
 	}
 
 	public boolean reciveEvent(NodeDetectionEvent eventInfo) {
@@ -77,7 +55,7 @@ public class ClusterService implements IServiceModule {
 		}
 		clusterLogger.log(Level.INFO, "NodeDetectionEvent 이벤트 받음, Master IP : " + eventInfo.masterIP.getHostAddress() + "Is Master? : " + eventInfo.isMaster);
 		
-		if(masterIp != null && !masterIp.equals(eventInfo.masterIP.getHostAddress())) {	//마스터가 아니였다가 마스터가 될때 마스터프로세스를 종료시켜준다.(잔존 프로세스 제거)
+		if(masterIp != null && !masterIp.equals(eventInfo.masterIP.getHostAddress())) {	//마스터IP가 바뀔때 마스터, 워커 프로세스를 종료시켜준다.(잔존 프로세스 제거)
 			sparkManager.stopSparkMaster();
 			sparkManager.stopSparkWorker();
 		}

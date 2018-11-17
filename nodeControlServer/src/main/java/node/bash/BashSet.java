@@ -13,11 +13,13 @@ public class BashSet {
 	public static final File stop_spkWorker = FileHandler.getExtResourceFile("Shscript/stop_spkWorker.sh");
 	public static final File install_spark = FileHandler.getExtResourceFile("Shscript/install_spark.sh");
 	public static final File all_change_unix = FileHandler.getExtResourceFile("Shscript/all_change_unix.sh");
+	public static final File check_spark = FileHandler.getExtResourceFile("Shscript/check_spark.sh");
 	
 	//파일상수, 매개변수(옵션)1, 매개변수(옵션)2,... 이런식으로 사용
-	public static void execSh(File shFile, String... arg) {
+	public static String execSh(File shFile, String... arg) {
 		//현재 노드에서 주키퍼 서버 실행
 		StringBuffer cmdline = new StringBuffer();
+		String result = null;
 		
 		cmdline.append(shFile.getAbsolutePath());
 		for(int i = 0; i < arg.length; i++) {
@@ -25,10 +27,11 @@ public class BashSet {
 		}
 			
 		try {
-			CommandExecutor.executeCommand(cmdline.toString());
+			result = CommandExecutor.executeCommand(cmdline.toString());
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		return result;
 	}
 }

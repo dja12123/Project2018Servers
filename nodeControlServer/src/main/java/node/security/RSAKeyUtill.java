@@ -2,30 +2,57 @@ package node.security;
 
 import java.security.Key;
 import java.security.KeyFactory;
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
-import java.util.Base64;
 
 public class RSAKeyUtill 
 {
-	public static String convertKeyToB64(Key key)
-    {
-        return Base64.getEncoder().encodeToString(key.getEncoded());
-    }
+	public static final String DEFAULT_PUBLIC_KEY_PROP = "defaultPublicKey";
+	public static final String DEFAULT_PRIVATE_KEY_PROP = "defaultPrivateKey";
+
+	public static byte[] convertKeyToArr(Key key) { return key.getEncoded(); }
+	
+	public static byte[] convertByteStringtoByteArr(String str)
+	{
+		byte[] buffer = new byte[str.length() / 2];
+		
+		for(int i = 0; i < str.length(); i += 2)
+			buffer[i / 2] = (byte)Integer.parseInt(str.substring(i, i + 2), 16);
+		
+		return buffer;
+	}
     
-    public static Key convertB64StringToKey(String B64str)
+    public static Key convertArrToKey(byte[] rawByte)
     {
+    	KeyFactory kf = null;
+    	try 
+    	{
+			kf = KeyFactory.getInstance("RSA");
+		} 
+    	catch (NoSuchAlgorithmException e) 
+    	{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    	
     	try
     	{
-    		byte[] data = Base64.getDecoder().decode((B64str.getBytes()));
-       		X509EncodedKeySpec spec = new X509EncodedKeySpec(data);
-       		KeyFactory fact = KeyFactory.getInstance("RSA");
-       		return fact.generatePublic(spec);
+    		//publicKey
+    		return kf.generatePublic(new X509EncodedKeySpec(rawByte));
     	}
-    	catch (Exception e) 
+    	catch (InvalidKeySpecException e) 
     	{
-    		e.printStackTrace();
-    		
-    		return null;
+    		try 
+    		{
+    			//privateKey
+				return kf.generatePrivate(new PKCS8EncodedKeySpec(rawByte));
+			}
+    		catch (InvalidKeySpecException e1) 
+    		{
+				return null;
+			}
 		}
     }
 }

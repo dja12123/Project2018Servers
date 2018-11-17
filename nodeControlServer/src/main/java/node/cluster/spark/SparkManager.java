@@ -7,6 +7,7 @@ import java.util.logging.Logger;
 
 import node.NodeControlCore;
 import node.bash.BashSet;
+import node.bash.CommandExecutor;
 import node.cluster.ClusterService;
 import node.log.LogWriter;
 
@@ -73,9 +74,15 @@ public class SparkManager {
 	}
 	
 	
-	public void instSpark() {
-		sparkLogger.log(Level.INFO, "스파크 설치중..");
+	public boolean initSpark() {
+		sparkLogger.log(Level.INFO, "스파크 초기화 중..");
 		confSpark();
+		String haveSpark = BashSet.execSh(BashSet.check_spark, sparkInstDir);
+		if(haveSpark.equals("false" + CommandExecutor.lineSeparator) ) {
+			sparkLogger.log(Level.SEVERE, "Spark is Missing", new Exception("Spark is Missing"));
+			return false;
+		}
 		BashSet.execSh(BashSet.all_change_unix, "");
+		return true;
 	}
 }
