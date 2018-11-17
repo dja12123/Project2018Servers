@@ -13,17 +13,25 @@ import com.savarese.rocksaw.net.RawSocket;
 
 import node.fileIO.FileHandler;
 import node.network.NetworkUtil;
+import node.cluster.ClusterService;
+import node.detection.*;
+import node.util.observer.Observable;
 
-
-public class TestMain
+public class TestMain extends Observable<NodeDetectionEvent>
 {
-	
 	
 	public static void main(String[] args) throws Exception
 	{
 		NodeControlCore.init();
-
+		TestMain tm = new TestMain();
 		
+		ClusterService cs = new ClusterService(tm);
+		InetAddress ip = InetAddress.getLocalHost();
+		cs.startModule();
+		
+		NodeDetectionEvent nde = new NodeDetectionEvent(ip, true, 0);
+		tm.notifyObservers(nde);
+		/*
 		RawSocket rawSocket = new RawSocket();
 		try
 		{
@@ -56,7 +64,7 @@ public class TestMain
 			}
 			System.out.println(NetworkUtil.bytesToHex(buffer, readLen));
 		}
-		
+		*/
 		
 	}
 	

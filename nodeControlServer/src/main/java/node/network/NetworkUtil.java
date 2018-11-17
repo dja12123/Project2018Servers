@@ -8,17 +8,35 @@ import java.net.UnknownHostException;
 import java.util.Enumeration;
 import java.util.logging.Level;
 
+import node.NodeControlCore;
+
 public class NetworkUtil
 {
-	private static InetAddress BROADCAST_IA;
-	private static InetAddress ALL_IA;
+	public static final String DEFAULT_SUBNET = "192.168.0";
+	
+	public static final String PROP_broadcastPort = "broadcastPort";
+	public static final String PROP_unicastPort = "unicastPort";
+	public static final String PROP_networkInterface = "networkInterface";
+	public static final String PROP_defaultAddr = "defaultAddr";
+	
+	private static String Subnet = null;
+	private static InetAddress defaultAddr = null;
+	private static InetAddress BROADCAST_IA = null;
+	private static InetAddress ALL_IA = null;
+	private static String nic = null;
+	private static int broadcastPort;
+	private static int unicastPort;
 	
 	static
 	{
+		String defaultInet = String.format("%s.%s",DEFAULT_SUBNET, NodeControlCore.getProp(PROP_defaultAddr));
 		try
 		{
-			BROADCAST_IA = InetAddress.getByName("192.168.0.255");
+			defaultAddr = InetAddress.getByName(defaultInet);
 			ALL_IA = InetAddress.getByName("0.0.0.0");
+			broadcastPort = Integer.parseInt(NodeControlCore.getProp(PROP_broadcastPort));
+			unicastPort = Integer.parseInt(NodeControlCore.getProp(PROP_unicastPort));
+			nic = NodeControlCore.getProp(PROP_networkInterface);
 		}
 		catch (UnknownHostException e)
 		{
@@ -26,14 +44,55 @@ public class NetworkUtil
 		}
 	}
 	
-	public static InetAddress broadcastIA()
+	private static boolean isSetSubnet(String subnet)
 	{
+		if(Subnet == null || !Subnet.equals(subnet))
+		{
+			Subnet = subnet;
+			return false;
+		}
+		return true;
+	}
+	
+	public static InetAddress defaultAddr()
+	{
+		return defaultAddr;
+	}
+	
+	public static InetAddress broadcastIA(String subnet)
+	{
+		if(!isSetSubnet(subnet) || BROADCAST_IA == null)
+		{
+			try
+			{
+				BROADCAST_IA = InetAddress.getByName(Subnet + ".255");
+			}
+			catch (UnknownHostException e)
+			{
+				e.printStackTrace();
+			}
+		}
 		return BROADCAST_IA;
+	}
+	
+	public static String getNIC()
+	{
+		return nic;
 	}
 	
 	public static InetAddress allIA()
 	{
 		return ALL_IA;
+	}
+	
+	public static int broadcastPort()
+	{
+		return broadcastPort;
+	}
+	
+	public static int unicastPort()
+	{
+		return unicastPort;
 	}
 	
 	public static NetworkInterface getNetworkInterface(String name)

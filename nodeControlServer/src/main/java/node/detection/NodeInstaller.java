@@ -6,6 +6,7 @@ import java.util.logging.Logger;
 
 import node.network.NetworkManager;
 import node.NodeControlCore;
+import node.detection.masterNode.MasterNodeService;
 import node.log.LogWriter;
 import node.network.NetworkEvent;
 import node.util.observer.Observable;
@@ -14,9 +15,6 @@ import node.util.observer.Observer;
 public class NodeInstaller implements Runnable
 {
 	public static final Logger logger = LogWriter.createLogger(NodeInstaller.class, "nodeInstaller");
-	
-	private static final String PROP_DEFAULT_WAIT_TIME = "nodeInitDefaultWaitTime";
-	private static final String PROP_RANDOM_WAIT_TIME = "nodeInitRandomWaitTime";
 	
 	private NetworkManager networkManager;
 	private Thread waitThread;
@@ -55,8 +53,9 @@ public class NodeInstaller implements Runnable
 		if(this.isRun) return;
 		logger.log(Level.INFO, "노드 초기화 활성화");
 		
-		this.defaultWaitTime = Integer.parseInt(NodeControlCore.getProp(PROP_DEFAULT_WAIT_TIME));
-		this.randomWaitTime = Integer.parseInt(NodeControlCore.getProp(PROP_RANDOM_WAIT_TIME));
+		int broadcastDelay = Integer.parseInt(NodeControlCore.getProp(DetectionUtil.PROP_delayMasterNodeBroadcast));
+		this.defaultWaitTime = broadcastDelay * 3;
+		this.randomWaitTime = broadcastDelay;
 		
 		this.waitThread = new Thread(this);
 		this.waitThread.start();

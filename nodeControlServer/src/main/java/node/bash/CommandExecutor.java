@@ -16,6 +16,7 @@ import node.log.LogWriter;
 public class CommandExecutor {
 	//매개변수로 ArrayList<문자열> 타입으로 넘기면 bash명령이 한줄씩 실행됨
 	public static final Logger cmdlogger = LogWriter.createLogger(CommandExecutor.class, "cmd");
+	public static final String lineSeparator = System.getProperty("line.separator");
 	
 	public static void executeBash(ArrayList<String> cmd) throws Exception {
 		//StringBuffer successOutput = new StringBuffer();
@@ -33,11 +34,11 @@ public class CommandExecutor {
 	        Process process = pb.start();
 	        successBufferReader = new BufferedReader(new InputStreamReader(process.getInputStream(), "UTF-8"));
 	        while((msg = successBufferReader.readLine()) != null) {
-	        	cmdlogger.log(Level.INFO, msg + System.getProperty("line.separator"));
+	        	cmdlogger.log(Level.INFO, msg + lineSeparator);
 	        }
 	        errorBufferReader = new BufferedReader(new InputStreamReader(process.getErrorStream(), "UTF-8"));
 	        while((msg = errorBufferReader.readLine()) != null) {
-	        	cmdlogger.log(Level.INFO, msg + System.getProperty("line.separator"));
+	        	cmdlogger.log(Level.INFO, msg + lineSeparator);
 	        }
 	        process.waitFor();
 	        
@@ -68,6 +69,12 @@ public class CommandExecutor {
 	//명령을 mv -r /df /fd 하고 싶으면 매개변수로 ("mv -r /df /fd") 이런식으로 넘기면 명령줄 실행
 	public static String executeCommand(String cmd) throws Exception {
 
+        return executeCommand(cmd, true);
+	}
+	
+	//명령을 mv -r /df /fd 하고 싶으면 매개변수로 ("mv -r /df /fd") 이런식으로 넘기면 명령줄 실행
+	public static String executeCommand(String cmd, boolean isPrint) throws Exception {
+
 		BufferedReader successBufferReader = null;
 		BufferedReader errorBufferReader = null;
 		String msg = null;
@@ -79,21 +86,26 @@ public class CommandExecutor {
         //pb.inheritIO();
         
         //Process process = pb.start();
-		cmdlogger.log(Level.INFO, "NOW EXECUTE COMMAND #### : " + cmd + System.getProperty("line.separator"));
+		if(isPrint) {
+			cmdlogger.log(Level.INFO, "명령 실행: " + cmd);
+		}
 		
 		Process process = runtime.exec(cmd);
 		
         successBufferReader = new BufferedReader(new InputStreamReader(process.getInputStream(), "UTF-8"));
-        cmdlogger.log(Level.INFO, "SUCCESS MESSAGE #### : " + System.getProperty("line.separator"));
         while((msg = successBufferReader.readLine()) != null) {
-        	cmdlogger.log(Level.INFO, msg + System.getProperty("line.separator"));
-        	resultMsg.append(msg + System.getProperty("line.separator"));
+        	if(isPrint) {
+        		cmdlogger.log(Level.INFO, "실행 결과: " + msg);
+        	}
+        	resultMsg.append(msg + lineSeparator);
         }
         errorBufferReader = new BufferedReader(new InputStreamReader(process.getErrorStream(), "UTF-8"));
-        cmdlogger.log(Level.INFO, "ERROR MESSAGE #### : " + System.getProperty("line.separator"));
+
         while((msg = errorBufferReader.readLine()) != null) {
-        	cmdlogger.log(Level.INFO, msg + System.getProperty("line.separator"));
-        	resultMsg.append(msg + System.getProperty("line.separator"));
+        	if(isPrint) {
+        		cmdlogger.log(Level.INFO, "실행 오류: " +msg);
+        	}
+        	resultMsg.append(msg + lineSeparator);
         }
         
         process.waitFor();

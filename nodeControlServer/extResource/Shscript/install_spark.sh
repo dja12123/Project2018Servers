@@ -1,18 +1,27 @@
-if [ -z "$1" ]; then
+if [ $# -eq 0 ]; then
+	echo "need input argument"
 	exit 1
 fi
 
-mkdir "$1/../"
-cd "$1/../"
+bashrc=/etc/bash.bashrc
 
+if ! grep -q "export SPARK_HOME=$1/spark" $bashrc; then
 
-wget http://mirror.apache-kr.org/spark/spark-2.3.1/spark-2.3.1-bin-hadoop2.7.tgz
-tar -xvf spark-2.3.1-bin-hadoop2.7.tgz
-mv spark-2.3.1-bin-hadoop2.7 spark
+		echo "wget"
+		if [ ! -f "/root/spark-2.4.0-bin-hadoop2.7.tgz" ]; then
+        	wget http://mirror.apache-kr.org/spark/spark-2.4.0/spark-2.4.0-bin-hadoop2.7.tgz -P /root/
+        fi
+        echo "tar"
+        tar -xvf /root/spark-2.4.0-bin-hadoop2.7.tgz -C /root/
+        echo "mv"
+        mv /root/spark-2.4.0-bin-hadoop2.7 $1/spark
 
-echo "export SPARK_HOME=$1" >> /etc/bashrc
-echo "export JAVA_HOME=/usr/lib/jvm/jdk-8-oracle-arm32-vfp-hflt/jre" >> /etc/bashrc
-echo 'export PATH=$PATH:$SPARK_HOME/bin' >> /etc/bashrc
+		echo "configing"
+        echo "export SPARK_HOME=$1/spark" >> $bashrc
+        echo "export JAVA_HOME=/usr/lib/jvm/jdk-8-oracle-arm32-vfp-hflt/jre" >> $bashrc
+        echo 'export PATH=$PATH:$SPARK_HOME/bin' >> $bashrc
 
-cd $1/conf
-cp spark-env.sh.template spark-env.sh
+        cd $1/spark/conf
+        cp spark-env.sh.template spark-env.sh
+fi
+. $bashrc

@@ -1,23 +1,52 @@
 package node.security;
 
+import java.io.IOException;
 import java.security.Key;
-import java.security.KeyFactory;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.PrivateKey;
 import java.security.PublicKey;
-import java.security.spec.X509EncodedKeySpec;
-import java.util.Base64;
+import java.util.Properties;
+
+import node.fileIO.FileHandler;
 
 public class RSAKeyManager
 {
+	public static final PublicKey DEFAULT_PUBLIC_KEY;
+	public static final PrivateKey DEFAULY_PRIVATE_KEY;
+	
     private static RSAKeyManager instance;
     
     private PublicKey publicKey;
     private PrivateKey privateKey;
     
-    private String b64PublicKey;
-    private String b64PrivateKey;
+    private byte[] publicKeyByte;
+    
+    static
+    {
+    	/*
+    	NodeControlCore.getProp(DEFAULT_PUBLIC_KEY);
+    	NodeControlCore.getProp(DEFAULT_PRIVATE_KEY_PROP);
+    	*/
+    	
+    	//TODO: this line is temp line (for get properties) need change
+    	Properties prop = new Properties();
+		try 
+		{
+			prop.load(FileHandler.getResourceAsStream("/config.properties"));
+		} 
+		catch (IOException e) 
+		{
+			e.printStackTrace();
+		}
+		//TODO: end.
+		
+    	String temp = prop.getProperty(RSAKeyUtill.DEFAULT_PUBLIC_KEY_PROP);
+    	DEFAULT_PUBLIC_KEY = (PublicKey)RSAKeyUtill.convertArrToKey(RSAKeyUtill.convertByteStringtoByteArr(temp));
+    	
+    	temp = prop.getProperty(RSAKeyUtill.DEFAULT_PRIVATE_KEY_PROP);
+    	DEFAULY_PRIVATE_KEY = (PrivateKey)RSAKeyUtill.convertArrToKey(RSAKeyUtill.convertByteStringtoByteArr(temp));
+    }
     
     private RSAKeyManager() 
     {
@@ -36,32 +65,6 @@ public class RSAKeyManager
 		}
     }
     
-    public Key getPublicKey()
-    {
-        return publicKey;
-    }
-
-    public Key getPrivateKey()
-    {
-        return privateKey;
-    }
-    
-    public String getPublicB64()
-    {
-        if(b64PublicKey == null)
-            b64PublicKey = convertKeyToB64(publicKey);
-        
-        return b64PublicKey;
-    }
-    
-    public String getPrivateB64()
-    {
-        if(b64PrivateKey == null)
-            b64PrivateKey = convertKeyToB64(privateKey);
-        
-        return b64PrivateKey;
-    }
-    
     public static RSAKeyManager getInstance()
     {
         if(instance == null)
@@ -70,25 +73,15 @@ public class RSAKeyManager
         return instance;
     }
     
-    public static String convertKeyToB64(Key key)
+    public Key getPublicKey() { return publicKey; }
+
+    public Key getPrivateKey() { return privateKey; }
+
+    public byte[] getPublicByteArr()
     {
-        return Base64.getEncoder().encodeToString(key.getEncoded());
-    }
-    
-    public static Key convertB64StringToKey(String B64str)
-    {
-    	try
-    	{
-    		byte[] data = Base64.getDecoder().decode((B64str.getBytes()));
-       		X509EncodedKeySpec spec = new X509EncodedKeySpec(data);
-       		KeyFactory fact = KeyFactory.getInstance("RSA");
-       		return fact.generatePublic(spec);
-    	}
-    	catch (Exception e) 
-    	{
-    		e.printStackTrace();
-    		
-    		return null;
-		}
+        if(publicKeyByte == null)
+        	publicKeyByte = RSAKeyUtill.convertKeyToArr(publicKey);
+        
+        return publicKeyByte;
     }
 }

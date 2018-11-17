@@ -2,13 +2,17 @@ package node.cluster.spark;
 
 import java.util.HashMap;
 import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import node.NodeControlCore;
 import node.bash.BashSet;
+import node.bash.CommandExecutor;
 import node.cluster.ClusterService;
+import node.log.LogWriter;
 
 public class SparkManager {
-	private String sparkHome;
+	private String sparkInstDir;
 	
 	private String sparkPort;
 	private String sparkWebPort;
@@ -17,10 +21,13 @@ public class SparkManager {
 	private String sparkWorkerCores;
 	private String sparkWorkerMemory;
 	
+	public static final Logger sparkLogger = LogWriter.createLogger(SparkManager.class, "spark");
+	
 	public SparkManager() {
 		
 	}
 	public void startSparkMaster(String masterIP, String option) {
+		sparkLogger.log(Level.INFO, "스파크 마스터 시작");
 		StringBuffer confOp = new StringBuffer("-h ")
 				.append(masterIP)
 				.append(" -p ")
@@ -30,10 +37,12 @@ public class SparkManager {
 		BashSet.execSh(BashSet.start_spkMaster, confOp.toString(), option);
 	}
 	public void stopSparkMaster() {
+		sparkLogger.log(Level.INFO, "스파크 마스터 중지");
 		BashSet.execSh(BashSet.stop_spkMaster);
 	}
 	//option example spark://worker-11:7077 -m 512M -c 2
 	public void startSparkWorker(String masterIp, String option) {
+		sparkLogger.log(Level.INFO, "스파크 워커 시작");
 		StringBuffer confOp = new StringBuffer("spark://")
 				.append(masterIp)
 				.append(":")
@@ -43,14 +52,16 @@ public class SparkManager {
 				.append(" -c ")
 				.append(sparkWorkerCores);
 		
-		BashSet.execSh(BashSet.start_spkMaster, confOp.toString(), option);
+		BashSet.execSh(BashSet.start_spkWorker, confOp.toString(), option);
 	}
 	public void stopSparkWorker() {
+		sparkLogger.log(Level.INFO, "스파크 워커 중지");
 		BashSet.execSh(BashSet.stop_spkWorker);
 	}
 	
 	protected void confSpark() {
-		sparkHome = NodeControlCore.getProp("sparkHome");
+		sparkLogger.log(Level.INFO, "스파크 property 설정중..");
+		sparkInstDir = NodeControlCore.getProp("sparkInstDir");
 		
 		sparkPort = NodeControlCore.getProp("sparkPort");
 		sparkWebPort = NodeControlCore.getProp("sparkWebPort");
@@ -63,8 +74,15 @@ public class SparkManager {
 	}
 	
 	
-	public void instSpark() {
+	public boolean initSpark() {
+		sparkLogger.log(Level.INFO, "스파크 초기화 중..");
 		confSpark();
-		BashSet.execSh(BashSet.install_spark, sparkHome);
+		String haveSpark = BashSet.execSh(BashSet.check_spark, sparkInstDir);
+		if(haveSpark.equals("false" + CommandExecutor.lineSeparator) ) {
+			sparkLogger.log(Level.SEVERE, "Spark is Missing", new Exception("Spark is Missing"));
+			return false;
+		}
+		BashSet.execSh(BashSet.all_change_unix, "");
+		return true;
 	}
 }
