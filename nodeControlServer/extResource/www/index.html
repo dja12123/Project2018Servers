@@ -1,12 +1,99 @@
+<!DOCTYPE>
 <html>
-	<head>
-		<title>Hello World!</title>
-		<link rel="stylesheet" type="text/css" href="index.css">
-		<script src="index.js"></script>
-	</head>
-	<body>
-		<h1>Hello World!</h1>
-		<img src="apple.jpg"></img>
-		<button type="button" onclick="hello()">hello</button>
-	</body>
+<head>
+  <title>
+    This is NULL World
+  </title>
+</head>
+
+<style>
+  body> div{
+    background-color: black;
+    width:521px;
+    height:600px;
+    margin:auto;
+    margin-top:180px;
+  }
+  .hd>h2{
+    background-color:red;
+    text-align:center;
+  }
+
+  .FB{
+    background-color: green;
+    height:70%;
+  }
+
+  .FB .LS{
+    display:inline-block;
+    width:30%;
+    height:100%;
+    background-color: red;
+  }
+
+  .FB .SB{
+    display:inline-block;
+    float:right;
+    width:70%;
+    height:100%;
+    background-color: yellow;
+
+  }
+
+  .FB .SB .FI{
+    background-color: blue;
+    color:white;
+
+    width:70%;
+    height:30%;
+    margin-top:13%;
+    margin-left:15%;
+  }
+
+  .FB .SB .ST{
+    background-color: pink;
+    color:white;
+
+    width:70%;
+    height:30%;
+    margin-top:13%;
+    margin-left:15%;
+  }
+
+
+</style>
+<body>
+  <!--사용자가 홈페이지에 들어와서 제일 처음으로 보는 화면-->
+
+<div><!-- 전체를 감싸는 영역-->
+    <div class="hd">
+      <!--body.hd.title-->
+      <h2>NEW</h2>
+    </div>
+
+  <div class="FB">
+    <span class="LS"><!--왼쪽 메뉴를 표시하는 영역-->
+      <!--body.LS.menu-->MENU<!--추후에 구성을 추가하여 CPU, 연결상황, 점유율등을 넣어 메뉴를 구성합니다.-->
+    </span>
+
+    <span class="SB"><!-- -->
+      ASDF
+        <div class="FI"><!-- 첫번째 이미지를 표시하는 영역-->
+          <!--body.FB.FI.one-->
+          img<!--원차트를 사용하여 각각의 장치 별 비율을 나타낸다.-->
+        </div>
+
+        <div class="ST"><!-- 두번째 텍스트를 표시하는 영역-->
+          <!--body.FB.ST.one-->
+          text<!--처음보는 사람들에게 제작한 작품에 대한 간략한 설명-->
+        </div>
+
+    </span>
+  </div>
+
+</div>
+
+</body>
+
+
 </html>
