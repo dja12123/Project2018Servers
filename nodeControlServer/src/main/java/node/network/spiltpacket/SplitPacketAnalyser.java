@@ -4,8 +4,10 @@ package node.network.spiltpacket;
 import java.net.InetAddress;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -33,29 +35,44 @@ public class SplitPacketAnalyser
 		InetAddress addr1 = InetAddress.getByName("192.168.0.1");
 		InetAddress addr2 = InetAddress.getByName("192.168.0.1");
 		InetAddress addr3 = InetAddress.getByName("192.168.0.1");
+		Random r = new Random();
 		
-		byte[] test = new byte[50];
-		for(int i = 0; i < test.length; ++i)
-		{
-			test[i] = 0x1F;
-		}
-		
-		SplitPacket p = new SplitPacket(SplitPacketUtil.createSplitPacketID(addr1), test);
-		System.out.println(p.segCount);
-		byte[] receiveTest = new byte[test.length + (p.segCount * SplitPacketUtil.PACKET_METADATA_SIZE)];
-		ByteBuffer buf = ByteBuffer.wrap(receiveTest);
-		
-		for(int i = 0; i < p.segCount; ++i)
-		{
-			byte[] seg = p.getSegment(i);
-			
-			System.out.println(NetworkUtil.bytesToHex(seg, seg.length));
-			buf.put(seg);
-			
-			
-		}
 
-		analyser.analysePacket(addr1, receiveTest);
+		
+		for(int x = 0; x < 1000; ++x)
+		{
+			byte[] test = new byte[r.nextInt(49) + 1];
+			for(int i = 0; i < test.length; ++i)
+			{
+				test[i] = (byte)i;
+			}
+			SplitPacket p = new SplitPacket(SplitPacketUtil.createSplitPacketID(addr1), test);
+			System.out.println(p.segCount);
+			byte[] receiveTest = new byte[test.length + (p.segCount * SplitPacketUtil.PACKET_METADATA_SIZE) + 1000];
+			ByteBuffer buf = ByteBuffer.wrap(receiveTest);
+			buf.putInt(0xBABABA);
+			for(int i = 0; i < p.segCount; ++i)
+			{
+				byte[] seg = p.getSegment(i);
+				
+				System.out.println("SEG "+NetworkUtil.bytesToHex(seg, seg.length));
+				buf.put(seg);
+				
+				for(int j = 0; j < r.nextInt(10); ++j)
+				{
+					buf.put((byte) 0xAA);
+				}
+			}
+			analyser.analysePacket(addr1, receiveTest);
+			if(!p.equals(analyser.p))
+			{
+				
+				System.out.println("미션 실패");
+				return;
+			}
+		}
+		System.out.println("미션 석쎾쓰");
+
 	}
 	
 	public SplitPacketAnalyser()
@@ -104,17 +121,18 @@ public class SplitPacketAnalyser
 				if(queue.getSize() > SplitPacketUtil.PACKET_METADATA_SIZE)
 				{
 					byte[] snapShot = queue.getSnapShot(queue.getPacketStartPosition(), SplitPacketUtil.SPLIT_SIZE);
+					System.out.println("SNAP " + queue.getPacketStartPosition());
 					this.processPacket(snapShot);
-					System.out.println(NetworkUtil.bytesToHex(snapShot, snapShot.length));
 				}
 			}
 		}
 	}
 	
+	private SplitPacket p;
 	private void processPacket(byte[] snapShot)
 	{
 		long id = SplitPacketUtil.headerToLong(snapShot);
-		System.out.println("패킷이당" + id);
+		System.out.println(NetworkUtil.bytesToHex(Arrays.copyOfRange(snapShot, SplitPacketUtil.START_PACKET_ID, SplitPacketUtil.START_PACKET_ID+ SplitPacketUtil.RANGE_PACKET_ID), SplitPacketUtil.RANGE_PACKET_ID));
 		SplitPacketBuilder builder = this.builderStack.get(id);
 		try
 		{
@@ -139,6 +157,7 @@ public class SplitPacketAnalyser
 			if(builder.isBuilded())
 			{
 				this.builderStack.remove(id);
+				p = builder.getInstance();
 				System.out.println("빌드 완성!");
 				return;
 			}
@@ -206,4 +225,3 @@ public class SplitPacketAnalyser
 		}
 	}
 }
-

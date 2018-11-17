@@ -33,6 +33,14 @@ class PacketQueue
 		if (this.queueSize - 1 == this.size)
 		{// 큐가 찼을때
 			this.front = (this.front + 1) % this.queueSize;
+			if(this.isStart)
+			{
+				--this.isStartLife;
+				if(this.isStartLife < 0)
+				{
+					this.isStart = false;
+				}
+			}
 		}
 		
 		this.rear = (this.rear + 1) % (this.queueSize);
@@ -40,14 +48,7 @@ class PacketQueue
 		
 		this.size = this.front > this.rear ? (this.queueSize - this.front + this.rear) : (this.rear - this.front);
 		
-		if(this.isStart)
-		{
-			--this.isStartLife;
-			if(this.isStartLife < 0)
-			{
-				this.isStart = false;
-			}
-		}
+		
 		
 		if(this.size >= SplitPacketUtil.RANGE_MAGICNO_START)
 		{
@@ -55,12 +56,11 @@ class PacketQueue
 					, SplitPacketUtil.MAGIC_NO_START))
 			{
 				this.isStart = true;
-				this.isStartLife = this.queueSize - SplitPacketUtil.RANGE_MAGICNO_START - 1;
+				this.isStartLife = this.size - SplitPacketUtil.RANGE_MAGICNO_START;
 			}
 			else if(this.isStart && 
 					this.findPattern((this.front + this.size - SplitPacketUtil.RANGE_MAGIC_NO_END) , SplitPacketUtil.MAGIC_NO_END))
 			{
-				System.out.println(this.isStartLife +" "+ (this.queueSize - 1 - this.size));
 				return true;
 			}
 		}
@@ -93,11 +93,12 @@ class PacketQueue
 			return null;
 		byte[] snapShot = new byte[end - start];
 		int front = (this.front + start) % this.queueSize;
-		int rear = this.rear - (this.queueSize - end - 1);
+		int rear = (this.queueSize + this.rear - (this.size - end)) % this.queueSize;
 		System.out.printf("F:%d, CF:%d, R:%d, CR:%d\n", this.front, front, this.rear, rear);
-		if(this.front < this.rear)
+		if(front < rear)
 		{
-			System.arraycopy(this.itemArray, front + 1, snapShot, 0, this.size);
+			System.out.printf("FRONTSIZE%d\n", front + 1);
+			System.arraycopy(this.itemArray, front + 1, snapShot, 0, end - start);
 		}
 		else
 		{

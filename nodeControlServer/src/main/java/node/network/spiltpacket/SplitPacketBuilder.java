@@ -12,7 +12,9 @@ public class SplitPacketBuilder
 	private byte[] id;
 	private int lastSegNo;
 	private int fullSegmentCount;
+	private int payloadSize;
 	private Date lastUpdateTime;
+	private boolean isgetInstace;
 
 	public SplitPacketBuilder()
 	{
@@ -21,6 +23,8 @@ public class SplitPacketBuilder
 		this.id = null;
 		this.lastSegNo = -1;
 		this.fullSegmentCount = -1;
+		this.payloadSize = 0;
+		this.isgetInstace = false;
 		
 		this.updateTime();
 	}
@@ -38,6 +42,7 @@ public class SplitPacketBuilder
 		if(this.id != null)
 			throw new SplitPacketBuildFailureException("이미 샛팅 된 ID");
 		this.id = SplitPacketUtil.longToBytes(id);
+		System.out.println("설정한 ID: "+NetworkUtil.bytesToHex(this.id, this.id.length));
 		return this;
 	}
 
@@ -55,6 +60,8 @@ public class SplitPacketBuilder
 			throw new SplitPacketBuildFailureException("세그먼트 개수가 설정되지 않음");
 		
 		++this.lastSegNo;
+		this.payloadSize += rawData.length - SplitPacketUtil.PACKET_METADATA_SIZE;
+		System.out.println("PAYLOADSIZE" + NetworkUtil.bytesToHex(rawData, rawData.length));
 		this.splitPacket.push(rawData);
 		return this;
 	}
@@ -117,8 +124,23 @@ public class SplitPacketBuilder
 		if(!this.isBuilded())
 			throw new SplitPacketBuildFailureException("빌드가 모두 완료되지 않음");
 		
-		byte[][] arr = new byte[this.splitPacket.size()][];
-		this.splitPacket.toArray(arr);
-		return null;
+		if(this.isgetInstace)
+			throw new SplitPacketBuildFailureException("이미 빌드된 패킷");
+		
+		this.isgetInstace = true;
+		byte[] payload = new byte[this.payloadSize];
+		int storeSize = 0;
+		int segPayloadSize;
+		byte[] segment;
+		for(int i = 0; i < this.splitPacket.size(); ++i)
+		{
+			segment = this.splitPacket.get(i);
+			segPayloadSize = segment.length - SplitPacketUtil.PACKET_METADATA_SIZE;
+			System.arraycopy(segment, SplitPacketUtil.START_PAYLOAD, payload, storeSize, segPayloadSize);
+			storeSize += segPayloadSize;
+		}
+		System.out.println("빌드합니다.." + NetworkUtil.bytesToHex(this.id, this.id.length));
+		SplitPacket packet = new SplitPacket(this.id, payload);
+		return packet;
 	}
 }

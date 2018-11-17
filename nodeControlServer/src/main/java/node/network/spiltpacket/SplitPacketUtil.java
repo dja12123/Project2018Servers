@@ -3,6 +3,8 @@ package node.network.spiltpacket;
 import java.net.InetAddress;
 import java.nio.ByteBuffer;
 
+import node.network.NetworkUtil;
+
 public class SplitPacketUtil
 {
 	public static final byte[] MAGIC_NO_START = new byte[] { 0x31, 0x11, 0x31, 0x11 };
@@ -38,6 +40,25 @@ public class SplitPacketUtil
 			result |= (rawPacket[i + START_PACKET_ID] & 0xFF);
 		}
 		return result;
+	}
+	
+	public static long byteToLong(byte[] rawPacket)
+	{
+		long result = 0;
+		for (int i = 0; i < 8; i++)
+		{
+			result <<= 8;
+			result |= (rawPacket[i] & 0xFF);
+		}
+		return result;
+	}
+	public static void main(String[] args)
+	{
+		byte[] tb = new byte[] {(byte) 0xC0,(byte) 0xA8,0x00,0x01,0x06,(byte) 0xDB,0x11,0x4F};
+		long l = byteToLong(tb);
+		byte[] change = longToBytes(l);
+		System.out.println(NetworkUtil.bytesToHex(tb, tb.length));
+		System.out.println(NetworkUtil.bytesToHex(change, change.length));
 	}
 
 	public static byte[] longToBytes(long l)
@@ -90,7 +111,7 @@ public class SplitPacketUtil
 		byte[] id = new byte[SplitPacketUtil.RANGE_PACKET_ID];
 		ByteBuffer buf = ByteBuffer.wrap(id);
 		buf.put(addr.getAddress(), 0, 4);
-		buf.putInt((int)System.currentTimeMillis());
+		buf.putInt((int)(System.nanoTime() >> 16));
 		return id;
 	}
 }
