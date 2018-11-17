@@ -1,76 +1,61 @@
 package node.security;
 
+import java.nio.ByteBuffer;
 import java.security.Key;
 import java.security.KeyFactory;
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
-import java.util.Base64;
-import java.util.Properties;
 
-import node.fileIO.FileHandler;
+import node.network.encpacket.EncPacketUtil;
 
 public class RSAKeyUtill 
 {
 	public static final String DEFAULT_PUBLIC_KEY_PROP = "defaultPublicKey";
 	public static final String DEFAULT_PRIVATE_KEY_PROP = "defaultPrivateKey";
+
+	public static byte[] convertKeyToArr(Key key) { return key.getEncoded(); }
 	
-	public static void main(String[] args)
+	public static byte[] convertByteStringtoByteArr(String str)
 	{
-		try 
-		{
-			Properties prop = new Properties();
-			prop.load(FileHandler.getResourceAsStream("/config.properties"));
-			
-			String[] publicKeyStrArr = prop.getProperty(DEFAULT_PUBLIC_KEY_PROP).split(" ");
-			byte[] defaultPublicKeyByte = new byte[publicKeyStrArr.length];
-			
-			for(int i = 0; i < publicKeyStrArr.length; ++i)
-				defaultPublicKeyByte[i] = (byte)Integer.parseInt(publicKeyStrArr[i], 16);
-				
-			
-			KeyFactory kf = KeyFactory.getInstance("RSA");
-			Key publicKey = kf.generatePublic(new X509EncodedKeySpec(defaultPublicKeyByte));
-			
-	
-			/*byte[] temp = RSAKeyManager.getInstance().getPublicKey().getEncoded();
-			for(byte value : temp)
-				System.out.printf("%02x ",value);
-			
-			System.out.println();
-			System.out.println("-------------------------------------------------------");
-            
-			temp = RSAKeyManager.getInstance().getPrivateKey().getEncoded();
-			for(byte value : temp)
-				System.out.printf("%02x ",value);*/
-			
-            //PKCS8EncodedKeySpec();
+		ByteBuffer buffer = ByteBuffer.wrap(new byte[0]);
+		
+		for(int i = 0; i < str.length(); i += 2)
+			buffer.put((byte)Integer.parseInt(str.substring(i, i + 1),16));
+		
+		return EncPacketUtil.convertByteBufferToByteArr(buffer);
+	}
+    
+    public static Key convertArrToKey(byte[] rawByte)
+    {
+    	KeyFactory kf = null;
+    	try 
+    	{
+			kf = KeyFactory.getInstance("RSA");
 		} 
-		catch (Exception e) 
-		{
+    	catch (NoSuchAlgorithmException e) 
+    	{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-	}
-	
-	public static String convertKeyToB64(Key key)
-    {
-        return Base64.getEncoder().encodeToString(key.getEncoded());
-    }
-    
-    public static Key convertB64StringToKey(String B64str)
-    {
+    	
     	try
     	{
-    		byte[] data = Base64.getDecoder().decode((B64str.getBytes()));
-       		X509EncodedKeySpec spec = new X509EncodedKeySpec(data);
-       		KeyFactory fact = KeyFactory.getInstance("RSA");
-       		return fact.generatePublic(spec);
+    		//publicKey
+    		return kf.generatePublic(new X509EncodedKeySpec(rawByte));
     	}
-    	catch (Exception e) 
+    	catch (InvalidKeySpecException e) 
     	{
-    		e.printStackTrace();
-    		
-    		return null;
+    		try 
+    		{
+    			//privateKey
+				return kf.generatePrivate(new PKCS8EncodedKeySpec(rawByte));
+			}
+    		catch (InvalidKeySpecException e1) 
+    		{
+				return null;
+			}
 		}
     }
 }
