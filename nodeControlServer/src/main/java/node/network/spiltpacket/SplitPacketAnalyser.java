@@ -2,6 +2,7 @@ package node.network.spiltpacket;
 // 현재 splitPacket 프로토콜은 UDP패킷을 수신할 때 IP스푸핑을 사용한 응용 레벨 서비스 거부 공격에 대응할 수 없습니다. 개선 필요
 
 import java.net.InetAddress;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -26,12 +27,14 @@ public class SplitPacketAnalyser
 	
 	public static void main(String[] args) throws Exception
 	{
+		SplitPacketAnalyser analyser = new SplitPacketAnalyser();
+		analyser.start();
 		System.out.println("시작");
 		InetAddress addr1 = InetAddress.getByName("192.168.0.1");
 		InetAddress addr2 = InetAddress.getByName("192.168.0.1");
 		InetAddress addr3 = InetAddress.getByName("192.168.0.1");
 		
-		byte[] test = new byte[1024];
+		byte[] test = new byte[50];
 		for(int i = 0; i < test.length; ++i)
 		{
 			test[i] = 0x1F;
@@ -39,15 +42,18 @@ public class SplitPacketAnalyser
 		
 		SplitPacket p = new SplitPacket(SplitPacketUtil.createSplitPacketID(addr1), test);
 		System.out.println(p.segCount);
+		byte[] receiveTest = new byte[test.length + (p.segCount * SplitPacketUtil.PACKET_METADATA_SIZE)];
+		ByteBuffer buf = ByteBuffer.wrap(receiveTest);
 		
 		for(int i = 0; i < p.segCount; ++i)
 		{
 			byte[] seg = p.getSegment(i);
+			buf.put(seg);
+			
 			System.out.println(NetworkUtil.bytesToHex(seg, seg.length));
 		}
-		SplitPacketAnalyser analyser = new SplitPacketAnalyser();
-		analyser.start();
-		//analyser.analysePacket(addr1, test);
+
+		analyser.analysePacket(addr1, receiveTest);
 	}
 	
 	public SplitPacketAnalyser()

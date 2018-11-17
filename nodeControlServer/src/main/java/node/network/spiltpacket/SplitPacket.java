@@ -9,15 +9,7 @@ public class SplitPacket
 	private final byte[][] source;
 	
 	public final byte[] id;
-	public final int segCount;	
-	
-	public static void main(String[] args)
-	{
-		byte[] testData = "Hello Worldaaaaaaaaaaaaaaaaaaaaaaaaaabbbbbbbbbbbbbbbbbbbbbbbbbbbbbbcccccccccccccccccddddddddddddd".getBytes();
-		System.out.println(testData.length);
-		//SplitPacket packet = new SplitPacket(testData);
-	}
-	
+	public final int segCount;
 	
 	public SplitPacket(byte[] id, byte[] payload) throws SplitPacketBuildFailureException
 	{
@@ -29,20 +21,22 @@ public class SplitPacket
 		
 		for(int i = 0; i < this.segCount; ++i)
 		{
-			byte[] segment = new byte[SplitPacketUtil.SPLIT_SIZE];
-			this.source[i] = segment;
-			ByteBuffer segmentBuffer = ByteBuffer.wrap(segment);
-			segmentBuffer.put(SplitPacketUtil.MAGIC_NO_START);
-			segmentBuffer.put(this.id);
-			segmentBuffer.putInt(i);
 			int payloadStart = i * SplitPacketUtil.RANGE_PAYLOAD;
 			int payloadSize;
 			
 			if(payloadStart + SplitPacketUtil.RANGE_PAYLOAD <= payload.length)
 				payloadSize =  SplitPacketUtil.RANGE_PAYLOAD;
 			else payloadSize = payload.length - payloadStart;
+			
+			byte[] segment = new byte[payloadSize + SplitPacketUtil.PACKET_METADATA_SIZE];
+			this.source[i] = segment;
+			ByteBuffer segmentBuffer = ByteBuffer.wrap(segment);
+			segmentBuffer.put(SplitPacketUtil.MAGIC_NO_START);
+			segmentBuffer.put(this.id);
+			segmentBuffer.putInt(this.segCount);
+			segmentBuffer.putInt(i);
 			segmentBuffer.put(payload, payloadStart, payloadSize);
-			segmentBuffer.put(PacketUtil.MAGIC_NO_END);
+			segmentBuffer.put(SplitPacketUtil.MAGIC_NO_END);
 		}
 	}
 	
