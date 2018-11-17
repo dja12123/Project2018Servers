@@ -24,6 +24,8 @@ class PacketQueue
 		this.itemArray = new byte[queueSize + 1];
 		
 		this.isStart = false;
+		
+		this.updateTime();
 	}
 
 	public boolean enQueue(byte item)

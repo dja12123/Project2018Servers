@@ -100,7 +100,6 @@ public class SplitPacketAnalyser
 			System.out.println(queue);
 			if(queue.enQueue(copyedBuffer[i]))
 			{
-				System.out.println("감지완료");
 				if(queue.getSize() > SplitPacketUtil.PACKET_METADATA_SIZE)
 				{
 					this.processPacket(queue.getSnapShot());
@@ -120,8 +119,10 @@ public class SplitPacketAnalyser
 			{
 				builder = new SplitPacketBuilder();
 				this.builderStack.put(id, builder);
+				System.out.println("풋" + this.builderStack.size());
 				builder.setID(id);
-				System.out.println("빌더 생성");
+				builder.setFullSegment(SplitPacketUtil.getFullSegmentSize(snapShot));
+				System.out.println("빌더 생성" +SplitPacketUtil.getFullSegmentSize(snapShot));
 			}
 			if(!builder.checkPacket(snapShot))
 			{
@@ -131,13 +132,14 @@ public class SplitPacketAnalyser
 			}
 			System.out.println("빌더에 패킷 추가");
 			builder.addRawPacket(snapShot);
+			builder.updateTime();
 			if(builder.isBuilded())
 			{
 				this.builderStack.remove(id);
 				System.out.println("빌드 완성!");
 				return;
 			}
-			builder.updateTime();
+			
 		}
 		catch (SplitPacketBuildFailureException e)
 		{
