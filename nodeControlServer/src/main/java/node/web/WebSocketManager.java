@@ -12,6 +12,7 @@ import node.network.NetworkManager;
 import node.util.observer.Observable;
 import node.util.observer.Observer;
 
+//nanohttpd websocket 이용
 public class WebSocketManager {
 	public static final Logger logger = LogWriter.createLogger(WebSocketManager.class, "websocket");
 	

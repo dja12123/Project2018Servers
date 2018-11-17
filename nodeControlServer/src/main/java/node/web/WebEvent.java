@@ -1,6 +1,6 @@
 package node.web;
 
-//channel
+//channel 이용
 
 public class WebEvent {
 	public final String key;
