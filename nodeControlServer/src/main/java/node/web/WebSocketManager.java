@@ -71,6 +71,8 @@ public class WebSocketManager /*extends NanoWSD*/ implements IServiceModule {
 		}
 	}
 	
+	//소켓 통신 부분(클라이언트에서 넘어온 것 체크 -> 통신)
+	
 	public void sendMessage() {
 		
 	}
