@@ -14,15 +14,20 @@ import org.nanohttpd.protocols.http.response.Response;
 import org.nanohttpd.protocols.http.response.Status;
 import org.nanohttpd.util.ServerRunner;
 
+import org.nanohttpd.protocols.websockets.NanoWSD;
+
 public class WebServiceMain extends NanoHTTPD implements IServiceModule
 {
 	private static final Logger LOG = LogWriter.createLogger(WebServiceMain.class, "WebServiceMain");
 	// private static final int MAXIMUM_SIZE_OF_IMAGE = 1000000;
 	public static final String rootDirectory = FileHandler.getExtResourceFile("www").toString();
 	
+	private WebSocketManager responseSocketHandler;
+	
 	public WebServiceMain()
 	{
 		super(80);
+		responseSocketHandler = new WebSocketManager(8080, true); //소켓
 	}
 
 	public static void main(String[] args)
@@ -76,7 +81,7 @@ public class WebServiceMain extends NanoHTTPD implements IServiceModule
 			}
 			else 
 			{
-				msg = FileHandler.readFileString("www/index.html");
+				msg = FileHandler.readFileString("www/sockettest.html");
 			}
 		}
 
@@ -94,7 +99,7 @@ public class WebServiceMain extends NanoHTTPD implements IServiceModule
 	@Override
 	public void stopModule()
 	{
-
+		ws.stop();
 	}
 
 }
