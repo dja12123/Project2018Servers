@@ -13,6 +13,7 @@ public class EncPacketConverter
 		try
 		{
 			byte[] firstLine = RSAEncrypt.decode(targetPacket.payLoad[0], privateKey);
+			EncPacketBuilder.printHex(firstLine);
 			
 			if(firstLine[0] == EncPacketUtil.MAGIC_NO_PART[0] && firstLine[1] == EncPacketUtil.MAGIC_NO_PART[1]) //분할일때
 			{
