@@ -23,6 +23,8 @@ import node.network.socketHandler.IPJumpBroadcast;
 import node.network.socketHandler.UnicastHandler;
 import node.network.spiltpacket.SplitPacket;
 import node.network.spiltpacket.SplitPacketAnalyser;
+import node.network.spiltpacket.SplitPacketBuildFailureException;
+import node.network.spiltpacket.SplitPacketUtil;
 import node.util.observer.Observable;
 import node.util.observer.Observer;
 
@@ -55,7 +57,6 @@ public class NetworkManager implements IServiceModule
 		this.observerMap = new HashMap<String, Observable<NetworkEvent>>();
 		
 		this.inetAddress = null;
-
 	}
 	
 	public void addObserver(String key, Observer<NetworkEvent> observer)
@@ -108,20 +109,55 @@ public class NetworkManager implements IServiceModule
 	
 	public void sendMessage(Packet packet)
 	{
-		packet.getDataByte();
-		if(packet.isBroadcast())
+		NodeControlCore.mainThreadPool.execute(()->
 		{
-			this.ipJumpBroadcast.sendMessage(true, packet.getNativeArr());
-		}
-		else
-		{
-			Device d = this.deviceInfoManager.getDevice(packet.getReceiver());
-			if(d == null || d.getInetAddr() == null)
+			byte[] id;
+			byte[][] splitData;
+			SplitPacket splitPacket;
+			if(packet.isBroadcast())
 			{
-				return;
+				id = SplitPacketUtil.createSplitPacketID(NetworkUtil.broadcastIA(NetworkUtil.DEFAULT_SUBNET));
+				try
+				{
+					splitPacket = new SplitPacket(id, packet.getDataByte());
+				}
+				catch (SplitPacketBuildFailureException e)
+				{
+					logger.log(Level.WARNING, "패킷 전송중 오류", e);
+					return;
+				}
+				
+				splitData = splitPacket.getSplitePacket();
+				for(int i = 0; i < splitData.length; ++i)
+				{
+					this.ipJumpBroadcast.sendMessage(true, splitData[i]);
+				}
 			}
-			this.unicastHandler.sendMessage(packet.getNativeArr(), d.getInetAddr());
-		}
+			else
+			{
+				Device d = this.deviceInfoManager.getDevice(packet.getReceiver());
+				if(d == null || d.getInetAddr() == null)
+				{
+					return;
+				}
+				id = SplitPacketUtil.createSplitPacketID(d.getInetAddr());
+				try
+				{
+					splitPacket = new SplitPacket(id, packet.getDataByte());
+				}
+				catch (SplitPacketBuildFailureException e)
+				{
+					logger.log(Level.WARNING, "패킷 전송중 오류", e);
+					return;
+				}
+				
+				splitData = splitPacket.getSplitePacket();
+				for(int i = 0; i < splitData.length; ++i)
+				{
+					this.unicastHandler.sendMessage(splitData[i], d.getInetAddr());
+				}
+			}
+		});
 	}
 	
 	public void socketRawByteReadCallback(InetAddress addr, byte[] packetBuffer)
