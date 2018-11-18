@@ -13,7 +13,7 @@ import node.fileIO.FileHandler;
 public class RSAKeyManager
 {
 	public static final PublicKey DEFAULT_PUBLIC_KEY;
-	public static final PrivateKey DEFAULY_PRIVATE_KEY;
+	public static final PrivateKey DEFAULT_PRIVATE_KEY;
 	
     private static RSAKeyManager instance;
     
@@ -45,7 +45,7 @@ public class RSAKeyManager
     	DEFAULT_PUBLIC_KEY = (PublicKey)RSAKeyUtill.convertArrToKey(RSAKeyUtill.convertByteStringtoByteArr(temp));
     	
     	temp = prop.getProperty(RSAKeyUtill.DEFAULT_PRIVATE_KEY_PROP);
-    	DEFAULY_PRIVATE_KEY = (PrivateKey)RSAKeyUtill.convertArrToKey(RSAKeyUtill.convertByteStringtoByteArr(temp));
+    	DEFAULT_PRIVATE_KEY = (PrivateKey)RSAKeyUtill.convertArrToKey(RSAKeyUtill.convertByteStringtoByteArr(temp));
     }
     
     private RSAKeyManager() 
