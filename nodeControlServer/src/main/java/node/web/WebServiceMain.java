@@ -20,7 +20,7 @@ public class WebServiceMain extends NanoHTTPD implements IServiceModule
 	// private static final int MAXIMUM_SIZE_OF_IMAGE = 1000000;
 	public static final String rootDirectory = FileHandler.getExtResourceFile("www").toString();
 	
-	private WebSocketManager responseSocketHandler;
+	private static WebSocketManager responseSocketHandler;
 	
 	public WebServiceMain()
 	{
@@ -32,6 +32,7 @@ public class WebServiceMain extends NanoHTTPD implements IServiceModule
 	{
 		WebServiceMain main = new WebServiceMain();
 		main.startModule();
+
 	}
 
 	private static Response serveImage(MIME_TYPE imageType, String path)
@@ -46,7 +47,9 @@ public class WebServiceMain extends NanoHTTPD implements IServiceModule
 	{
 		Method method = session.getMethod();
 		String uri = session.getUri();
-
+		
+		responseSocketHandler.openWebSocket(session); //소켓 세션
+		
 		WebServiceMain.LOG.info(method + " '" + uri + "' ");
 
 		// 웹서비스 할 때 필요한 파일 스트림 모듈로 만들기(fileIO 패키지)
