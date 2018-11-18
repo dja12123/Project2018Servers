@@ -16,8 +16,8 @@
     gradle moveres (nodeControlServers/extResources/의 모든 파일들을 jar파일이 있는 위치로 이동)
    
    
-Spark 설치
+*Spark 설치
 
-1. extResource/Shscript/all_change_unix.sh 실행
-2. extResource/Shscript/install_spark.sh /opt/ 실행
-3. movres 후 빌드해서 프로젝트 
+    1. extResource/Shscript/all_change_unix.sh 실행
+    2. extResource/Shscript/install_spark.sh /opt/ 실행
+    3. movres 후 빌드해서 프로젝트 
