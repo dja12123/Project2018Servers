@@ -173,7 +173,7 @@ public class NetworkManager implements IServiceModule
 		byte[] payload = p.payload;
 		if(!PacketUtil.isPacket(payload))
 		{
-			System.out.println("패킷아님!");
+			System.out.println("패킷아님!" + NetworkUtil.bytesToHex(payload, payload.length));
 			return;
 		}
 		
