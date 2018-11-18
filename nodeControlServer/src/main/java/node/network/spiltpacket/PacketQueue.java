@@ -28,8 +28,8 @@ class PacketQueue
 		this.updateTime();
 	}
 
-	public boolean enQueue(byte item)
-	{
+	public boolean enQueue(byte b)
+	{// 패킷 바이트 삽입
 		if (this.queueSize - 1 == this.size)
 		{// 큐가 찼을때
 			this.front = (this.front + 1) % this.queueSize;
@@ -44,11 +44,9 @@ class PacketQueue
 		}
 		
 		this.rear = (this.rear + 1) % (this.queueSize);
-		this.itemArray[this.rear] = item;
+		this.itemArray[this.rear] = b;
 		
 		this.size = this.front > this.rear ? (this.queueSize - this.front + this.rear) : (this.rear - this.front);
-		
-		
 		
 		if(this.size >= SplitPacketUtil.RANGE_MAGICNO_START)
 		{
@@ -94,10 +92,8 @@ class PacketQueue
 		byte[] snapShot = new byte[end - start];
 		int front = (this.front + start) % this.queueSize;
 		int rear = (this.queueSize + this.rear - (this.size - end)) % this.queueSize;
-		System.out.printf("F:%d, CF:%d, R:%d, CR:%d\n", this.front, front, this.rear, rear);
 		if(front < rear)
 		{
-			System.out.printf("FRONTSIZE%d\n", front + 1);
 			System.arraycopy(this.itemArray, front + 1, snapShot, 0, end - start);
 		}
 		else

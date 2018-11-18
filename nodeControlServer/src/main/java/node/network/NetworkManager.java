@@ -21,6 +21,7 @@ import node.network.packet.PacketUtil;
 import node.network.socketHandler.RawSocketReceiver;
 import node.network.socketHandler.IPJumpBroadcast;
 import node.network.socketHandler.UnicastHandler;
+import node.network.spiltpacket.SplitPacket;
 import node.util.observer.Observable;
 import node.util.observer.Observer;
 
@@ -42,9 +43,9 @@ public class NetworkManager implements IServiceModule
 	{
 		this.deviceInfoManager = deviceInfoManager;
 
-		this.ipJumpBroadcast = new IPJumpBroadcast(this::socketReadCallback);
-		this.rawSocketReceiver = new RawSocketReceiver(this::socketReadCallback);
-		this.unicastHandler = new UnicastHandler(this::socketReadCallback);
+		this.ipJumpBroadcast = new IPJumpBroadcast(this::socketRawByteReadCallback);
+		this.rawSocketReceiver = new RawSocketReceiver(this::socketRawByteReadCallback);
+		this.unicastHandler = new UnicastHandler(this::socketRawByteReadCallback);
 		
 		this.observerMap = new HashMap<String, Observable<NetworkEvent>>();
 		
@@ -117,7 +118,7 @@ public class NetworkManager implements IServiceModule
 		}
 	}
 	
-	public void socketReadCallback(InetAddress addr, byte[] packetBuffer)
+	public void socketRawByteReadCallback(InetAddress addr, byte[] packetBuffer)
 	{
 		if(!PacketUtil.isPacket(packetBuffer))
 		{
@@ -136,6 +137,11 @@ public class NetworkManager implements IServiceModule
 		
 		NetworkEvent event = new NetworkEvent(eventKey, addr, packetObj);
 		observable.notifyObservers(NodeControlCore.mainThreadPool, event);
+	}
+	
+	public void splitPacketCallback(InetAddress addr, SplitPacket p)
+	{
+		
 	}
 	
 	public InetAddress getMyAddr()
