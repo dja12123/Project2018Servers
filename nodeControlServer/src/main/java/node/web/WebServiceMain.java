@@ -3,31 +3,16 @@ package node.web;
 import node.IServiceModule;
 import node.fileIO.FileHandler;
 import node.log.LogWriter;
+import node.web.MIME_TYPE;
 
 import java.util.logging.Logger;
 
-import fi.iki.elonen.NanoHTTPD;
-import fi.iki.elonen.NanoHTTPD.Response.IStatus;
-import fi.iki.elonen.util.ServerRunner;
-
-enum MIME_TYPE
-{
-	IMAGE_JPEG("image/jpeg"),
-	IMAGE_PNG("image/png");
-
-	String typeString;
-
-	MIME_TYPE(String typeString)
-	{
-		this.typeString = typeString;
-	}
-
-	@Override
-	public String toString()
-	{
-		return typeString;
-	}
-}
+import org.nanohttpd.protocols.http.IHTTPSession;
+import org.nanohttpd.protocols.http.NanoHTTPD;
+import org.nanohttpd.protocols.http.request.Method;
+import org.nanohttpd.protocols.http.response.Response;
+import org.nanohttpd.protocols.http.response.Status;
+import org.nanohttpd.util.ServerRunner;
 
 public class WebServiceMain extends NanoHTTPD implements IServiceModule
 {
@@ -48,10 +33,9 @@ public class WebServiceMain extends NanoHTTPD implements IServiceModule
 
 	private static Response serveImage(MIME_TYPE imageType, String path)
 	{
-		IStatus status = NanoHTTPD.Response.Status.OK;
 		String imageTypeStr = imageType.toString();
-
-		return newFixedLengthResponse(status, imageTypeStr, FileHandler.getInputStream(path), -1);
+		
+		return Response.newFixedLengthResponse(Status.OK, imageTypeStr, FileHandler.getInputStream(path), -1);
 	}
 
 	@Override
@@ -97,7 +81,7 @@ public class WebServiceMain extends NanoHTTPD implements IServiceModule
 		}
 
 		System.out.println("Response Data Recieve...");
-		return newFixedLengthResponse(msg);
+		return Response.newFixedLengthResponse(msg);
 	}
 
 	@Override
