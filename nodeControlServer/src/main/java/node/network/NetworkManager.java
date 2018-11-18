@@ -173,6 +173,7 @@ public class NetworkManager implements IServiceModule
 		byte[] payload = p.payload;
 		if(!PacketUtil.isPacket(payload))
 		{
+			System.out.println("패킷아님!");
 			return;
 		}
 		
@@ -182,6 +183,7 @@ public class NetworkManager implements IServiceModule
 		Observable<NetworkEvent> observable = observerMap.getOrDefault(eventKey, null);
 		if(observable == null)
 		{
+			System.out.println("옵저버없음!");
 			return;
 		}
 		System.out.println(packetObj.toString());
