@@ -164,14 +164,12 @@ public class NetworkManager implements IServiceModule
 	public void socketRawByteReadCallback(InetAddress addr, byte[] packetBuffer)
 	{// 소켓에서 받은 RAW데이터를 패킷 분석기에 집어넣기
 		NodeControlCore.mainThreadPool.execute(()->{
-			logger.log(Level.INFO, "패킷받음1");
 			this.splitPacketAnalyser.analysePacket(addr, packetBuffer);
 		});
 	}
 	
 	public void splitPacketCallback(InetAddress addr, SplitPacket p)
 	{// 패킷 분석기에서 취합한 패킷을 재분석하여 옵저버들에게 날려줌
-		logger.log(Level.INFO, "패킷받음2");
 		byte[] payload = p.payload;
 		if(!PacketUtil.isPacket(payload))
 		{
@@ -186,7 +184,7 @@ public class NetworkManager implements IServiceModule
 		{
 			return;
 		}
-		
+		System.out.println(packetObj.toString());
 		NetworkEvent event = new NetworkEvent(eventKey, addr, packetObj);
 		observable.notifyObservers(NodeControlCore.mainThreadPool, event);
 	}
