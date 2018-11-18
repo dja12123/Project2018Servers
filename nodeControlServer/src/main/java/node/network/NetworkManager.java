@@ -22,6 +22,9 @@ import node.network.socketHandler.RawSocketReceiver;
 import node.network.socketHandler.IPJumpBroadcast;
 import node.network.socketHandler.UnicastHandler;
 import node.network.spiltpacket.SplitPacket;
+import node.network.spiltpacket.SplitPacketAnalyser;
+import node.network.spiltpacket.SplitPacketBuildFailureException;
+import node.network.spiltpacket.SplitPacketUtil;
 import node.util.observer.Observable;
 import node.util.observer.Observer;
 
@@ -35,6 +38,8 @@ public class NetworkManager implements IServiceModule
 	private final RawSocketReceiver rawSocketReceiver;
 	private final UnicastHandler unicastHandler;
 	
+	private final SplitPacketAnalyser splitPacketAnalyser;
+	
 	private HashMap<String, Observable<NetworkEvent>> observerMap;
 	
 	private InetAddress inetAddress;
@@ -47,10 +52,11 @@ public class NetworkManager implements IServiceModule
 		this.rawSocketReceiver = new RawSocketReceiver(this::socketRawByteReadCallback);
 		this.unicastHandler = new UnicastHandler(this::socketRawByteReadCallback);
 		
+		this.splitPacketAnalyser = new SplitPacketAnalyser(this::splitPacketCallback);
+		
 		this.observerMap = new HashMap<String, Observable<NetworkEvent>>();
 		
 		this.inetAddress = null;
-
 	}
 	
 	public void addObserver(String key, Observer<NetworkEvent> observer)
@@ -103,32 +109,73 @@ public class NetworkManager implements IServiceModule
 	
 	public void sendMessage(Packet packet)
 	{
-		if(packet.isBroadcast())
+		NodeControlCore.mainThreadPool.execute(()->
 		{
-			this.ipJumpBroadcast.sendMessage(true, packet.getNativeArr());
-		}
-		else
-		{
-			Device d = this.deviceInfoManager.getDevice(packet.getReceiver());
-			if(d == null || d.getInetAddr() == null)
+			byte[] id;
+			byte[][] splitData;
+			SplitPacket splitPacket;
+			if(packet.isBroadcast())
 			{
-				return;
+				id = SplitPacketUtil.createSplitPacketID(NetworkUtil.broadcastIA(NetworkUtil.DEFAULT_SUBNET));
+				try
+				{
+					splitPacket = new SplitPacket(id, packet.getDataByte());
+				}
+				catch (SplitPacketBuildFailureException e)
+				{
+					logger.log(Level.WARNING, "패킷 전송중 오류", e);
+					return;
+				}
+				
+				splitData = splitPacket.getSplitePacket();
+				for(int i = 0; i < splitData.length; ++i)
+				{
+					this.ipJumpBroadcast.sendMessage(true, splitData[i]);
+				}
 			}
-			this.unicastHandler.sendMessage(packet.getNativeArr(), d.getInetAddr());
-		}
+			else
+			{
+				Device d = this.deviceInfoManager.getDevice(packet.getReceiver());
+				if(d == null || d.getInetAddr() == null)
+				{
+					return;
+				}
+				id = SplitPacketUtil.createSplitPacketID(d.getInetAddr());
+				try
+				{
+					splitPacket = new SplitPacket(id, packet.getDataByte());
+				}
+				catch (SplitPacketBuildFailureException e)
+				{
+					logger.log(Level.WARNING, "패킷 전송중 오류", e);
+					return;
+				}
+				
+				splitData = splitPacket.getSplitePacket();
+				for(int i = 0; i < splitData.length; ++i)
+				{
+					this.unicastHandler.sendMessage(splitData[i], d.getInetAddr());
+				}
+			}
+		});
 	}
 	
 	public void socketRawByteReadCallback(InetAddress addr, byte[] packetBuffer)
-	{
-		if(!PacketUtil.isPacket(packetBuffer))
+	{// 소켓에서 받은 RAW데이터를 패킷 분석기에 집어넣기
+		NodeControlCore.mainThreadPool.execute(()->this.splitPacketAnalyser.analysePacket(addr, packetBuffer));
+	}
+	
+	public void splitPacketCallback(InetAddress addr, SplitPacket p)
+	{// 패킷 분석기에서 취합한 패킷을 재분석하여 옵저버들에게 날려줌
+		byte[] payload = p.payload;
+		if(!PacketUtil.isPacket(payload))
 		{
 			return;
 		}
 		
-		Packet packetObj = new Packet(packetBuffer);
+		Packet packetObj = new Packet(payload);
 		
 		String eventKey = packetObj.getKey();
-		
 		Observable<NetworkEvent> observable = observerMap.getOrDefault(eventKey, null);
 		if(observable == null)
 		{
@@ -137,11 +184,6 @@ public class NetworkManager implements IServiceModule
 		
 		NetworkEvent event = new NetworkEvent(eventKey, addr, packetObj);
 		observable.notifyObservers(NodeControlCore.mainThreadPool, event);
-	}
-	
-	public void splitPacketCallback(InetAddress addr, SplitPacket p)
-	{
-		
 	}
 	
 	public InetAddress getMyAddr()
