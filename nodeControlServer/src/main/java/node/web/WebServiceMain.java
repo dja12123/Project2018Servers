@@ -14,8 +14,6 @@ import org.nanohttpd.protocols.http.response.Response;
 import org.nanohttpd.protocols.http.response.Status;
 import org.nanohttpd.util.ServerRunner;
 
-import org.nanohttpd.protocols.websockets.NanoWSD;
-
 public class WebServiceMain extends NanoHTTPD implements IServiceModule
 {
 	private static final Logger LOG = LogWriter.createLogger(WebServiceMain.class, "WebServiceMain");
