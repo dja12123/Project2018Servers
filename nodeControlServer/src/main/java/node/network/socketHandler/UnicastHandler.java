@@ -72,6 +72,7 @@ public class UnicastHandler
 		try
 		{
 			this.socket.send(packet);
+			System.out.println("유니캐스트 패킷 전송-------------");
 		}
 		catch (IOException e)
 		{

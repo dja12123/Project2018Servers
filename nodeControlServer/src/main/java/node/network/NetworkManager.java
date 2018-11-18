@@ -154,7 +154,6 @@ public class NetworkManager implements IServiceModule
 					logger.log(Level.WARNING, "패킷 전송중 오류", e);
 					return;
 				}
-				System.out.println("유니캐스트 패킷 전송-------------");
 				splitData = splitPacket.getSplitePacket();
 				for(int i = 0; i < splitData.length; ++i)
 				{
