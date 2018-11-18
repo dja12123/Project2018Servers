@@ -99,7 +99,6 @@ public class WebServiceMain extends NanoHTTPD implements IServiceModule
 	@Override
 	public void stopModule()
 	{
-		ws.stop();
 	}
 
 }
