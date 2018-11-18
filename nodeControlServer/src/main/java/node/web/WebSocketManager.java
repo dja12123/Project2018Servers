@@ -64,7 +64,7 @@ public class WebSocketManager extends NanoWSD implements IServiceModule {
 				String logMsg = "웹소켓 닫힘 [" + (initiatedByRemote ? "Remote" : "Self") + "]"
 								+ (code != null ? code : "UnknownCloseCode[" + code + "]")
 								+ (reason != null && !reason.isEmpty() ? ": " + reason : "");
-				logger.log(Level.INFO, logMsg);
+				System.out.println(logMsg);
 			}
 		}
 		
@@ -74,7 +74,7 @@ public class WebSocketManager extends NanoWSD implements IServiceModule {
 				message.setUnmasked();
 				sendFrame(message);
 			} catch (IOException e) {
-				logger.log(Level.WARNING, "웹 소켓 메시지 전송 파일 입출력 오류");
+				System.out.println("웹 소켓 메시지 전송 파일 입출력 오류");
 				//throw new RuntimeException(e);
 			}
 		}
@@ -82,7 +82,7 @@ public class WebSocketManager extends NanoWSD implements IServiceModule {
 		@Override
 		protected void onPong(WebSocketFrame pong) {
 			if (server.debug) {
-				logger.log(Level.INFO, "웹 소켓 Pong " + pong);
+				System.out.println("웹 소켓 Pong " + pong);
 			}
 		}
 		
@@ -94,14 +94,14 @@ public class WebSocketManager extends NanoWSD implements IServiceModule {
 		@Override
 		protected void debugFrameReceived(WebSocketFrame frame) {
 			if (server.debug) {
-				logger.log(Level.INFO, "프레임 받음 >> " + frame);
+				System.out.println("프레임 받음 >> " + frame);
 			}
 		}
 		
 		@Override
 		protected void debugFrameSent(WebSocketFrame frame) {
 			if (server.debug) {
-				logger.log(Level.INFO, "프레임 보냄 >> " + frame);
+				System.out.println("프레임 보냄 >> " + frame);
 			}
 		}
 	}
