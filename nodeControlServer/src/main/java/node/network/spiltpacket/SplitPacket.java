@@ -8,9 +8,8 @@ import node.network.packet.PacketUtil;
 
 public class SplitPacket
 {
-	private final byte[][] source;
-	
 	public final byte[] id;
+	public final byte[] payload;
 	public final int segCount;
 	
 	public SplitPacket(byte[] id, byte[] payload) throws SplitPacketBuildFailureException
@@ -24,11 +23,19 @@ public class SplitPacket
 			throw new SplitPacketBuildFailureException("용량 제한을 초과했습니다");
 		}
 		
+		this.id = id;
 		int segmentCount = payload.length / SplitPacketUtil.RANGE_PAYLOAD;
 		if((payload.length % SplitPacketUtil.RANGE_PAYLOAD) != 0) ++segmentCount;
 		this.segCount = segmentCount;
-		this.id = id;
-		this.source = new byte[this.segCount][];
+		this.payload = payload;
+		
+	}
+	
+	public byte[][] getSplitePacket()
+	{
+		
+
+		byte[][] splitPacket = new byte[this.segCount][];
 		
 		for(int i = 0; i < this.segCount; ++i)
 		{
@@ -40,7 +47,7 @@ public class SplitPacket
 			else payloadSize = payload.length - payloadStart;
 			
 			byte[] segment = new byte[payloadSize + SplitPacketUtil.PACKET_METADATA_SIZE];
-			this.source[i] = segment;
+			splitPacket[i] = segment;
 			ByteBuffer segmentBuffer = ByteBuffer.wrap(segment);
 			segmentBuffer.put(SplitPacketUtil.MAGIC_NO_START);
 			segmentBuffer.put(this.id);
@@ -49,13 +56,9 @@ public class SplitPacket
 			segmentBuffer.put(payload, payloadStart, payloadSize);
 			segmentBuffer.put(SplitPacketUtil.MAGIC_NO_END);
 		}
+		return splitPacket;
 	}
-	
-	public byte[] getSegment(int segno)
-	{
-		return this.source[segno];
-	}
-	
+
 	@Override
 	public boolean equals(Object o)
 	{
@@ -75,7 +78,7 @@ public class SplitPacket
 			return false;
 		}
 		
-		if(!Arrays.deepEquals(target.source, this.source))
+		if(!Arrays.equals(target.payload, this.payload))
 		{
 			return false;
 		}

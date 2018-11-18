@@ -10,7 +10,7 @@ public class SplitPacketUtil
 	public static final byte[] MAGIC_NO_START = new byte[] { 0x31, 0x11, 0x31, 0x11 };
 	public static final byte[] MAGIC_NO_END = new byte[] { 0x01, 0x12, 0x01, 0x12 };
 
-	public static final int SPLIT_SIZE = 32;
+	public static final int MAX_SEGMENT_SIZE = 32;
 	
 	public static final int START_MAGICNO_START = 0;
 	public static final int RANGE_MAGICNO_START = 4;
@@ -22,13 +22,13 @@ public class SplitPacketUtil
 	public static final int RANGE_PACKET_NUM = 4;
 
 	public static final int RANGE_MAGIC_NO_END = 4;
-	public static final int START_MAGIC_NO_END = SPLIT_SIZE - RANGE_MAGIC_NO_END;
+	public static final int START_MAGIC_NO_END = MAX_SEGMENT_SIZE - RANGE_MAGIC_NO_END;
 
 	public static final int PACKET_METADATA_SIZE = RANGE_MAGICNO_START + RANGE_PACKET_ID + RANGE_PACKET_FULLSEG
 			+ RANGE_PACKET_NUM + RANGE_MAGIC_NO_END;
 	public static final int START_PAYLOAD = RANGE_MAGICNO_START + RANGE_PACKET_ID + RANGE_PACKET_FULLSEG
 			+ RANGE_PACKET_NUM;
-	public static final int RANGE_PAYLOAD = SPLIT_SIZE - PACKET_METADATA_SIZE;
+	public static final int RANGE_PAYLOAD = MAX_SEGMENT_SIZE - PACKET_METADATA_SIZE;
 	public static final int FULL_PACKET_LIMIT = 1024 * 1024 * 100;// 100mbyte제한
 
 	public static long headerToLong(byte[] rawPacket)
@@ -51,14 +51,6 @@ public class SplitPacketUtil
 			result |= (rawPacket[i] & 0xFF);
 		}
 		return result;
-	}
-	public static void main(String[] args)
-	{
-		byte[] tb = new byte[] {(byte) 0xC0,(byte) 0xA8,0x00,0x01,0x06,(byte) 0xDB,0x11,0x4F};
-		long l = byteToLong(tb);
-		byte[] change = longToBytes(l);
-		System.out.println(NetworkUtil.bytesToHex(tb, tb.length));
-		System.out.println(NetworkUtil.bytesToHex(change, change.length));
 	}
 
 	public static byte[] longToBytes(long l)

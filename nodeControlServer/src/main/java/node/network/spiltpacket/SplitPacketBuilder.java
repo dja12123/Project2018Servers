@@ -1,5 +1,6 @@
 package node.network.spiltpacket;
 
+import java.net.InetAddress;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.Stack;
@@ -9,6 +10,8 @@ import node.network.NetworkUtil;
 public class SplitPacketBuilder
 {
 	private Stack<byte[]> splitPacket;
+	
+	private InetAddress inetAddress;
 	private byte[] id;
 	private int lastSegNo;
 	private int fullSegmentCount;
@@ -16,10 +19,11 @@ public class SplitPacketBuilder
 	private Date lastUpdateTime;
 	private boolean isgetInstace;
 
-	public SplitPacketBuilder()
+	public SplitPacketBuilder(InetAddress inetAddress)
 	{
 		this.splitPacket = new Stack<>();
 		
+		this.inetAddress = inetAddress;
 		this.id = null;
 		this.lastSegNo = -1;
 		this.fullSegmentCount = -1;
@@ -42,10 +46,9 @@ public class SplitPacketBuilder
 		if(this.id != null)
 			throw new SplitPacketBuildFailureException("이미 샛팅 된 ID");
 		this.id = SplitPacketUtil.longToBytes(id);
-		System.out.println("설정한 ID: "+NetworkUtil.bytesToHex(this.id, this.id.length));
 		return this;
 	}
-
+	
 	public SplitPacketBuilder setFullSegment(int fullSegment) throws SplitPacketBuildFailureException
 	{
 		if(this.fullSegmentCount != -1)
@@ -61,7 +64,6 @@ public class SplitPacketBuilder
 		
 		++this.lastSegNo;
 		this.payloadSize += rawData.length - SplitPacketUtil.PACKET_METADATA_SIZE;
-		System.out.println("PAYLOADSIZE" + NetworkUtil.bytesToHex(rawData, rawData.length));
 		this.splitPacket.push(rawData);
 		return this;
 	}
@@ -74,6 +76,11 @@ public class SplitPacketBuilder
 	public Date getTime()
 	{
 		return this.lastUpdateTime;
+	}
+	
+	public InetAddress getInetAddress()
+	{
+		return this.inetAddress;
 	}
 	
 	public boolean checkPacket(byte[] rawData) throws SplitPacketBuildFailureException
@@ -91,23 +98,17 @@ public class SplitPacketBuilder
 			throw new SplitPacketBuildFailureException(String.format("세그먼트 카운트 어긋남 (all:%d, now:%d)", this.fullSegmentCount, nowSegmentNo));
 		
 		if(!SplitPacketUtil.comparePacketID(rawData, this.id))
-		{
-			System.out.println("아이디다름");
-			System.out.println(NetworkUtil.bytesToHex(this.id, this.id.length));
+		{// ID다름
 			return false;
 		}
-			
 		
 		if(this.fullSegmentCount != fullSegmentSize)
-		{
-			System.out.println("세그먼트 개수 다름");
+		{// 세그먼트 개수 다름
 			return false;
 		}
 		
 		if(this.lastSegNo + 1 != nowSegmentNo)
-		{
-			
-			System.out.println(String.format("세그먼트 순서 틀림 (all:%d, now:%d)", this.lastSegNo + 1, nowSegmentNo));
+		{// 세그먼트 순서 틀림
 			return false;
 		}
 		
@@ -126,8 +127,8 @@ public class SplitPacketBuilder
 		
 		if(this.isgetInstace)
 			throw new SplitPacketBuildFailureException("이미 빌드된 패킷");
-		
 		this.isgetInstace = true;
+		
 		byte[] payload = new byte[this.payloadSize];
 		int storeSize = 0;
 		int segPayloadSize;
@@ -139,7 +140,6 @@ public class SplitPacketBuilder
 			System.arraycopy(segment, SplitPacketUtil.START_PAYLOAD, payload, storeSize, segPayloadSize);
 			storeSize += segPayloadSize;
 		}
-		System.out.println("빌드합니다.." + NetworkUtil.bytesToHex(this.id, this.id.length));
 		SplitPacket packet = new SplitPacket(this.id, payload);
 		return packet;
 	}
