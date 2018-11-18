@@ -1,11 +1,7 @@
 package node.web;
 
-import node.IServiceModule;
 import node.fileIO.FileHandler;
-import node.log.LogWriter;
 import node.web.MIME_TYPE;
-
-import java.util.logging.Logger;
 
 import org.nanohttpd.protocols.http.IHTTPSession;
 import org.nanohttpd.protocols.http.NanoHTTPD;
@@ -14,26 +10,26 @@ import org.nanohttpd.protocols.http.response.Response;
 import org.nanohttpd.protocols.http.response.Status;
 import org.nanohttpd.util.ServerRunner;
 
-public class WebServiceMain extends NanoHTTPD implements IServiceModule
+public class HTTPServer extends NanoHTTPD
 {
-	private static final Logger LOG = LogWriter.createLogger(WebServiceMain.class, "WebServiceMain");
 	// private static final int MAXIMUM_SIZE_OF_IMAGE = 1000000;
 	public static final String rootDirectory = FileHandler.getExtResourceFile("www").toString();
 	
-	private static WebSocketManager responseSocketHandler;
+	//private static WebSocketManager responseSocketHandler;
 	
-	public WebServiceMain()
+	public HTTPServer()
 	{
 		super(80);
-		responseSocketHandler = new WebSocketManager(8080, true); //소켓
+		//responseSocketHandler = new WebSocketManager(8080, true); //소켓
 	}
 //
+	/*
 	public static void main(String[] args)
 	{
 		WebServiceMain main = new WebServiceMain();
 		main.startModule();
-		
 	}
+	*/
 
 	private static Response serveImage(MIME_TYPE imageType, String path)
 	{
@@ -48,9 +44,9 @@ public class WebServiceMain extends NanoHTTPD implements IServiceModule
 		Method method = session.getMethod();
 		String uri = session.getUri();
 		
-		responseSocketHandler.openWebSocket(session); //소켓 세션
+		//responseSocketHandler.openWebSocket(session); //소켓 세션
 		
-		WebServiceMain.LOG.info(method + " '" + uri + "' ");
+		HTTPServer.LOG.info(method + " '" + uri + "' ");
 
 		// 웹서비스 할 때 필요한 파일 스트림 모듈로 만들기(fileIO 패키지)
 		// StringBuffer 적극 사용
@@ -66,11 +62,11 @@ public class WebServiceMain extends NanoHTTPD implements IServiceModule
 			if (uri.contains(".jpg"))
 			{
 				//System.out.println("uri path >> " + (rootDirectory + uri));
-				return WebServiceMain.serveImage(MIME_TYPE.IMAGE_JPEG, "www" + uri);
+				return HTTPServer.serveImage(MIME_TYPE.IMAGE_JPEG, "www" + uri);
 			}
 			else if (uri.contains(".png")) 
 			{
-				return WebServiceMain.serveImage(MIME_TYPE.IMAGE_PNG, "www" + uri);
+				return HTTPServer.serveImage(MIME_TYPE.IMAGE_PNG, "www" + uri);
 			}
 			else if (uri.contains(".js"))
 			{
@@ -90,15 +86,12 @@ public class WebServiceMain extends NanoHTTPD implements IServiceModule
 		return Response.newFixedLengthResponse(msg);
 	}
 
-	@Override
-	public boolean startModule()
+	public void start()
 	{
-		ServerRunner.run(WebServiceMain.class);
-		return true;
+		ServerRunner.run(HTTPServer.class);
 	}
 
-	@Override
-	public void stopModule()
+	public void stop()
 	{
 	}
 

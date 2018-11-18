@@ -19,22 +19,16 @@ import node.util.observer.Observable;
 import node.util.observer.Observer;
 
 //NanoWSD를 상속받아야 함 -> nanohttpd-websocket 라이브러리에 protocols.http.NanoHTTPD 클래스가 있어야 함
-public class WebSocketManager extends NanoWSD implements IServiceModule {
-	public static final Logger logger = LogWriter.createLogger(WebSocketManager.class, "websocket");
+public class WebSocketHandler extends NanoWSD implements IServiceModule {
+	public static final Logger logger = LogWriter.createLogger(WebSocketHandler.class, "websocket");
 	
 	private HashMap<String, Observable<WebEvent>> observerMap;
 	
 	private final boolean debug;
 	
-	public WebSocketManager(int port, boolean debug) {
+	public WebSocketHandler(int port, boolean debug) {
 		super(port);
 		System.out.println("port open >> " + port);
-		try {
-			throw new Exception();
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 		this.observerMap = new HashMap<String, Observable<WebEvent>>();
 		this.debug = debug;
 	}
@@ -54,9 +48,9 @@ public class WebSocketManager extends NanoWSD implements IServiceModule {
 	 * @extends WebSocket
 	 */
 	private static class WebSocketData extends WebSocket {
-		private final WebSocketManager server;
+		private final WebSocketHandler server;
 		
-		public WebSocketData(WebSocketManager server, IHTTPSession handshakeRequest) {
+		public WebSocketData(WebSocketHandler server, IHTTPSession handshakeRequest) {
 			super(handshakeRequest);
 			this.server = server;
 		}
