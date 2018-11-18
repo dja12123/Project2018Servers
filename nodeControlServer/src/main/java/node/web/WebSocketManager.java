@@ -28,6 +28,7 @@ public class WebSocketManager extends NanoWSD implements IServiceModule {
 	
 	public WebSocketManager(int port, boolean debug) {
 		super(port);
+		System.out.println("port open >> " + port);
 		this.observerMap = new HashMap<String, Observable<WebEvent>>();
 		this.debug = debug;
 	}
@@ -54,8 +55,9 @@ public class WebSocketManager extends NanoWSD implements IServiceModule {
 		}
 		
 		@Override
-		protected void onOpen() { 
+		protected void onOpen() {
 			logger.log(Level.INFO, "웹소켓 열림");
+			System.out.println("웹소켓 열림");
 		}
 		
 		@Override
@@ -73,6 +75,7 @@ public class WebSocketManager extends NanoWSD implements IServiceModule {
 			try {
 				message.setUnmasked();
 				sendFrame(message);
+				System.out.println(message);
 			} catch (IOException e) {
 				System.out.println("웹 소켓 메시지 전송 파일 입출력 오류");
 				//throw new RuntimeException(e);
