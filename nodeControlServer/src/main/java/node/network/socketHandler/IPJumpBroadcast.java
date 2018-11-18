@@ -64,48 +64,12 @@ public class IPJumpBroadcast
 		this.nowIP = this.ipStart + this.random.nextInt(this.ipEnd - this.ipStart + 1);
 	}
 	
-	public synchronized void sendMessage(boolean jump, byte[] data)
+	public synchronized void sendMessage(byte[] data)
 	{
 		if(!this.isWork)
 		{
 			logger.log(Level.WARNING, "소켓 닫힘");
 			return;
-		}
-		
-		String nowAddr = String.format("%s.%d", NetworkUtil.DEFAULT_SUBNET, this.nowIP);
-		
-		if(jump)
-		{
-			int beforeIP = this.nowIP;
-			this.nowIP = this.ipStart + this.random.nextInt(this.ipEnd - this.ipStart);
-			if(this.nowIP >= beforeIP) ++this.nowIP;
-			//IP이전꺼랑 안겹치게 랜덤 점프 하는 로직
-			
-			String ipSetCommand = String.format("ifconfig %s:%s %s/24", NetworkUtil.getNIC(), VNIC, nowAddr);
-			try
-			{
-				CommandExecutor.executeCommand(ipSetCommand, false);
-			}
-			catch (Exception e)
-			{
-				logger.log(Level.SEVERE, "가상NIC설정 실패", e);
-				return;
-			}
-			try
-			{
-				if(this.socket != null && !this.socket.isClosed())
-				{
-					this.socket.close();
-				}
-				this.socket = new DatagramSocket(null);
-				this.socket.bind(new InetSocketAddress(nowAddr, NetworkUtil.broadcastPort()));
-				this.socket.setBroadcast(true);
-			}
-			catch (IllegalStateException | IOException e)
-			{
-				logger.log(Level.SEVERE, "소켓 열기 실패", e);
-				return;
-			}
 		}
 		
 		DatagramPacket packet = new DatagramPacket(data, data.length);
@@ -118,6 +82,40 @@ public class IPJumpBroadcast
 		catch (IOException e)
 		{
 			logger.log(Level.SEVERE, "브로드캐스트 실패", e);
+		}
+	}
+	
+	public void ipJump()
+	{
+		int beforeIP = this.nowIP;
+		this.nowIP = this.ipStart + this.random.nextInt(this.ipEnd - this.ipStart);
+		if(this.nowIP >= beforeIP) ++this.nowIP;
+		//IP이전꺼랑 안겹치게 랜덤 점프 하는 로직
+		String nowAddr = String.format("%s.%d", NetworkUtil.DEFAULT_SUBNET, this.nowIP);
+		String ipSetCommand = String.format("ifconfig %s:%s %s/24", NetworkUtil.getNIC(), VNIC, nowAddr);
+		try
+		{
+			CommandExecutor.executeCommand(ipSetCommand, false);
+		}
+		catch (Exception e)
+		{
+			logger.log(Level.SEVERE, "가상NIC설정 실패", e);
+			return;
+		}
+		try
+		{
+			if(this.socket != null && !this.socket.isClosed())
+			{
+				this.socket.close();
+			}
+			this.socket = new DatagramSocket(null);
+			this.socket.bind(new InetSocketAddress(nowAddr, NetworkUtil.broadcastPort()));
+			this.socket.setBroadcast(true);
+		}
+		catch (IllegalStateException | IOException e)
+		{
+			logger.log(Level.SEVERE, "소켓 열기 실패", e);
+			return;
 		}
 	}
 
