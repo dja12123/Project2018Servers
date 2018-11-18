@@ -33,7 +33,7 @@ public class Packet
 		this.isStringData = PacketUtil.checkOption(option, PacketUtil.OPT_ISSTRINGDATA);
 	}
 	
-	public byte[] getNativeArr()
+	public byte[] getRawData()
 	{
 		return this.source.array();
 	}

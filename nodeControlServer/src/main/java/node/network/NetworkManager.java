@@ -6,6 +6,7 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -17,6 +18,8 @@ import node.device.DeviceInfoManager;
 import node.log.LogWriter;
 import node.network.NetworkEvent;
 import node.network.packet.Packet;
+import node.network.packet.PacketBuildFailureException;
+import node.network.packet.PacketBuilder;
 import node.network.packet.PacketUtil;
 import node.network.socketHandler.RawSocketReceiver;
 import node.network.socketHandler.IPJumpBroadcast;
@@ -119,7 +122,7 @@ public class NetworkManager implements IServiceModule
 				id = SplitPacketUtil.createSplitPacketID(NetworkUtil.broadcastIA(NetworkUtil.DEFAULT_SUBNET));
 				try
 				{
-					splitPacket = new SplitPacket(id, packet.getDataByte());
+					splitPacket = new SplitPacket(id, packet.getRawData());
 				}
 				catch (SplitPacketBuildFailureException e)
 				{
@@ -144,7 +147,7 @@ public class NetworkManager implements IServiceModule
 				id = SplitPacketUtil.createSplitPacketID(d.getInetAddr());
 				try
 				{
-					splitPacket = new SplitPacket(id, packet.getDataByte());
+					splitPacket = new SplitPacket(id, packet.getRawData());
 				}
 				catch (SplitPacketBuildFailureException e)
 				{

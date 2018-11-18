@@ -33,8 +33,6 @@ public class SplitPacket
 	
 	public byte[][] getSplitePacket()
 	{
-		
-
 		byte[][] splitPacket = new byte[this.segCount][];
 		
 		for(int i = 0; i < this.segCount; ++i)
