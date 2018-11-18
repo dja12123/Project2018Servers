@@ -258,10 +258,10 @@ public class NetworkManager implements IServiceModule
 			{
 				e.printStackTrace();
 			}
+			logger.log(Level.INFO, String.format("IP변경 완료(%s)", inetAddress.getHostAddress()));
 			this.unicastHandler.start(this.inetAddress);
 			this.ipJumpBroadcast.start();
 			this.rawSocketReceiver.start();
-			logger.log(Level.INFO, String.format("IP변경 완료(%s)", inetAddress.getHostAddress()));
 		}
 		
 		this.inetAddress = inetAddress;

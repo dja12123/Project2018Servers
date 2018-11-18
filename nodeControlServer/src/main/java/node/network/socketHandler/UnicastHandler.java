@@ -72,7 +72,7 @@ public class UnicastHandler
 		try
 		{
 			this.socket.send(packet);
-			System.out.println("유니캐스트 패킷 전송-------------");
+			System.out.println("유니캐스트 패킷 전송-------------" + addr.getHostAddress());
 		}
 		catch (IOException e)
 		{
