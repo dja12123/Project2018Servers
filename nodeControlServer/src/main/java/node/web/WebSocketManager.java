@@ -29,6 +29,12 @@ public class WebSocketManager extends NanoWSD implements IServiceModule {
 	public WebSocketManager(int port, boolean debug) {
 		super(port);
 		System.out.println("port open >> " + port);
+		try {
+			throw new Exception();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		this.observerMap = new HashMap<String, Observable<WebEvent>>();
 		this.debug = debug;
 	}
