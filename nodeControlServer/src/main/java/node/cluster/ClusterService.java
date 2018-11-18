@@ -37,8 +37,6 @@ public class ClusterService implements IServiceModule {
 		this.nds = nds;
 		this.masterIp = null;
 		nds.addObserver(ndEventReceiver);
-		
-		instSpark();
 	}
 	public void instSpark() {
 		clusterLogger.log(Level.INFO, "스파크 설치확인");
@@ -86,7 +84,7 @@ public class ClusterService implements IServiceModule {
 	@Override
 	public boolean startModule() {		//객체 초기화 생성및 쓰레드 초기화 생성
 		// TODO Auto-generated method stub
-		
+		this.instSpark();
 		if(this.instFlag == SPARK_NOT_INSTALLED) {
 			clusterLogger.log(Level.SEVERE, "Not Installed Spark", new Exception("Not Installed Spark"));
 			
