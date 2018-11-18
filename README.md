@@ -19,5 +19,5 @@
 Spark 설치
 
 1. extResource/Shscript/all_change_unix.sh 실행
-2. extResource/Shscript/install_spark.sh 실행
+2. extResource/Shscript/install_spark.sh /opt/ 실행
 3. movres 후 빌드해서 프로젝트 
