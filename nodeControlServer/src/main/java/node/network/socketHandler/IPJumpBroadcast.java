@@ -49,6 +49,7 @@ public class IPJumpBroadcast
 		this.isWork = false;
 		
 		this.random = new Random();
+		this.ipJump();
 	}
 	
 	public void start()
