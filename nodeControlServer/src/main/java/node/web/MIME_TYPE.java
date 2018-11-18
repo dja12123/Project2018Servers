@@ -1,5 +1,5 @@
 package node.web;
-//
+
 public enum MIME_TYPE
 {
 	IMAGE_JPEG("image/jpeg"),
