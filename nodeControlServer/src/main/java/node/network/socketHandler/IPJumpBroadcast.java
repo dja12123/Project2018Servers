@@ -49,7 +49,6 @@ public class IPJumpBroadcast
 		this.isWork = false;
 		
 		this.random = new Random();
-		this.ipJump();
 	}
 	
 	public void start()
@@ -63,6 +62,7 @@ public class IPJumpBroadcast
 		this.ipEnd = Integer.parseInt(NodeControlCore.getProp(PROP_BroadcastIPend));
 		
 		this.nowIP = this.ipStart + this.random.nextInt(this.ipEnd - this.ipStart + 1);
+		this.ipJump();
 	}
 	
 	public synchronized void sendMessage(byte[] data)
