@@ -14,3 +14,10 @@
     gradle run (프로젝트를 컴파일하고 기본 클래스를 실행)
     gradle buildtest -PmainClass={실행할클래스명}(ex. node.NodeControlCore) (테스트용jar 컴파일)
     gradle moveres (nodeControlServers/extResources/의 모든 파일들을 jar파일이 있는 위치로 이동)
+   
+   
+Spark 설치
+
+1. extResource/Shscript/all_change_unix.sh 실행
+2. extResource/Shscript/install_spark.sh 실행
+3. movres 후 빌드해서 프로젝트 
