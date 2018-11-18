@@ -85,7 +85,7 @@ public class IPJumpBroadcast
 		}
 	}
 	
-	public void ipJump()
+	public synchronized void ipJump()
 	{
 		int beforeIP = this.nowIP;
 		this.nowIP = this.ipStart + this.random.nextInt(this.ipEnd - this.ipStart);
