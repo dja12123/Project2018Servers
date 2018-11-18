@@ -18,15 +18,92 @@ import node.log.LogWriter;
 import node.util.observer.Observable;
 import node.util.observer.Observer;
 
-//nanohttpd websocket 이용
-public class WebSocketManager /*extends NanoWSD*/ implements IServiceModule {
+//NanoWSD를 상속받아야 함 -> nanohttpd-websocket 라이브러리에 protocols.http.NanoHTTPD 클래스가 있어야 함
+public class WebSocketManager extends NanoWSD implements IServiceModule {
 	public static final Logger logger = LogWriter.createLogger(WebSocketManager.class, "websocket");
 	
 	private HashMap<String, Observable<WebEvent>> observerMap;
 	
-	public WebSocketManager(int port) {
-		/*super(port);*/
+	private final boolean debug;
+	
+	public WebSocketManager(int port, boolean debug) {
+		super(port);
 		this.observerMap = new HashMap<String, Observable<WebEvent>>();
+		this.debug = debug;
+	}
+	
+	/*
+	 * @see org.nanohttpd.protocols.websockets.NanoWSD#openWebSocket(org.nanohttpd.protocols.http.IHTTPSession)
+	 * @param IHTTPSession handshake: 세션
+	 */
+	@Override
+	protected WebSocket openWebSocket(IHTTPSession handshake) {
+		return new WebSocketData(this, handshake);
+	}
+	
+	/*
+	 * WebSocket의 데이터를 정의한 클래스
+	 * @extends WebSocket
+	 */
+	private static class WebSocketData extends WebSocket {
+		private final WebSocketManager server;
+		
+		public WebSocketData(WebSocketManager server, IHTTPSession handshakeRequest) {
+			super(handshakeRequest);
+			this.server = server;
+		}
+		
+		@Override
+		protected void onOpen() { 
+			logger.log(Level.INFO, "웹소켓 열림");
+		}
+		
+		@Override
+		protected void onClose(CloseCode code, String reason, boolean initiatedByRemote) {
+			if (server.debug) {
+				String logMsg = "웹소켓 닫힘 [" + (initiatedByRemote ? "Remote" : "Self") + "]"
+								+ (code != null ? code : "UnknownCloseCode[" + code + "]")
+								+ (reason != null && !reason.isEmpty() ? ": " + reason : "");
+				logger.log(Level.INFO, logMsg);
+			}
+		}
+		
+		@Override
+		protected void onMessage(WebSocketFrame message) {
+			try {
+				message.setUnmasked();
+				sendFrame(message);
+			} catch (IOException e) {
+				logger.log(Level.WARNING, "웹 소켓 메시지 전송 파일 입출력 오류");
+				//throw new RuntimeException(e);
+			}
+		}
+		
+		@Override
+		protected void onPong(WebSocketFrame pong) {
+			if (server.debug) {
+				logger.log(Level.INFO, "웹 소켓 Pong " + pong);
+			}
+		}
+		
+		@Override
+		protected void onException(IOException exception) {
+			logger.log(Level.SEVERE, "웹 소켓 예외가 발생함", exception);
+		}
+		
+		@Override
+		protected void debugFrameReceived(WebSocketFrame frame) {
+			if (server.debug) {
+				logger.log(Level.INFO, "프레임 받음 >> " + frame);
+			}
+		}
+		
+		@Override
+		protected void debugFrameSent(WebSocketFrame frame) {
+			if (server.debug) {
+				logger.log(Level.INFO, "프레임 보냄 >> " + frame);
+			}
+		}
 	}
 	
 	public void addObserver(String key, Observer<WebEvent> observer) {
@@ -69,12 +146,6 @@ public class WebSocketManager /*extends NanoWSD*/ implements IServiceModule {
 		for (int i = 0; i < removeObservableKey.size(); ++i) {
 			this.observerMap.remove(removeObservableKey.get(i));
 		}
-	}
-	
-	//소켓 통신 부분(클라이언트에서 넘어온 것 체크 -> 통신)
-	
-	public void sendMessage() {
-		
 	}
 	
 	@Override
