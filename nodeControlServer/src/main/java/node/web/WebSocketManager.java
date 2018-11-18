@@ -39,6 +39,7 @@ public class WebSocketManager extends NanoWSD implements IServiceModule {
 	 */
 	@Override
 	protected WebSocket openWebSocket(IHTTPSession handshake) {
+		System.out.println(handshake);
 		return new WebSocketData(this, handshake);
 	}
 	

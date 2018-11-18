@@ -32,7 +32,7 @@ public class WebServiceMain extends NanoHTTPD implements IServiceModule
 	{
 		WebServiceMain main = new WebServiceMain();
 		main.startModule();
-
+		
 	}
 
 	private static Response serveImage(MIME_TYPE imageType, String path)
