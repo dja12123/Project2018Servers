@@ -29,7 +29,7 @@ public class WebServiceMain extends NanoHTTPD implements IServiceModule
 		super(80);
 		responseSocketHandler = new WebSocketManager(8080, true); //소켓
 	}
-
+//
 	public static void main(String[] args)
 	{
 		WebServiceMain main = new WebServiceMain();
