@@ -1,14 +1,17 @@
-#if [ $# -eq 0 ]; then
-#	echo "need input argument"
-#	exit 1
-#fi
+if [ $# -eq 0 ]; then
+	echo "need input argument"
+	exit 1
+fi
 
 bashrc=/etc/bash.bashrc
-javac="readlink -f /usr/bin/javac"
+javac=$(readlink -f /usr/bin/javac)
 javahome="${javac/javac/}"
-echo javahome
 
-:<<'E'
+if ! grep -q "$javahome" $bashrc; then
+	echo "add java global variable"
+	echo "$javahome" >> $bashrc
+fi
+
 if ! grep -q "export SPARK_HOME=$1/spark" $bashrc; then
 
 		echo "wget"
@@ -28,4 +31,3 @@ if ! grep -q "export SPARK_HOME=$1/spark" $bashrc; then
         cp spark-env.sh.template spark-env.sh
 fi
 . $bashrc
-E
