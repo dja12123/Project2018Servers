@@ -82,7 +82,6 @@ public class SparkManager {
 			sparkLogger.log(Level.SEVERE, "Spark is Missing", new Exception("Spark is Missing"));
 			return false;
 		}
-		BashSet.execSh(BashSet.all_change_unix, "");
 		stopSparkMaster();
 		stopSparkWorker();
 		return true;
