@@ -19,7 +19,7 @@
     2. 루트 홈으로 이동후 git clone https://github.com/dja12123/Project2018Servers.git
     3. /root/Project2018Servers 이동후 그래들 명령어를 사용할 수 있음
     4. 빌드한 프로젝트는 /root/Project2018Servers/builds/libs 에 있음
-    * 패키지 설치가 불가능 할경우 /etc/resolv.conf에서 nameserver을 8.8.8.8로 
+    * 패키지 설치가 불가능 할경우 apt-get update, apt-get upgrade
     
 
 *그래들 명령어
