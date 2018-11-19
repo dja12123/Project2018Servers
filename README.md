@@ -32,8 +32,8 @@
    
 *Spark 설치
 
-    1. sh ~/Project2018Servers/nodeControlServer/extResource/Shscript/all_change_unix.sh 실행
-    2. sh ~/Project2018Servers/nodeControlServer/extResource/Shscript/install_spark.sh /opt/ 실행
+    1. ~/Project2018Servers/nodeControlServer/extResource/Shscript/all_change_unix.sh 실행
+    2. ~/Project2018Servers/nodeControlServer/extResource/Shscript/install_spark.sh /opt/ 실행
     3. source /etc/bash.bashrc 실행 or 시스템 재부팅
     4. gradle moveres 후 빌드해서 프로젝트 실행
     
