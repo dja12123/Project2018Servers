@@ -6,6 +6,7 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -17,6 +18,8 @@ import node.device.DeviceInfoManager;
 import node.log.LogWriter;
 import node.network.NetworkEvent;
 import node.network.packet.Packet;
+import node.network.packet.PacketBuildFailureException;
+import node.network.packet.PacketBuilder;
 import node.network.packet.PacketUtil;
 import node.network.socketHandler.RawSocketReceiver;
 import node.network.socketHandler.IPJumpBroadcast;
@@ -119,7 +122,7 @@ public class NetworkManager implements IServiceModule
 				id = SplitPacketUtil.createSplitPacketID(NetworkUtil.broadcastIA(NetworkUtil.DEFAULT_SUBNET));
 				try
 				{
-					splitPacket = new SplitPacket(id, packet.getDataByte());
+					splitPacket = new SplitPacket(id, packet.getRawData());
 				}
 				catch (SplitPacketBuildFailureException e)
 				{
@@ -130,8 +133,9 @@ public class NetworkManager implements IServiceModule
 				splitData = splitPacket.getSplitePacket();
 				for(int i = 0; i < splitData.length; ++i)
 				{
-					this.ipJumpBroadcast.sendMessage(true, splitData[i]);
+					this.ipJumpBroadcast.sendMessage(splitData[i]);
 				}
+				this.ipJumpBroadcast.ipJump();
 			}
 			else
 			{
@@ -143,14 +147,13 @@ public class NetworkManager implements IServiceModule
 				id = SplitPacketUtil.createSplitPacketID(d.getInetAddr());
 				try
 				{
-					splitPacket = new SplitPacket(id, packet.getDataByte());
+					splitPacket = new SplitPacket(id, packet.getRawData());
 				}
 				catch (SplitPacketBuildFailureException e)
 				{
 					logger.log(Level.WARNING, "패킷 전송중 오류", e);
 					return;
 				}
-				
 				splitData = splitPacket.getSplitePacket();
 				for(int i = 0; i < splitData.length; ++i)
 				{
@@ -162,7 +165,9 @@ public class NetworkManager implements IServiceModule
 	
 	public void socketRawByteReadCallback(InetAddress addr, byte[] packetBuffer)
 	{// 소켓에서 받은 RAW데이터를 패킷 분석기에 집어넣기
-		NodeControlCore.mainThreadPool.execute(()->this.splitPacketAnalyser.analysePacket(addr, packetBuffer));
+		NodeControlCore.mainThreadPool.execute(()->{
+			this.splitPacketAnalyser.analysePacket(addr, packetBuffer);
+		});
 	}
 	
 	public void splitPacketCallback(InetAddress addr, SplitPacket p)
@@ -181,7 +186,6 @@ public class NetworkManager implements IServiceModule
 		{
 			return;
 		}
-		
 		NetworkEvent event = new NetworkEvent(eventKey, addr, packetObj);
 		observable.notifyObservers(NodeControlCore.mainThreadPool, event);
 	}
@@ -254,10 +258,10 @@ public class NetworkManager implements IServiceModule
 			{
 				e.printStackTrace();
 			}
+			logger.log(Level.INFO, String.format("IP변경 완료(%s)", inetAddress.getHostAddress()));
 			this.unicastHandler.start(this.inetAddress);
 			this.ipJumpBroadcast.start();
 			this.rawSocketReceiver.start();
-			logger.log(Level.INFO, String.format("IP변경 완료(%s)", inetAddress.getHostAddress()));
 		}
 		
 		this.inetAddress = inetAddress;
