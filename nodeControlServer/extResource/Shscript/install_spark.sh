@@ -1,3 +1,5 @@
+#!/bin/bash
+
 if [ $# -eq 0 ]; then
 	echo "need input argument"
 	exit 1
@@ -5,7 +7,7 @@ fi
 
 bashrc=/etc/bash.bashrc
 javac=$(readlink -f /usr/bin/javac)
-javahome="${javac/javac/}"
+javahome=${javac: -9}
 
 if ! grep -q ".*JAVA_HOME.*" $bashrc; then
 	echo "add java global variable"
