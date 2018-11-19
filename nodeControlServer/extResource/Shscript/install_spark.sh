@@ -7,7 +7,7 @@ fi
 
 bashrc=/etc/bash.bashrc
 javac=$(readlink -f /usr/bin/javac)
-javahome=${javac: -9}
+javahome=${javac:1: -9}
 
 if ! grep -q ".*JAVA_HOME.*" $bashrc; then
 	echo "add java global variable"
