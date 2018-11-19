@@ -82,8 +82,6 @@ public class SparkManager {
 			sparkLogger.log(Level.SEVERE, "Spark is Missing", new Exception("Spark is Missing"));
 			return false;
 		}
-		stopSparkMaster();
-		stopSparkWorker();
 		return true;
 	}
 }
