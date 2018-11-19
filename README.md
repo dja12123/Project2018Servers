@@ -36,7 +36,6 @@
     2. ~/Project2018Servers/nodeControlServer/extResource/Shscript/install_spark.sh /opt/ 실행
     3. 시스템 재부팅
     4. source /etc/bash.bashrc 실행
-    5. gradle moveres 후 빌드해서 프로젝트 실행
     
     
 *Spark 삭제
