@@ -32,17 +32,17 @@
    
 *Spark 설치
 
-    1. ~/Project2018Servers/nodeControlServer/extResource/Shscript/all_change_unix.sh 실행
-    2. ~/Project2018Servers/nodeControlServer/extResource/Shscript/install_spark.sh /opt/ 실행
+    1. ~/Project2018Servers/nodeControlServer/extResource/Shscript/all_change_unix.sh
+    2. ~/Project2018Servers/nodeControlServer/extResource/Shscript/install_spark.sh /opt/
     3. 시스템 재부팅
-    4. source /etc/bash.bashrc 실행
+    4. source /etc/bash.bashrc
     
     
 *Spark 삭제
     
-    1. sh ~/Project2018Servers/nodeControlServer/extResource/Shscript/uninstall_spark.sh /opt/ 실행
+    1. sh ~/Project2018Servers/nodeControlServer/extResource/Shscript/uninstall_spark.sh /opt/
     2. 재부팅
-    3. source /etc/bash.bashrc 실행
+    3. source /etc/bash.bashrc
 
 ※ Spark 관련 명령어 안될시 sh 를 맨앞에 붙여줄것!
 
