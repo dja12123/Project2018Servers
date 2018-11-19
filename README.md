@@ -15,7 +15,7 @@
     - 오랜지파이 armbian 기본 ID:orangepi PW:1234
     - 설치후 공통 비밀번호 설정: rhavkddl
     - 프로젝트 기본 계정(디렉토리): root(/root/Project2018Servers)
-    1. apt-get install git, apt-get install gradle
+    1. apt-get install git, gradle, default-jdk
     2. 루트 홈으로 이동후 git clone https://github.com/dja12123/Project2018Servers.git
     3. /root/Project2018Servers 이동후 그래들 명령어를 사용할 수 있음
     4. 빌드한 프로젝트는 /root/Project2018Servers/builds/libs 에 있음
