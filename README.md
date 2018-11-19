@@ -32,13 +32,13 @@
    
 *Spark 설치
 
-    1. extResource/Shscript/all_change_unix.sh 실행
-    2. extResource/Shscript/install_spark.sh /opt/ 실행
+    1. sh extResource/Shscript/all_change_unix.sh 실행
+    2. sh extResource/Shscript/install_spark.sh /opt/ 실행
     3. source /etc/bash.bashrc 실행 or 시스템 재부팅
     4. gradle moveres 후 빌드해서 프로젝트 실행
     
     
 *Spark 삭제
     
-    1. extResource/Shscript/uninstall_spark.sh /opt/ 실행
+    1. sh extResource/Shscript/uninstall_spark.sh /opt/ 실행
     2. 재부팅 
