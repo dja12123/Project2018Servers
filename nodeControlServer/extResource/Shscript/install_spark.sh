@@ -7,12 +7,12 @@ bashrc=/etc/bash.bashrc
 javac=$(readlink -f /usr/bin/javac)
 javahome="${javac/javac/}"
 
-if ! grep -q "export JAVA_HOME=$javahome" $bashrc; then
+if ! grep -q ".*JAVA_HOME.*" $bashrc; then
 	echo "add java global variable"
-	echo "$javahome" >> $bashrc
+	echo "export JAVA_HOME=$javahome" >> $bashrc
 fi
 
-if ! grep -q "export SPARK_HOME=$1/spark" $bashrc; then
+if ! grep -q ".*SPARK_HOME.*" $bashrc; then
 
 		echo "wget"
 		if [ ! -f "/root/spark-2.4.0-bin-hadoop2.7.tgz" ]; then
