@@ -20,7 +20,7 @@
 
     1. extResource/Shscript/all_change_unix.sh 실행
     2. extResource/Shscript/install_spark.sh /opt/ 실행
-    3. . /etc/bash.bashrc 실행 or 시스템 재부팅
+    3. source /etc/bash.bashrc 실행 or 시스템 재부팅
     4. gradle moveres 후 빌드해서 프로젝트 실행
     
     
