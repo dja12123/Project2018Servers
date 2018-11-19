@@ -42,7 +42,7 @@ public class NodeControlCore
 	private final NetworkManager networkManager;
 	private final DeviceInfoManager deviceInfoManager;
 	private final NodeDetectionService nodeDetectionService;
-	//private final ClusterService clusterService;
+	private final ClusterService clusterService;
 	
 	public NodeControlCore()
 	{
@@ -50,7 +50,7 @@ public class NodeControlCore
 		this.deviceInfoManager = new DeviceInfoManager(this.dbHandler);
 		this.networkManager = new NetworkManager(this.deviceInfoManager);
 		this.nodeDetectionService = new NodeDetectionService(this.dbHandler, this.deviceInfoManager, this.networkManager);
-		//this.clusterService = new ClusterService(this.nodeDetectionService);
+		this.clusterService = new ClusterService(this.nodeDetectionService);
 	}
     
     public static void main(String[] args) throws InterruptedException
@@ -142,7 +142,7 @@ public class NodeControlCore
 			if(!this.deviceInfoManager.startModule()) throw new Exception("노드 정보 모듈 로드 실패");
 			if(!this.networkManager.startModule()) throw new Exception("네트워크 모듈 로드 실패");
 			if(!this.nodeDetectionService.startModule()) throw new Exception("노드 감지 서비스 모듈 로드 실패");
-			//if(!this.clusterService.startModule()) throw new Exception("스파크 모듈 로드 실패");
+			if(!this.clusterService.startModule()) throw new Exception("스파크 모듈 로드 실패");
 			
 			this.dbHandler.getInstaller().complete();
 		}

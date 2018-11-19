@@ -83,6 +83,8 @@ public class SparkManager {
 			return false;
 		}
 		BashSet.execSh(BashSet.all_change_unix, "");
+		stopSparkMaster();
+		stopSparkWorker();
 		return true;
 	}
 }
