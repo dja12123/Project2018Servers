@@ -53,6 +53,11 @@ public class ClusterService implements IServiceModule {
 		}
 		clusterLogger.log(Level.INFO, "NodeDetectionEvent 이벤트 받음, Master IP : " + eventInfo.masterIP.getHostAddress() + "Is Master? : " + eventInfo.isMaster);
 		
+		if(this.masterIp == null) {
+			sparkManager.stopSparkMaster();
+			sparkManager.stopSparkWorker();
+		}
+		
 		if(!this.masterIp.equals(eventInfo.masterIP.getHostAddress())) {	//마스터IP가 바뀔때 마스터, 워커 프로세스를 종료시켜준다.(잔존 프로세스 제거)
 			sparkManager.stopSparkMaster();
 			sparkManager.stopSparkWorker();
