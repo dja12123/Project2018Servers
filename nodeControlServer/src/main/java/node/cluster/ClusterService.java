@@ -22,6 +22,7 @@ public class ClusterService implements IServiceModule {
 	private String masterIp;
 	private int connectState;
 	private int instFlag;
+	private boolean isWorkerRun;
 	
 	public final NodeDetectionEventReceiver ndEventReceiver = new NodeDetectionEventReceiver(this);
 	public final NodeInfoChangeEventSender nicEventSender = new NodeInfoChangeEventSender();
@@ -36,6 +37,7 @@ public class ClusterService implements IServiceModule {
 		this.connectState = NodeDetectionEvent.STATE_FAIL;
 		this.nds = nds;
 		this.masterIp = null;
+		this.isWorkerRun = false;
 		nds.addObserver(ndEventReceiver);
 	}
 	public void instSpark() {
@@ -56,6 +58,7 @@ public class ClusterService implements IServiceModule {
 		if(this.masterIp == null || (eventInfo.isMaster == true && this.isMaster == false) ) {	//마스터IP가 바뀔때 마스터, 워커 프로세스를 종료시켜준다.(잔존 프로세스 제거)
 			sparkManager.stopSparkMaster();
 			sparkManager.stopSparkWorker();
+			isWorkerRun = false;
 		}
 		
 		this.isMaster = eventInfo.isMaster;
@@ -79,7 +82,11 @@ public class ClusterService implements IServiceModule {
 		if(isMaster == true)	{
 			sparkManager.startSparkMaster(masterIp, "");
 		}
-		sparkManager.startSparkWorker(masterIp, "");
+		if(isWorkerRun == false) {
+			sparkManager.startSparkWorker(masterIp, "");
+			isWorkerRun = true;
+		}
+		
 		return true;
 	}
 	
