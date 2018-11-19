@@ -27,4 +27,4 @@
 *Spark 삭제
     
     1. extResource/Shscript/uninstall_spark.sh /opt/ 실행
-    2. 
+    2. 재부팅 
