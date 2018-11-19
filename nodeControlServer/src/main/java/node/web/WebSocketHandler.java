@@ -13,13 +13,19 @@ import org.nanohttpd.protocols.websockets.WebSocket;
 import org.nanohttpd.protocols.websockets.WebSocketFrame;
 
 import node.IServiceModule;
+import node.NodeControlCore;
 import node.web.WebEvent;
 import node.log.LogWriter;
+import node.network.NetworkEvent;
 import node.util.observer.Observable;
 import node.util.observer.Observer;
 
 //NanoWSD를 상속받아야 함 -> nanohttpd-websocket 라이브러리에 protocols.http.NanoHTTPD 클래스가 있어야 함
 public class WebSocketHandler extends NanoWSD implements IServiceModule {
+	public static final String KEY_DATA_SEPERATOR = "=";
+	
+	
+	
 	public static final Logger logger = LogWriter.createLogger(WebSocketHandler.class, "websocket");
 	
 	private HashMap<String, Observable<WebEvent>> observerMap;
@@ -80,7 +86,19 @@ public class WebSocketHandler extends NanoWSD implements IServiceModule {
 			} catch (IOException e) {
 				System.out.println("웹 소켓 메시지 전송 파일 입출력 오류");
 				//throw new RuntimeException(e);
+
+
+				return;
 			}
+			/*
+			String eventKey = packetObj.getKey();
+			Observable<NetworkEvent> observable = observerMap.getOrDefault(eventKey, null);
+			if(observable == null)
+			{
+				return;
+			}
+			NetworkEvent event = new NetworkEvent(eventKey, addr, packetObj);
+			observable.notifyObservers(NodeControlCore.mainThreadPool, event);*/
 		}
 		
 		@Override

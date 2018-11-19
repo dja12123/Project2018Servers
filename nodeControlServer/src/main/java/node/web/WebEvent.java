@@ -5,6 +5,7 @@ package node.web;
 public class WebEvent {
 	public final String key;
 	public final String value;
+	// 정보 X
 	
 	WebEvent(String key, String value) {
 		this.key = key;
