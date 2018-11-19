@@ -1,5 +1,10 @@
 #!/bin/bash
 
+if [ $# -eq 0 ]; then
+	echo "need input argument"
+	exit 1
+fi
+
 bashrc=/etc/bash.bashrc
 
 sed -i '/.*JAVA_HOME.*/d' $bashrc

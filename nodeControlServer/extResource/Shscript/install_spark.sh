@@ -33,3 +33,9 @@ if ! grep -q ".*SPARK_HOME.*" $bashrc; then
         cp spark-env.sh.template spark-env.sh
 fi
 . $bashrc
+
+echo "Reboot System?(y/n)"
+read answer
+if [ $answer = "y" ]; then
+	reboot
+fi
