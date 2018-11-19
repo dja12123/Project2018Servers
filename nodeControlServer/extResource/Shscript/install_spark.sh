@@ -1,10 +1,14 @@
-if [ $# -eq 0 ]; then
-	echo "need input argument"
-	exit 1
-fi
+#if [ $# -eq 0 ]; then
+#	echo "need input argument"
+#	exit 1
+#fi
 
 bashrc=/etc/bash.bashrc
+javac="readlink -f /usr/bin/javac"
+javahome="${javac/javac/}"
+echo javahome
 
+:<<'E'
 if ! grep -q "export SPARK_HOME=$1/spark" $bashrc; then
 
 		echo "wget"
@@ -18,10 +22,10 @@ if ! grep -q "export SPARK_HOME=$1/spark" $bashrc; then
 
 		echo "configing"
         echo "export SPARK_HOME=$1/spark" >> $bashrc
-        echo "export JAVA_HOME=/usr/lib/jvm/jdk-8-oracle-arm32-vfp-hflt/jre" >> $bashrc
         echo 'export PATH=$PATH:$SPARK_HOME/bin' >> $bashrc
 
         cd $1/spark/conf
         cp spark-env.sh.template spark-env.sh
 fi
 . $bashrc
+E
