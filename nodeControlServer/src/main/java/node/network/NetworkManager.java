@@ -186,8 +186,7 @@ public class NetworkManager implements IServiceModule
 		{
 			return;
 		}
-		String sender = packetObj.getSender().toString();
-		System.out.println(sender.substring(sender.length() - 5, sender.length() - 1));
+
 		NetworkEvent event = new NetworkEvent(eventKey, addr, packetObj);
 		observable.notifyObservers(NodeControlCore.mainThreadPool, event);
 	}
