@@ -1,5 +1,0 @@
-//gradle plugins for this project
-plugins 
-{
-    id 'java'
-}

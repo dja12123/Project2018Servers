@@ -28,8 +28,7 @@ repositories
 //libs for this project
 dependencies 
 {
-    compile project(':dhcp4java')
-    
+
     compile ('org.xerial:sqlite-jdbc:3.7.2')
     
 	//compile ('org.nanohttpd:nanohttpd:2.3.1')
