@@ -7,13 +7,12 @@ fi
 
 bashrc=/etc/bash.bashrc
 
-sed -i "/export SPARK_HOME=$1/spark/d" $bashrc
-sed -i '/export PATH=$PATH:$SPARK_HOME/bin/d' $bashrc
+sed -i '/export/d' $bashrc
 
 rm -r $1/spark
 
-echo "Reboot System?"
+echo "Reboot System?(y/n)"
 read answer
-if [ $answer = "y" | $answer = "yes" ]; then
-	shutdown -r
+if [ $answer = "y" ]; then
+	reboot
 fi
