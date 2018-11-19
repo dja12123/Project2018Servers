@@ -57,6 +57,11 @@ public class ClusterService implements IServiceModule {
 			sparkManager.stopSparkMaster();
 			sparkManager.stopSparkWorker();
 		}
+
+		startSpark();
+
+		
+		
 		this.isMaster = eventInfo.isMaster;
 		this.masterIp = eventInfo.masterIP.getHostAddress();
 		this.connectState = eventInfo.state;
