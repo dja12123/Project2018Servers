@@ -42,3 +42,7 @@
     
     1. sh extResource/Shscript/uninstall_spark.sh /opt/ 실행
     2. 재부팅 
+
+프로젝트 자동빌드 (git pull도 자동으로 해줌)
+
+    sh extResource/Shscript/auto_build_proj.sh 
