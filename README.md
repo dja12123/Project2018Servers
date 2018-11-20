@@ -46,6 +46,7 @@
 
 ※ Spark 관련 명령어 안될시 sh 를 맨앞에 붙여줄것!
 
-프로젝트 자동빌드 (git pull도 자동으로 해줌)
+프로젝트 자동빌드&실행 (git pull도 자동으로 해줌)
 
     sh ~/Project2018Servers/nodeControlServer/extResource/Shscript/auto_build_proj.sh 
+    java -jar ~/Project2018Servers/nodeControlServer/build/libs/Project2018Servers.jar
