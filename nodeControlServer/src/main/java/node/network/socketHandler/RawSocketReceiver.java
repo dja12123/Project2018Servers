@@ -70,7 +70,7 @@ public class RawSocketReceiver implements Runnable
 		try
 		{
 			this.rawSocket.open(RawSocket.PF_INET, RawSocket.getProtocolByName("UDP"));
-			
+			this.rawSocket.setIPHeaderInclude(true);
 			//this.rawSocket.bindDevice(nic);
 			//logger.log(Level.INFO, String.format("바인드:(%s)", nic));
 		}
@@ -113,8 +113,6 @@ public class RawSocketReceiver implements Runnable
 		{
 			try
 			{
-				this.rawSocket.getSourceAddressForDestination(InetAddress.getByName("192.168.0.251"), packetBuffer);
-				System.out.println(NetworkUtil.bytesToHex(packetBuffer, 10));
 				
 				readLen = this.rawSocket.read(packetBuffer, NetworkUtil.broadcastIA(NetworkUtil.DEFAULT_SUBNET).getAddress());
 
@@ -125,6 +123,7 @@ public class RawSocketReceiver implements Runnable
 				byte[] copyBuf = Arrays.copyOfRange(packetBuffer, 28, readLen);
 			
 				this.receiveCallback.accept(NetworkUtil.broadcastIA(NetworkUtil.DEFAULT_SUBNET), copyBuf);
+				System.out.println(NetworkUtil.bytesToHex(packetBuffer, 10));
 			}
 			catch (IOException e)
 			{
