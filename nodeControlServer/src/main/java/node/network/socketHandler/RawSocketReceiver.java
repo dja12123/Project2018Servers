@@ -59,6 +59,16 @@ public class RawSocketReceiver implements Runnable
 		
 		try
 		{
+			CommandExecutor.executeCommand(String.format("ip link set %s promisc on", nic));
+		}
+		catch (Exception e)
+		{
+			logger.log(Level.SEVERE, "무작위 모드 변경 실패", e);
+			return;
+		}
+		
+		try
+		{
 			this.rawSocket.open(RawSocket.PF_INET, RawSocket.getProtocolByName("UDP"));
 			//this.rawSocket.bindDevice(nic);
 			//logger.log(Level.INFO, String.format("바인드:(%s)", nic));
@@ -69,15 +79,7 @@ public class RawSocketReceiver implements Runnable
 			return;
 		}
 		
-		try
-		{
-			CommandExecutor.executeCommand(String.format("ip link set %s promisc on", nic));
-		}
-		catch (Exception e)
-		{
-			logger.log(Level.SEVERE, "무작위 모드 변경 실패", e);
-			return;
-		}
+	
 		
 		this.worker.start();
 		return;
