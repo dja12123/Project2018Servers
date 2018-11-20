@@ -37,6 +37,7 @@ public class BroadcastHandler
 	private DatagramSocket socket;
 
 	private boolean isWork;
+	private Thread worker;
 
 	private BiConsumer<InetAddress, byte[]> receiveCallback;
 	
@@ -69,12 +70,15 @@ public class BroadcastHandler
 		{
 			this.socket = new DatagramSocket(null);
 			this.socket.bind(new InetSocketAddress(addr, NetworkUtil.broadcastPort()));
+			this.socket.setBroadcast(true);
 		}
 		catch (SocketException e)
 		{
 			logger.log(Level.SEVERE, String.format("바인딩 실패(%s:%d)", addr.getHostAddress(), NetworkUtil.broadcastPort()), e);
 			return;
 		}
+		this.worker = new Thread(this::run);
+		this.worker.start();
 		
 	}
 	
@@ -96,6 +100,26 @@ public class BroadcastHandler
 		catch (IOException e)
 		{
 			logger.log(Level.SEVERE, "브로드캐스트 실패", e);
+		}
+	}
+	
+	private void run()
+	{
+		DatagramPacket dgramPacket;
+		byte[] buffer = new byte[1024];
+		while(this.isWork)
+		{
+			dgramPacket = new DatagramPacket(buffer, buffer.length);
+			try
+			{
+				socket.receive(dgramPacket);
+				System.out.println("수신: " + dgramPacket.getAddress().getHostAddress());
+			}
+			catch (IOException e)
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 	}
 	
