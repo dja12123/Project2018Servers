@@ -71,7 +71,6 @@ public class UnicastHandler
 		packet.setPort(NetworkUtil.unicastPort());
 		try
 		{
-			System.out.println("유니캐스트 전송");
 			this.socket.send(packet);
 		}
 		catch (IOException e)
