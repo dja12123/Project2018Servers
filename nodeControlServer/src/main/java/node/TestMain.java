@@ -1,72 +1,90 @@
+// $Id: Sniffer.java,v 1.1 2002/02/18 21:49:49 pcharles Exp $
+
+/***************************************************************************
+ * Copyright (C) 2001, Rex Tsai <chihchun@kalug.linux.org.tw>              *
+ * Distributed under the Mozilla Public License                            *
+ *   http://www.mozilla.org/NPL/MPL-1.1.txt                                *
+ ***************************************************************************/
+
 package node;
 
-import java.io.File;
-import java.io.IOException;
-import java.lang.reflect.Field;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.InetAddress;
-import java.net.SocketException;
-import java.nio.ByteBuffer;
+import net.sourceforge.jpcap.capture.PacketCapture;
+import net.sourceforge.jpcap.capture.PacketListener;
+import net.sourceforge.jpcap.net.Packet;
+import net.sourceforge.jpcap.net.TCPPacket;
 
-import com.savarese.rocksaw.net.RawSocket;
 
-import node.fileIO.FileHandler;
-import node.network.NetworkUtil;
-import node.cluster.ClusterService;
-import node.detection.*;
-import node.util.observer.Observable;
-
-public class TestMain extends Observable<NodeDetectionEvent>
+/**
+ * jpcap Tutorial - Sniffer example
+ *
+ * @author Rex Tsai
+ * @version $Revision: 1.1 $
+ * @lastModifiedBy $Author: pcharles $
+ * @lastModifiedAt $Date: 2002/02/18 21:49:49 $
+ */
+public class TestMain
 {
-	
-	public static void main(String[] args) throws Exception
-	{
-		NodeControlCore.init();
-		TestMain tm = new TestMain();
-		
-		ClusterService cs = new ClusterService(tm);
-		InetAddress ip = InetAddress.getLocalHost();
-		cs.startModule();
-		
-		NodeDetectionEvent nde = new NodeDetectionEvent(ip, true, 0);
-		tm.notifyObservers(nde);
-		/*
-		RawSocket rawSocket = new RawSocket();
-		try
-		{
-			rawSocket.open(RawSocket.PF_INET, RawSocket.getProtocolByName("ICMP"));
-			rawSocket.bindDevice("eth0");
-		}
-		catch (IllegalStateException e)
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		catch (IOException e)
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		byte[] buffer = new byte[100000];
-		while(true)
-		{
-			System.out.println("정상적으로 수신중입니다...");
-			int readLen = 0;
-			try
-			{
-				readLen = rawSocket.read(buffer);
-			}
-			catch (IOException e)
-			{
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			System.out.println(NetworkUtil.bytesToHex(buffer, readLen));
-		}
-		*/
-		
-	}
-	
+  private static final int INFINITE = -1;
+  private static final int PACKET_COUNT = INFINITE; 
+  /*
+    private static final String HOST = "203.239.110.20";
+    private static final String FILTER = 
+      "host " + HOST + " and proto TCP and port 23";
+  */
 
+  private static final String FILTER = 
+    // "port 23";
+    "";
+
+  public static void main(String[] args) {
+    try {
+      if(args.length == 1){
+	TestMain sniffer = new TestMain(args[0]);
+      } else {
+	System.out.println("Usage: java Sniffer [device name]");
+	System.out.println("Available network devices on your machine:");
+	String[] devs = PacketCapture.lookupDevices();
+	for(int i = 0; i < devs.length ; i++)
+	  System.out.println("\t" + devs[i]);
+      }
+    } catch(Exception e) {
+      e.printStackTrace();
+    }
+  }
+
+  public TestMain(String device) throws Exception {
+    // Initialize jpcap
+    PacketCapture pcap = new PacketCapture();
+    System.out.println("Using device '" + device + "'");
+    pcap.open(device, true);
+    pcap.setFilter(FILTER, true);
+    pcap.addPacketListener(new PacketHandler());
+
+    System.out.println("Capturing packets...");
+    pcap.capture(PACKET_COUNT);
+  }
+}
+
+
+class PacketHandler implements PacketListener 
+{
+  @Override
+public void packetArrived(Packet packet) {
+    try {
+      // only handle TCP packets
+
+      if(packet instanceof TCPPacket) {
+	TCPPacket tcpPacket = (TCPPacket)packet;
+	byte[] data = tcpPacket.getTCPData();
+	    
+	String srcHost = tcpPacket.getSourceAddress();
+	String dstHost = tcpPacket.getDestinationAddress();
+	String isoData = new String(data, "ISO-8859-1");
+
+	System.out.println(srcHost+" -> " + dstHost + ": " + isoData);
+      }
+    } catch( Exception e ) {
+      e.printStackTrace();
+    }
+  }
 }
