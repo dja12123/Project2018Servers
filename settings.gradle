@@ -1,4 +1,3 @@
 rootProject.name = 'Project2018Servers'
 
-include 'dhcp4java'
 include 'nodeControlServer'
