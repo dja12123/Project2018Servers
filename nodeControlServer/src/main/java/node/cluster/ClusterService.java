@@ -64,6 +64,7 @@ public class ClusterService implements IServiceModule {
 			this.masterIp = eventInfo.masterIP.getHostAddress();
 			startSpark();
 		} else if( !this.masterIp.equals(eventInfo.masterIP.getHostAddress()) || this.isMaster != eventInfo.isMaster) { //마스터가 바뀔때 마스터, 워커 프로세스를 종료시켜준다.(잔존 프로세스 제거)
+			sparkManager.stopSparkMaster();
 			sparkManager.stopSparkWorker();
 			isWorkerRun = false;
 			
