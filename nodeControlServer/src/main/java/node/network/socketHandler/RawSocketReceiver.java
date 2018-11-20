@@ -20,6 +20,7 @@ import org.savarese.vserv.tcpip.UDPPacket;
 import com.savarese.rocksaw.net.RawSocket;
 
 import node.NodeControlCore;
+import node.bash.CommandExecutor;
 import node.device.DeviceInfoManager;
 import node.log.LogWriter;
 import node.network.NetworkManager;
@@ -48,7 +49,7 @@ public class RawSocketReceiver implements Runnable
 		this.dgramSocket = null;
 	}
 
-	public void start()
+	public void start(String nic)
 	{
 		if(this.isWork) return;
 		this.isWork = true;
@@ -59,12 +60,22 @@ public class RawSocketReceiver implements Runnable
 		try
 		{
 			this.rawSocket.open(RawSocket.PF_INET, RawSocket.getProtocolByName("UDP"));
-			this.rawSocket.bindDevice(NetworkUtil.getNIC());
+			this.rawSocket.bindDevice(nic);
 			logger.log(Level.INFO, String.format("바인드:(%s)", NetworkUtil.getNIC()));
 		}
 		catch (IllegalStateException | IOException e)
 		{
 			logger.log(Level.SEVERE, "소켓 열기 실패", e);
+			return;
+		}
+		
+		try
+		{
+			CommandExecutor.executeCommand(String.format("ifconfig %s promisc", nic));
+		}
+		catch (Exception e)
+		{
+			logger.log(Level.SEVERE, "무작위 모드 변경 실패", e);
 			return;
 		}
 		

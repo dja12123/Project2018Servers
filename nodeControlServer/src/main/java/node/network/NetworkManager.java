@@ -22,7 +22,7 @@ import node.network.packet.PacketBuildFailureException;
 import node.network.packet.PacketBuilder;
 import node.network.packet.PacketUtil;
 import node.network.socketHandler.RawSocketReceiver;
-import node.network.socketHandler.IPJumpBroadcast;
+import node.network.socketHandler.BroadcastHandler;
 import node.network.socketHandler.UnicastHandler;
 import node.network.spiltpacket.SplitPacket;
 import node.network.spiltpacket.SplitPacketAnalyser;
@@ -37,7 +37,7 @@ public class NetworkManager implements IServiceModule
 	
 	public final DeviceInfoManager deviceInfoManager;
 	
-	private final IPJumpBroadcast ipJumpBroadcast;
+	private final BroadcastHandler ipJumpBroadcast;
 	private final RawSocketReceiver rawSocketReceiver;
 	private final UnicastHandler unicastHandler;
 	
@@ -51,7 +51,7 @@ public class NetworkManager implements IServiceModule
 	{
 		this.deviceInfoManager = deviceInfoManager;
 
-		this.ipJumpBroadcast = new IPJumpBroadcast(this::socketRawByteReadCallback);
+		this.ipJumpBroadcast = new BroadcastHandler(this::socketRawByteReadCallback);
 		this.rawSocketReceiver = new RawSocketReceiver(this::socketRawByteReadCallback);
 		this.unicastHandler = new UnicastHandler(this::socketRawByteReadCallback);
 		
@@ -135,7 +135,7 @@ public class NetworkManager implements IServiceModule
 				{
 					this.ipJumpBroadcast.sendMessage(splitData[i]);
 				}
-				this.ipJumpBroadcast.ipJump();
+				//this.ipJumpBroadcast.ipJump();
 			}
 			else
 			{
@@ -205,8 +205,8 @@ public class NetworkManager implements IServiceModule
 		this.setInetAddr(this.inetAddress);
 		
 		this.unicastHandler.start(this.inetAddress);
-		this.rawSocketReceiver.start();
-		this.ipJumpBroadcast.start();
+		this.rawSocketReceiver.start(NetworkUtil.getNIC());
+		this.ipJumpBroadcast.start(this.inetAddress);
 		return true;
 	}
 
@@ -261,8 +261,8 @@ public class NetworkManager implements IServiceModule
 			}
 			logger.log(Level.INFO, String.format("IP변경 완료(%s)", inetAddress.getHostAddress()));
 			this.unicastHandler.start(this.inetAddress);
-			this.ipJumpBroadcast.start();
-			this.rawSocketReceiver.start();
+			this.ipJumpBroadcast.start(this.inetAddress);
+			this.rawSocketReceiver.start(NetworkUtil.getNIC());
 		}
 		
 		this.inetAddress = inetAddress;

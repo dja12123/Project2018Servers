@@ -6,6 +6,7 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
+import java.net.SocketException;
 import java.util.Arrays;
 import java.util.Random;
 import java.util.function.BiConsumer;
@@ -19,9 +20,9 @@ import node.network.NetworkManager;
 import node.network.NetworkUtil;
 import node.network.packet.PacketUtil;
 
-public class IPJumpBroadcast
+public class BroadcastHandler
 {
-	public static final Logger logger = LogWriter.createLogger(IPJumpBroadcast.class, "broadcastS");
+	public static final Logger logger = LogWriter.createLogger(BroadcastHandler.class, "broadcastS");
 	
 	private static final String PROP_BroadcastIPstart = "broadcastIPstart";
 	private static final String PROP_BroadcastIPend = "broadcastIPend";
@@ -41,7 +42,7 @@ public class IPJumpBroadcast
 	
 	private Random random;
 	
-	public IPJumpBroadcast(BiConsumer<InetAddress, byte[]> receiveCallback)
+	public BroadcastHandler(BiConsumer<InetAddress, byte[]> receiveCallback)
 	{
 		this.receiveCallback = receiveCallback;
 		
@@ -51,7 +52,7 @@ public class IPJumpBroadcast
 		this.random = new Random();
 	}
 	
-	public void start()
+	public void start(InetAddress addr)
 	{
 		if(this.isWork) return;
 		this.isWork = true;
@@ -61,8 +62,20 @@ public class IPJumpBroadcast
 		this.ipStart = Integer.parseInt(NodeControlCore.getProp(PROP_BroadcastIPstart));
 		this.ipEnd = Integer.parseInt(NodeControlCore.getProp(PROP_BroadcastIPend));
 		
-		this.nowIP = this.ipStart + this.random.nextInt(this.ipEnd - this.ipStart + 1);
-		this.ipJump();
+		//this.nowIP = this.ipStart + this.random.nextInt(this.ipEnd - this.ipStart + 1);
+		//this.ipJump();
+		
+		try
+		{
+			this.socket = new DatagramSocket(null);
+			this.socket.bind(new InetSocketAddress(addr, NetworkUtil.broadcastPort()));
+		}
+		catch (SocketException e)
+		{
+			logger.log(Level.SEVERE, "바인딩 실패");
+			return;
+		}
+		
 	}
 	
 	public synchronized void sendMessage(byte[] data)
@@ -86,7 +99,7 @@ public class IPJumpBroadcast
 		}
 	}
 	
-	public synchronized void ipJump()
+	/*public synchronized void ipJump()
 	{
 		int beforeIP = this.nowIP;
 		this.nowIP = this.ipStart + this.random.nextInt(this.ipEnd - this.ipStart);
@@ -118,7 +131,7 @@ public class IPJumpBroadcast
 			logger.log(Level.SEVERE, "소켓 열기 실패", e);
 			return;
 		}
-	}
+	}*/
 
 	public void stop()
 	{
