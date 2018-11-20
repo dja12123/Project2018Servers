@@ -60,8 +60,8 @@ public class RawSocketReceiver implements Runnable
 		try
 		{
 			this.rawSocket.open(RawSocket.PF_INET, RawSocket.getProtocolByName("UDP"));
-			this.rawSocket.bindDevice(nic);
-			logger.log(Level.INFO, String.format("바인드:(%s)", nic));
+			//this.rawSocket.bindDevice(nic);
+			//logger.log(Level.INFO, String.format("바인드:(%s)", nic));
 		}
 		catch (IllegalStateException | IOException e)
 		{
