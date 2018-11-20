@@ -201,7 +201,7 @@ public class NetworkManager implements IServiceModule
 	{
 		logger.log(Level.INFO, "네트워크 매니저 로드");
 		
-		this.setInetAddr(this.inetAddress);
+		this.setInetAddr(NetworkUtil.defaultAddr());
 		
 		this.unicastHandler.start(this.inetAddress);
 		this.rawSocketReceiver.start(NetworkUtil.getNIC());
