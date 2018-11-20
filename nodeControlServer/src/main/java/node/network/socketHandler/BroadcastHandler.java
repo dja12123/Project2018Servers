@@ -37,8 +37,7 @@ public class BroadcastHandler
 	private DatagramSocket socket;
 
 	private boolean isWork;
-	private Thread worker;
-
+	
 	private BiConsumer<InetAddress, byte[]> receiveCallback;
 	
 	private Random random;
@@ -77,7 +76,6 @@ public class BroadcastHandler
 			logger.log(Level.SEVERE, String.format("바인딩 실패(%s:%d)", addr.getHostAddress(), NetworkUtil.broadcastPort()), e);
 			return;
 		}
-		this.worker.start();
 		
 	}
 	
