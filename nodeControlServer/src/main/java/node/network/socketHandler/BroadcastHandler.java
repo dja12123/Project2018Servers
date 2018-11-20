@@ -72,7 +72,7 @@ public class BroadcastHandler
 		}
 		catch (SocketException e)
 		{
-			logger.log(Level.SEVERE, String.format("바인딩 실패(%s)", addr.getHostAddress()), e);
+			logger.log(Level.SEVERE, String.format("바인딩 실패(%s:%d)", addr.getHostAddress(), NetworkUtil.broadcastPort()), e);
 			return;
 		}
 		
