@@ -259,11 +259,12 @@ public class NetworkManager implements IServiceModule
 				e.printStackTrace();
 			}
 			logger.log(Level.INFO, String.format("IP변경 완료(%s)", inetAddress.getHostAddress()));
+			this.inetAddress = inetAddress;
 			this.unicastHandler.start(this.inetAddress);
 			this.ipJumpBroadcast.start(this.inetAddress);
 			this.rawSocketReceiver.start(NetworkUtil.getNIC());
 		}
 		
-		this.inetAddress = inetAddress;
+		
 	}
 }
