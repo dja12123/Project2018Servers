@@ -24,11 +24,10 @@ repositories
 //libs for this project
 dependencies 
 {
+    compile project(':nodeControlServer')
 	//Jpcap libs
 	// https://mvnrepository.com/artifact/jpcap/jpcap
 	compile group: 'jpcap', name: 'jpcap', version: '0.1.18-002'
-
-    compile project(':nodeControlServer')
 }
 
 task moveres(type: Copy){
