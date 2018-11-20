@@ -6,13 +6,11 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 
 import node.IServiceModule;
-import node.NodeControlCore;
 import node.bash.CommandExecutor;
 import node.cluster.spark.SparkManager;
 import node.log.LogWriter;
 import node.util.observer.Observable;
 import node.detection.NodeDetectionEvent;
-import node.detection.NodeDetectionService;
 
 public class ClusterService implements IServiceModule {
 	public static final int SPARK_INSTALLED = 0;
@@ -53,18 +51,27 @@ public class ClusterService implements IServiceModule {
 			return false;
 		}
 		clusterLogger.log(Level.INFO, "NodeDetectionEvent 이벤트 받음, Master IP : " + eventInfo.masterIP.getHostAddress() + "Is Master? : " + eventInfo.isMaster);
+		this.connectState = eventInfo.state;
 		
-		if(this.masterIp == null || (eventInfo.isMaster == true && this.isMaster == false) ) {	//마스터IP가 바뀔때 마스터, 워커 프로세스를 종료시켜준다.(잔존 프로세스 제거)
+		if(this.masterIp == null || eventInfo.masterIP == null ) {	//마스터가 현재 없을때 모든 스파크 프로세스 중지
 			sparkManager.stopSparkMaster();
 			sparkManager.stopSparkWorker();
 			isWorkerRun = false;
+			
+			//스파크 시작
+			this.isMaster = eventInfo.isMaster;
+			this.masterIp = eventInfo.masterIP.getHostAddress();
+			startSpark();
+		} else if( !this.masterIp.equals(eventInfo.masterIP.getHostAddress()) || this.isMaster != eventInfo.isMaster) { //마스터가 바뀔때 마스터, 워커 프로세스를 종료시켜준다.(잔존 프로세스 제거)
+			sparkManager.stopSparkWorker();
+			isWorkerRun = false;
+			
+			//스파크 시작
+			this.isMaster = eventInfo.isMaster;
+			this.masterIp = eventInfo.masterIP.getHostAddress();
+			startSpark();
+			
 		}
-		
-		this.isMaster = eventInfo.isMaster;
-		this.masterIp = eventInfo.masterIP.getHostAddress();
-		this.connectState = eventInfo.state;
-		
-		startSpark();
 		
 		return true;
 		
