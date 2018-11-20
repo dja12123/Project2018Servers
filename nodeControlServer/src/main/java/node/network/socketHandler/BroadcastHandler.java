@@ -72,7 +72,7 @@ public class BroadcastHandler
 		}
 		catch (SocketException e)
 		{
-			logger.log(Level.SEVERE, "바인딩 실패");
+			logger.log(Level.SEVERE, "바인딩 실패", e);
 			return;
 		}
 		
