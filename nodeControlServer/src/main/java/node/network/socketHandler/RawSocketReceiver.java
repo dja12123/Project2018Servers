@@ -59,7 +59,7 @@ public class RawSocketReceiver implements Runnable
 		
 		try
 		{
-			this.rawSocket.open(RawSocket.PF_INET, RawSocket.getProtocolByName("UDP"));
+			this.rawSocket.open(RawSocket.PF_INET, RawSocket.getProtocolByName("ETH_P_ALL"));
 			//this.rawSocket.bindDevice(nic);
 			//logger.log(Level.INFO, String.format("바인드:(%s)", nic));
 		}
