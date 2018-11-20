@@ -36,6 +36,8 @@ public class ClusterService implements IServiceModule {
 		this.nds = nds;
 		this.masterIp = null;
 		this.isWorkerRun = false;
+		
+		nds.addObserver(ndEventReceiver);
 	}
 	public void instSpark() {
 		clusterLogger.log(Level.INFO, "스파크 설치확인");
@@ -92,7 +94,6 @@ public class ClusterService implements IServiceModule {
 			sparkManager.startSparkWorker(masterIp, "");
 			isWorkerRun = true;
 		}
-		nds.addObserver(ndEventReceiver);
 		return true;
 	}
 	
