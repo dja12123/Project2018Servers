@@ -13,15 +13,26 @@ public class EncPacketConverter
 		try
 		{
 			byte[] firstLine = RSAEncrypt.decode(targetPacket.payLoad[0], privateKey);
-			EncPacketBuilder.printHex(firstLine);
 			
 			if(firstLine[0] == EncPacketUtil.MAGIC_NO_PART[0] && firstLine[1] == EncPacketUtil.MAGIC_NO_PART[1]) //분할일때
 			{
-				ByteBuffer buffer = ByteBuffer.wrap(deleteHead(firstLine));
+				int byteSize = 0; 
+				byte[][] bufferArr = new byte[targetPacket.partCount][];
+				bufferArr[0] = deleteHead(firstLine);
+				byteSize += bufferArr[0].length;
 				
 				for(int i = 1; i < targetPacket.partCount; ++i)
-					buffer.put(deleteHead(RSAEncrypt.decode(targetPacket.payLoad[i], privateKey)));
+				{
+					bufferArr[i] = deleteHead(RSAEncrypt.decode(targetPacket.payLoad[i], privateKey));
+					byteSize += bufferArr[i].length;
+				}
 				
+				ByteBuffer buffer = ByteBuffer.allocate(byteSize);
+				
+				
+				for(byte[] value : bufferArr)
+					buffer.put(value);
+					
 				return EncPacketUtil.convertByteBufferToByteArr(buffer);
 			}
 			else	//분할이 아닐때

@@ -10,44 +10,6 @@ import node.security.RSAKeyUtill;
 
 public class EncPacketBuilder 
 {
-	public static void main(String[] args)
-	{
-		//System.out.println(RSAKeyManager.DEFAULT_PUBLIC_KEY.toString());
-		printHex(RSAKeyManager.DEFAULT_PUBLIC_KEY.getEncoded());
-		
-		EncPacket packet = buildEncPacket(RSAKeyManager.DEFAULT_PUBLIC_KEY.getEncoded(),RSAKeyManager.getInstance().getPublicKey());
-		
-		
-		try
-		{
-			printHex(RSAEncrypt.decode(packet.payLoad[0], RSAKeyManager.getInstance().getPrivateKey()));
-		} catch (Exception e)
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-
-		byte[] rawPacket = EncPacketConverter.convertEncPacket(packet, RSAKeyManager.getInstance().getPrivateKey());
-		
-		//System.out.println(RSAKeyUtill.convertArrToKey(rawPacket).toString());
-	
-		/*for(byte value : rawPacket)
-			System.out.printf("%02x " ,value);*/
-		
-		return;
-	}
-	
-	public static void printHex(byte[] target)
-	{
-		System.out.println("---------------------------");
-		for(byte value : target)
-			System.out.printf("%02x " ,value);
-		
-		System.out.println();
-		System.out.println("---------------------------");
-	}
-	
 	public static EncPacket buildEncPacket(byte[] rawPacket, Key publicKey)
 	{
 		if(rawPacket.length + EncPacketUtil.MAGIC_NO_PART.length <= EncPacketUtil.PAYLOAD_SIZE)	//패킷 분할이 필요없을경우.
