@@ -1,0 +1,11 @@
+*.classpath
+*.bin
+*.lock
+*.project
+*.prefs
+*.class
+*.html
+*.properties
+*.jnilib
+*.jar
+*.dll
