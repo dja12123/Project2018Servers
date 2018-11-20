@@ -37,7 +37,6 @@ public class ClusterService implements IServiceModule {
 		this.masterIp = null;
 		this.isWorkerRun = false;
 		
-		nds.addObserver(ndEventReceiver);
 	}
 	public void instSpark() {
 		clusterLogger.log(Level.INFO, "스파크 설치확인");
@@ -79,6 +78,7 @@ public class ClusterService implements IServiceModule {
 		
 	}
 	public boolean startSpark() {		//스파크의 서버(마스터일때만) 와 워커를 실행
+		nds.addObserver(ndEventReceiver);
 		clusterLogger.log(Level.INFO, "스파크 시작");
 		
 		if(this.instFlag == SPARK_NOT_INSTALLED) {
