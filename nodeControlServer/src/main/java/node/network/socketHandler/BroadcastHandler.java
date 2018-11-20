@@ -67,9 +67,9 @@ public class BroadcastHandler
 		
 		try
 		{
-			this.socket = new DatagramSocket(null);
-			this.socket.bind(new InetSocketAddress(addr, NetworkUtil.broadcastPort()));
-			this.socket.setBroadcast(true);
+			this.socket = new DatagramSocket();
+			//this.socket.bind(new InetSocketAddress(addr, NetworkUtil.broadcastPort()));
+			//this.socket.setBroadcast(true);
 		}
 		catch (SocketException e)
 		{
