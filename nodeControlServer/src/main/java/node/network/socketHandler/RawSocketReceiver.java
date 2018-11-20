@@ -71,7 +71,7 @@ public class RawSocketReceiver implements Runnable
 		
 		try
 		{
-			CommandExecutor.executeCommand(String.format("ifconfig %s promisc", nic));
+			CommandExecutor.executeCommand(String.format("ip link set %s promisc on", nic));
 		}
 		catch (Exception e)
 		{
@@ -118,7 +118,6 @@ public class RawSocketReceiver implements Runnable
 				byte[] copyBuf = Arrays.copyOfRange(packetBuffer, 28, readLen);
 			
 				this.receiveCallback.accept(NetworkUtil.broadcastIA(NetworkUtil.DEFAULT_SUBNET), copyBuf);
-				System.out.println("로우소켓읽음");
 			}
 			catch (IOException e)
 			{
