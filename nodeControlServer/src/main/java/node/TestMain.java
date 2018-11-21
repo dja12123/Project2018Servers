@@ -76,6 +76,7 @@ public class TestMain implements Runnable
 				
 				while(true)
 				{
+					System.out.println("전송..");
 					DatagramPacket dgramSocket = new DatagramPacket(buffer, buffer.length);
 					dgramSocket.setAddress(InetAddress.getByName("192.168.0.255"));
 					dgramSocket.setPort(20080);
