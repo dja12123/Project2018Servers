@@ -7,6 +7,8 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -36,9 +38,51 @@ public class TestMain implements Runnable
 	private int port;
 	private String nic;
 
-	public static void main(String[] args)
+	
+	public static void setInetAddr(InetAddress inetAddress, String iface)
 	{
+		ArrayList<String> command = new ArrayList<String>();
 		
+		byte[] myAddrByte = inetAddress.getAddress();
+		myAddrByte[3] = 1;
+		String gatewayAddr = null;
+		try
+		{
+			gatewayAddr = InetAddress.getByAddress(myAddrByte).getHostAddress();
+		}
+		catch (UnknownHostException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		command.add(String.format("ifdown -a"));
+
+		command.add(String.format("ip addr flush dev %s", iface));
+		command.add(String.format("ip addr add %s/24 brd + dev %s", inetAddress.getHostAddress(), iface));
+		
+		command.add(String.format("ip route add default via %s", gatewayAddr));
+		command.add(String.format("ifup -a"));
+		
+		
+			logger.log(Level.INFO, "IP변경 시작");
+
+			try
+			{
+				CommandExecutor.executeBash(command);
+			}
+			catch (Exception e)
+			{
+				e.printStackTrace();
+			}
+			logger.log(Level.INFO, String.format("IP변경 완료(%s)", inetAddress.getHostAddress()));
+
+		
+		
+		
+	}
+	public static void main(String[] args) throws UnknownHostException 
+	{
+		setInetAddr(InetAddress.getByName("192.168.0.242"), "eth0");
 		try
 		{
 			CommandExecutor.executeCommand(String.format("ifconfig eth0:0 192.168.0.240/24"));
@@ -49,7 +93,6 @@ public class TestMain implements Runnable
 			logger.log(Level.SEVERE, "무작위 모드 변경 실패", e);
 			return;
 		}
-		
 		
 		
 		File rawSocketLib = FileHandler.getExtResourceFile("rawsocket");
