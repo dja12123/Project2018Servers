@@ -1,90 +1,69 @@
-// $Id: Sniffer.java,v 1.1 2002/02/18 21:49:49 pcharles Exp $
-
-/***************************************************************************
- * Copyright (C) 2001, Rex Tsai <chihchun@kalug.linux.org.tw>              *
- * Distributed under the Mozilla Public License                            *
- *   http://www.mozilla.org/NPL/MPL-1.1.txt                                *
- ***************************************************************************/
-
 package node;
 
-import net.sourceforge.jpcap.capture.PacketCapture;
-import net.sourceforge.jpcap.capture.PacketListener;
-import net.sourceforge.jpcap.net.Packet;
-import net.sourceforge.jpcap.net.TCPPacket;
+import java.util.ArrayList;
+import java.util.List;
+import org.jnetpcap.Pcap;
+import org.jnetpcap.PcapIf;
+import org.jnetpcap.packet.PcapPacket;
+import org.jnetpcap.packet.PcapPacketHandler;
+import org.jnetpcap.protocol.network.Ip4;
 
-
-/**
- * jpcap Tutorial - Sniffer example
- *
- * @author Rex Tsai
- * @version $Revision: 1.1 $
- * @lastModifiedBy $Author: pcharles $
- * @lastModifiedAt $Date: 2002/02/18 21:49:49 $
- */
 public class TestMain
 {
-  private static final int INFINITE = -1;
-  private static final int PACKET_COUNT = INFINITE; 
-  /*
-    private static final String HOST = "203.239.110.20";
-    private static final String FILTER = 
-      "host " + HOST + " and proto TCP and port 23";
-  */
+	public static void main(String[] args)
+	{
+		List<PcapIf> alldevs = new ArrayList<PcapIf>(); // Will be filled with NICs
+		StringBuilder errbuf = new StringBuilder(); // For any error msgs
+		int r = Pcap.findAllDevs(alldevs, errbuf);
+		if (r != Pcap.OK || alldevs.isEmpty())
+		{
+			System.err.printf("Can't read list of devices, error is %s", errbuf.toString());
+			return;
+		}
+		System.out.println("Network devices found:");
+		int i = 0;
+		for (PcapIf device : alldevs)
+		{
+			String description = (device.getDescription() != null) ? device.getDescription()
+					: "No description available";
+			System.out.printf("#%d: %s [%s]\n", i++, device.getName(), description);
+		}
+		PcapIf device = alldevs.get(0); // Get first device in list
+		System.out.printf("\nChoosing '%s' on your behalf:\n",
+				(device.getDescription() != null) ? device.getDescription() : device.getName());
+		int snaplen = 64 * 1024; // Capture all packets, no trucation
+		int flags = Pcap.MODE_PROMISCUOUS; // capture all packets
+		int timeout = 10 * 1000; // 10 seconds in millis
+		Pcap pcap = Pcap.openLive(device.getName(), snaplen, flags, timeout, errbuf);
+		if (pcap == null)
+		{
+			System.err.printf("Error while opening device for capture: " + errbuf.toString());
+			return;
+		}
+		PcapPacketHandler<String> jpacketHandler = new PcapPacketHandler<String>()
+		{
+			public void nextPacket(PcapPacket packet, String user)
+			{
+				byte[] data = packet.getByteArray(0, packet.size()); // the package data
+				byte[] sIP = new byte[4];
+				byte[] dIP = new byte[4];
+				Ip4 ip = new Ip4();
+				if (packet.hasHeader(ip) == false)
+				{
+					return; // Not IP packet
+				}
+				ip.source(sIP);
+				ip.destination(dIP);
+				/* Use jNetPcap format utilities */
+				String sourceIP = org.jnetpcap.packet.format.FormatUtils.ip(sIP);
+				String destinationIP = org.jnetpcap.packet.format.FormatUtils.ip(dIP);
 
-  private static final String FILTER = 
-    // "port 23";
-    "";
-
-  public static void main(String[] args) {
-    try {
-      if(args.length == 1){
-	TestMain sniffer = new TestMain(args[0]);
-      } else {
-	System.out.println("Usage: java Sniffer [device name]");
-	System.out.println("Available network devices on your machine:");
-	String[] devs = PacketCapture.lookupDevices();
-	for(int i = 0; i < devs.length ; i++)
-	  System.out.println("\t" + devs[i]);
-      }
-    } catch(Exception e) {
-      e.printStackTrace();
-    }
-  }
-
-  public TestMain(String device) throws Exception {
-    // Initialize jpcap
-    PacketCapture pcap = new PacketCapture();
-    System.out.println("Using device '" + device + "'");
-    pcap.open(device, true);
-    pcap.setFilter(FILTER, true);
-    pcap.addPacketListener(new PacketHandler());
-
-    System.out.println("Capturing packets...");
-    pcap.capture(PACKET_COUNT);
-  }
-}
-
-
-class PacketHandler implements PacketListener 
-{
-  @Override
-public void packetArrived(Packet packet) {
-    try {
-      // only handle TCP packets
-
-      if(packet instanceof TCPPacket) {
-	TCPPacket tcpPacket = (TCPPacket)packet;
-	byte[] data = tcpPacket.getTCPData();
-	    
-	String srcHost = tcpPacket.getSourceAddress();
-	String dstHost = tcpPacket.getDestinationAddress();
-	String isoData = new String(data, "ISO-8859-1");
-
-	System.out.println(srcHost+" -> " + dstHost + ": " + isoData);
-      }
-    } catch( Exception e ) {
-      e.printStackTrace();
-    }
-  }
+				System.out.println("srcIP=" + sourceIP + " dstIP=" + destinationIP + " caplen="
+						+ packet.getCaptureHeader().caplen());
+			}
+		};
+		// capture first 10 packages
+		pcap.loop(10, jpacketHandler, "jNetPcap");
+		pcap.close();
+	}
 }
