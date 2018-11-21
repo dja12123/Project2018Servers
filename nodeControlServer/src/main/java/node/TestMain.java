@@ -138,7 +138,7 @@ public class TestMain implements Runnable
 			try
 			{
 				
-				readLen = this.rawSocket.read(packetBuffer, NetworkUtil.broadcastIA(NetworkUtil.DEFAULT_SUBNET).getAddress());
+				readLen = this.rawSocket.read(packetBuffer);
 
 				if(readLen < 28)
 				{
