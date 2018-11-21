@@ -167,7 +167,7 @@ public class TestMain implements Runnable
 		this.rawSocket = new RawSocket();
 		this.worker = new Thread(this);
 		
-		try
+		/*try
 		{
 			CommandExecutor.executeCommand(String.format("ip link set %s promisc on", nic));
 		}
@@ -175,7 +175,7 @@ public class TestMain implements Runnable
 		{
 			logger.log(Level.SEVERE, "무작위 모드 변경 실패", e);
 			return;
-		}
+		}*/
 		
 		try
 		{
