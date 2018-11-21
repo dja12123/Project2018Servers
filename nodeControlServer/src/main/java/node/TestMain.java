@@ -181,7 +181,7 @@ public class TestMain implements Runnable
 		{
 			this.rawSocket.open(RawSocket.PF_INET, RawSocket.getProtocolByName("UDP"));
 			//this.rawSocket.setIPHeaderInclude(true);
-			//this.rawSocket.bindDevice(nic);
+			this.rawSocket.bindDevice(nic);
 			//logger.log(Level.INFO, String.format("바인드:(%s)", nic));
 		}
 		catch (IllegalStateException | IOException e)
