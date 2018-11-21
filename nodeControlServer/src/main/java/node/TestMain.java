@@ -1,21 +1,42 @@
 package node;
 
 import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.Field;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.function.BiConsumer;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
-import org.jnetpcap.Pcap;
-import org.jnetpcap.PcapIf;
-import org.jnetpcap.packet.PcapPacket;
-import org.jnetpcap.packet.PcapPacketHandler;
-import org.jnetpcap.protocol.network.Ip4;
+import org.savarese.vserv.tcpip.ICMPPacket;
+import org.savarese.vserv.tcpip.IPPacket;
 
+import com.savarese.rocksaw.net.RawSocket;
+
+import node.bash.CommandExecutor;
 import node.fileIO.FileHandler;
+import node.log.LogWriter;
+import node.network.NetworkUtil;
+import node.network.packet.PacketUtil;
+import node.network.socketHandler.RawSocketReceiver;
 
-public class TestMain
+public class TestMain implements Runnable
 {
+	public static final Logger logger = LogWriter.createLogger(RawSocketReceiver.class, "rawsocket");
+	
+	private Thread worker;
+	private boolean isWork;
+	private DatagramSocket dgramSocket;
+	
+	private RawSocket rawSocket;
+
+	private int port;
+	private String nic;
+
 	public static void main(String[] args)
 	{
 		File rawSocketLib = FileHandler.getExtResourceFile("rawsocket");
@@ -35,66 +56,152 @@ public class TestMain
 		catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e1)
 		{
 			// TODO Auto-generated catch blsock
-			System.out.print("링크 실패");
+			logger.log(Level.SEVERE, "JNI 라이브러리 폴더 링크 실패", e1);
 			return;
 		}
 		System.loadLibrary("rocksaw");
-		System.out.println("링크 성공");
+		logger.log(Level.INFO, "JNI 라이브러리 로드");
 		
-		
-		
-		List<PcapIf> alldevs = new ArrayList<PcapIf>(); // Will be filled with NICs
-		StringBuilder errbuf = new StringBuilder(); // For any error msgs
-		int r = Pcap.findAllDevs(alldevs, errbuf);
-		if (r != Pcap.OK || alldevs.isEmpty())
-		{
-			System.err.printf("Can't read list of devices, error is %s", errbuf.toString());
-			return;
-		}
-		System.out.println("Network devices found:");
-		int i = 0;
-		for (PcapIf device : alldevs)
-		{
-			String description = (device.getDescription() != null) ? device.getDescription()
-					: "No description available";
-			System.out.printf("#%d: %s [%s]\n", i++, device.getName(), description);
-		}
-		PcapIf device = alldevs.get(0); // Get first device in list
-		System.out.printf("\nChoosing '%s' on your behalf:\n",
-				(device.getDescription() != null) ? device.getDescription() : device.getName());
-		int snaplen = 64 * 1024; // Capture all packets, no trucation
-		int flags = Pcap.MODE_PROMISCUOUS; // capture all packets
-		int timeout = 10 * 1000; // 10 seconds in millis
-		Pcap pcap = Pcap.openLive(device.getName(), snaplen, flags, timeout, errbuf);
-		if (pcap == null)
-		{
-			System.err.printf("Error while opening device for capture: " + errbuf.toString());
-			return;
-		}
-		PcapPacketHandler<String> jpacketHandler = new PcapPacketHandler<String>()
-		{
-			public void nextPacket(PcapPacket packet, String user)
-			{
-				byte[] data = packet.getByteArray(0, packet.size()); // the package data
-				byte[] sIP = new byte[4];
-				byte[] dIP = new byte[4];
-				Ip4 ip = new Ip4();
-				if (packet.hasHeader(ip) == false)
-				{
-					return; // Not IP packet
-				}
-				ip.source(sIP);
-				ip.destination(dIP);
-				/* Use jNetPcap format utilities */
-				String sourceIP = org.jnetpcap.packet.format.FormatUtils.ip(sIP);
-				String destinationIP = org.jnetpcap.packet.format.FormatUtils.ip(dIP);
-
-				System.out.println("srcIP=" + sourceIP + " dstIP=" + destinationIP + " caplen="
-						+ packet.getCaptureHeader().caplen());
-			}
-		};
-		// capture first 10 packages
-		pcap.loop(10, jpacketHandler, "jNetPcap");
-		pcap.close();
+		TestMain t= new TestMain();
+		t.start("eth0");
 	}
+	
+	public TestMain()
+	{
+
+		this.rawSocket = null;
+		this.dgramSocket = null;
+	}
+
+	public void start(String nic)
+	{
+		if(this.isWork) return;
+		this.isWork = true;
+		
+		this.rawSocket = new RawSocket();
+		this.worker = new Thread(this);
+		
+		try
+		{
+			CommandExecutor.executeCommand(String.format("ip link set %s promisc on", nic));
+		}
+		catch (Exception e)
+		{
+			logger.log(Level.SEVERE, "무작위 모드 변경 실패", e);
+			return;
+		}
+		
+		try
+		{
+			this.rawSocket.open(RawSocket.PF_INET, RawSocket.getProtocolByName("UDP"));
+			this.rawSocket.setIPHeaderInclude(true);
+			//this.rawSocket.bindDevice(nic);
+			//logger.log(Level.INFO, String.format("바인드:(%s)", nic));
+		}
+		catch (IllegalStateException | IOException e)
+		{
+			logger.log(Level.SEVERE, "소켓 열기 실패", e);
+			return;
+		}
+		
+	
+		
+		this.worker.start();
+		return;
+	}
+
+	public void stop()
+	{
+		if(!this.isWork) return;
+		this.isWork = false;
+		
+		try
+		{
+			this.rawSocket.close();
+		}
+		catch (IOException e)
+		{
+			logger.log(Level.SEVERE, "로우 소켓 종료중 오류", e);
+		}
+		this.worker.interrupt();
+	}
+
+	@Override
+	public void run()
+	{
+		logger.log(Level.INFO, "로우 소켓 수신 시작");
+		byte[] packetBuffer = new byte[PacketUtil.HEADER_SIZE + PacketUtil.MAX_SIZE_KEY + PacketUtil.MAX_SIZE_DATA];
+		int readLen = 0;
+		
+		while(this.isWork)
+		{
+			try
+			{
+				
+				readLen = this.rawSocket.read(packetBuffer, NetworkUtil.broadcastIA(NetworkUtil.DEFAULT_SUBNET).getAddress());
+
+				if(readLen < 28)
+				{
+					continue;
+				}
+				byte[] copyBuf = Arrays.copyOfRange(packetBuffer, 28, readLen);
+				System.out.println("수신중...");
+				System.out.println(NetworkUtil.bytesToHex(packetBuffer, 20));
+			}
+			catch (IOException e)
+			{
+				if(!this.rawSocket.isOpen())
+				{
+					logger.log(Level.INFO, "소켓 종료");
+					return;
+				}
+				logger.log(Level.SEVERE, "수신 실패", e);
+			}
+			
+		}
+		logger.log(Level.INFO, "로우 소켓 수신 종료");
+	}
+}
+
+
+class NodeControlICMP extends ICMPPacket
+{
+	private static int IP_HEADER_SIZE = 20;
+	
+	private static int TYPE_NODE_ASSIGN = 14;
+	private static int CODE_BROADCAST = 0;
+	
+	public NodeControlICMP(byte[] pdata)
+	{
+		super(1);
+		byte[] fullPacket = new byte[IP_HEADER_SIZE + 8 + pdata.length];
+		System.arraycopy(pdata, 0, fullPacket, 20 + 8, pdata.length);
+		
+		this.setData(fullPacket);
+		
+		this.setIPVersion(4);
+		this.setIPHeaderLength(5);
+		this.setIPPacketLength(fullPacket.length);
+		this.setFragmentOffset(0x0400);
+		this.setTTL(0x64);
+		this.setProtocol(IPPacket.PROTOCOL_ICMP);
+		
+		this.setType(TYPE_NODE_ASSIGN);
+		this.setCode(CODE_BROADCAST);
+		
+		this.computeICMPChecksum();
+		this.computeIPChecksum();
+	}
+	
+	public byte[] getData()
+	{
+		return this._data_;
+	}
+
+	@Override
+	public int getICMPHeaderByteLength()
+	{
+		return 4;
+	}
+	
 }
