@@ -83,7 +83,7 @@ public class TestMain implements Runnable
 	public static void main(String[] args) throws UnknownHostException 
 	{
 		setInetAddr(InetAddress.getByName("192.168.0.242"), "eth0");
-		try
+		/*try
 		{
 			CommandExecutor.executeCommand(String.format("ifconfig eth0:0 192.168.0.240/24"));
 			CommandExecutor.executeCommand(String.format("ip link set %s promisc on", "eth0:0"));
@@ -92,7 +92,7 @@ public class TestMain implements Runnable
 		{
 			logger.log(Level.SEVERE, "무작위 모드 변경 실패", e);
 			return;
-		}
+		}*/
 		
 		
 		File rawSocketLib = FileHandler.getExtResourceFile("rawsocket");
@@ -119,7 +119,7 @@ public class TestMain implements Runnable
 		logger.log(Level.INFO, "JNI 라이브러리 로드");
 		
 		TestMain t= new TestMain();
-		t.start("eth0:0");
+		t.start("eth0");
 		
 		Thread s = new Thread(()->{
 			
