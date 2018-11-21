@@ -3,12 +3,11 @@ package node;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.util.ArrayList;
+import java.net.InetSocketAddress;
 import java.util.Arrays;
-import java.util.List;
-import java.util.function.BiConsumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -64,6 +63,35 @@ public class TestMain implements Runnable
 		
 		TestMain t= new TestMain();
 		t.start("eth0");
+		
+		Thread s = new Thread(()->{
+			
+			
+			try
+			{
+				DatagramSocket socket = new DatagramSocket(null);
+				socket.bind(new InetSocketAddress("192.168.0.251", 20080));
+				socket.setBroadcast(true);
+				byte[] buffer = "HELLO".getBytes();
+				
+				while(true)
+				{
+					DatagramPacket dgramSocket = new DatagramPacket(buffer, buffer.length);
+					dgramSocket.setAddress(InetAddress.getByName("192.168.0.255"));
+					dgramSocket.setPort(20080);
+					socket.send(dgramSocket);
+					Thread.sleep(1000);
+				}
+			}
+			catch (Exception e)
+			{
+				
+			}
+			
+	
+			
+		});
+		s.start();
 	}
 	
 	public TestMain()
