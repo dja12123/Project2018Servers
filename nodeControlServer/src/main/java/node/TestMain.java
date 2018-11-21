@@ -1,17 +1,48 @@
 package node;
 
+import java.io.File;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+
 import org.jnetpcap.Pcap;
 import org.jnetpcap.PcapIf;
 import org.jnetpcap.packet.PcapPacket;
 import org.jnetpcap.packet.PcapPacketHandler;
 import org.jnetpcap.protocol.network.Ip4;
 
+import node.fileIO.FileHandler;
+
 public class TestMain
 {
 	public static void main(String[] args)
 	{
+		File rawSocketLib = FileHandler.getExtResourceFile("rawsocket");
+		StringBuffer libPathBuffer = new StringBuffer();
+		libPathBuffer.append(rawSocketLib.toString());
+		libPathBuffer.append(":");
+		libPathBuffer.append(System.getProperty("java.library.path"));
+		
+		System.setProperty("java.library.path", libPathBuffer.toString());
+		Field sysPathsField = null;
+		try
+		{
+			sysPathsField = ClassLoader.class.getDeclaredField("sys_paths");
+			sysPathsField.setAccessible(true);
+			sysPathsField.set(null, null);
+		}
+		catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e1)
+		{
+			// TODO Auto-generated catch blsock
+			System.out.print("링크 실패");
+			return;
+		}
+		System.loadLibrary("rocksaw");
+		System.out.println("링크 성공");
+		
+		
+		
 		List<PcapIf> alldevs = new ArrayList<PcapIf>(); // Will be filled with NICs
 		StringBuilder errbuf = new StringBuilder(); // For any error msgs
 		int r = Pcap.findAllDevs(alldevs, errbuf);
