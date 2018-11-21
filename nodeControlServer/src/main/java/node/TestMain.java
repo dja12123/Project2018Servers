@@ -126,8 +126,8 @@ public class TestMain implements Runnable
 			
 			try
 			{
-				DatagramSocket socket = new DatagramSocket(null);
-				socket.bind(new InetSocketAddress("192.168.0.242", 20080));
+				DatagramSocket socket = new DatagramSocket();
+				//socket.bind(new InetSocketAddress("192.168.0.242", 20080));
 				socket.setBroadcast(true);
 				byte[] buffer = "HELLO".getBytes();
 				
