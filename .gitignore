@@ -9,3 +9,6 @@
 *.jnilib
 *.jar
 *.dll
+*.so
+/bin/
+nodeControlServer/bin/
