@@ -34,8 +34,8 @@ public class LEDControlInst
 		this.bg = bg;
 		this.bb = bb;
 		
-		this.isLight = true;
-		this.time = this.lightTime;
+		this.isLight = false;
+		this.time = 0;
 	}
 	
 	int getRepeat()
@@ -79,7 +79,6 @@ public class LEDControlInst
 			}
 			else
 			{// led on
-				
 				led_driver.setPixelColourRGB(this.pixel, this.r, this.g, this.b);
 				led_driver.render();
 				
