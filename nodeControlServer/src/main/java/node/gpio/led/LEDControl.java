@@ -96,8 +96,6 @@ public class LEDControl
 			{
 				this.notifyAll();
 			}
-			
-			System.out.println(Thread.currentThread().getName());
 
 			for (int i = 0; i < NUM_LED; ++i)
 			{
