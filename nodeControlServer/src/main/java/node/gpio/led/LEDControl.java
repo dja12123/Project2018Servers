@@ -34,7 +34,7 @@ public class LEDControl
 	public synchronized LEDControlInst createLEDControl(int pixel, int lightTime, int blackTime, int repeat, int r,
 			int g, int b, int br, int bg, int bb)
 	{
-		if(this.ledDriver == null)
+		if (this.ledDriver == null)
 		{
 			try
 			{
@@ -90,43 +90,42 @@ public class LEDControl
 
 	private void run()
 	{
-		try
+
+		LedDriverInterface iface = new WS281xSpi(2, 0, StripType.WS2812, NUM_LED, 255);
+		this.ledDriver = iface;
+		synchronized (this)
 		{
-			
-			LedDriverInterface iface = new WS281xSpi(2, 0, StripType.WS2812, NUM_LED, 255);
-			this.ledDriver = iface;
-			synchronized (this)
+			this.notifyAll();
+		}
+
+		for (int k = 0; k < 3; ++k)
+		{
+			for (int i = 0; i < NUM_LED; ++i)
 			{
-				this.notifyAll();
+				this.ledDriver.setPixelColourRGB(i, 255, 255, 255);
 			}
-
-			for(int k = 0; k < 3; ++k)
+			this.ledDriver.render();
+			SleepUtil.sleepMillis(100);
+			for (int i = 0; i < NUM_LED; ++i)
 			{
-				for (int i = 0; i < NUM_LED; ++i)
-				{
-					this.ledDriver.setPixelColourRGB(i, 255, 255, 255);
-				}
-				this.ledDriver.render();
-				SleepUtil.sleepMillis(100);
-				for (int i = 0; i < NUM_LED; ++i)
-				{
-					this.ledDriver.setPixelColourRGB(i, 0, 0, 0);
-				}
-				this.ledDriver.render();
-				SleepUtil.sleepMillis(100);
+				this.ledDriver.setPixelColourRGB(i, 0, 0, 0);
 			}
+			this.ledDriver.render();
+			SleepUtil.sleepMillis(100);
+		}
 
-			boolean[] isUpdateLOW = new boolean[NUM_LED];
-			boolean[] isLight = new boolean[NUM_LED];
-			while (true)
+		boolean[] isUpdateLOW = new boolean[NUM_LED];
+		boolean[] isLight = new boolean[NUM_LED];
+		while (true)
+		{
+			try
 			{
-
 				for (int i = 0; i < NUM_LED; ++i)
 				{
 					isUpdateLOW[i] = false;
 					isLight[i] = false;
 				}
-			
+
 				for (int i = this.controllers.size() - 1; i >= 0; --i)
 				{
 					LEDControlInst inst = this.controllers.get(i);
@@ -170,13 +169,15 @@ public class LEDControl
 					}
 					this.infControllers[i].update();
 				}
-				
+
 				SleepUtil.sleepMillis(SLEEP_TIME);
+
 			}
-		}
-		catch(Exception e)
-		{
-			e.printStackTrace();
+
+			catch (Exception e)
+			{
+				e.printStackTrace();
+			}
 		}
 	}
 }
