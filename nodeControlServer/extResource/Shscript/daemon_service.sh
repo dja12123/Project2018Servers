@@ -1,43 +1,76 @@
-#!/bin/sh
-SERVICE_NAME=Project2018Servers
-PATH_TO_JAR=/root/Project2018Servers/nodeControlServer/build/libs/Project2018Servers.jar
-PID_PATH_NAME=/tmp/Project2018Servers-pid
-
-case $1 in
-    start)
-        echo "Starting $SERVICE_NAME ..."
-        if [ ! -f $PID_PATH_NAME ]; then
-            nohup java -jar $PATH_TO_JAR /tmp 2>> /dev/null >> /dev/null &
-            echo $! > $PID_PATH_NAME
-            echo "$SERVICE_NAME started ..."
+#!/bin/bash
+ 
+BASE_DIR=/Project2018Servers/nodeControlServer/build/libs/
+START_COMMAND="java -jar Project2018Servers.jar"
+PID_FILE=$BASE_DIR/dropwizard-rest-stub.pid
+LOG_DIR=$BASE_DIR/logs
+ 
+start() {
+  PID=`$START_COMMAND > $LOG_DIR/init.log 2>$LOG_DIR/init.error.log & echo $!`
+}
+ 
+case "$1" in
+start)
+    if [ -f $PID_FILE ]; then
+        PID=`cat $PID_FILE`
+        if [ -z "`ps axf | grep ${PID} | grep -v grep`" ]; then
+            start
         else
-            echo "$SERVICE_NAME is already running ..."
+            echo "Already running [$PID]"
+            exit 0
         fi
-    ;;
-    stop)
-        if [ -f $PID_PATH_NAME ]; then
-            PID=$(cat $PID_PATH_NAME);
-            echo "$SERVICE_NAME stoping ..."
-            kill $PID;
-            echo "$SERVICE_NAME stopped ..."
-            rm $PID_PATH_NAME
+    else
+        start
+    fi
+ 
+    if [ -z $PID ]; then
+        echo "Failed starting"
+        exit 1
+    else
+        echo $PID > $PID_FILE
+        echo "Started [$PID]"
+        exit 0
+    fi
+;;
+status)
+    if [ -f $PID_FILE ]; then
+        PID=`cat $PID_FILE`
+        if [ -z "`ps axf | grep ${PID} | grep -v grep`" ]; then
+            echo "Not running (process dead but PID file exists)"
+            exit 1
         else
-            echo "$SERVICE_NAME is not running ..."
+            echo "Running [$PID]"
+            exit 0
         fi
-    ;;
-    restart)
-        if [ -f $PID_PATH_NAME ]; then
-            PID=$(cat $PID_PATH_NAME);
-            echo "$SERVICE_NAME stopping ...";
-            kill $PID;
-            echo "$SERVICE_NAME stopped ...";
-            rm $PID_PATH_NAME
-            echo "$SERVICE_NAME starting ..."
-            nohup java -jar $PATH_TO_JAR /tmp 2>> /dev/null >> /dev/null &
-            echo $! > $PID_PATH_NAME
-            echo "$SERVICE_NAME started ..."
+    else
+        echo "Not running"
+        exit 0
+    fi
+;;
+stop)
+    if [ -f $PID_FILE ]; then
+        PID=`cat $PID_FILE`
+        if [ -z "`ps axf | grep ${PID} | grep -v grep`" ]; then
+            echo "Not running (process dead but PID file exists)"
+            rm -f $PID_FILE
+            exit 1
         else
-            echo "$SERVICE_NAME is not running ..."
+            PID=`cat $PID_FILE`
+            kill -term $PID
+            echo "Stopped [$PID]"
+            rm -f $PID_FILE
+            exit 0
         fi
-    ;;
-esac 
+    else
+        echo "Not running (PID not found)"
+        exit 0
+    fi
+;;
+restart)
+    $0 stop
+    $0 start
+;;
+*)
+    echo "Usage: $0 {status|start|stop|restart}"
+    exit 0
+esac
