@@ -215,7 +215,7 @@ public class NetworkManager implements IServiceModule
 		
 		this.unicastHandler.start(this.inetAddress, this.netConfig.unicastPort());
 		this.rawSocketReceiver.start(this.netConfig.getNIC(), this.netConfig.broadcastPort());
-		this.broadcastSender.start(this.inetAddress, this.netConfig.broadcastPort());
+		this.broadcastSender.start(this.netConfig.broadcastIA(NetworkConfig.DEFAULT_SUBNET), this.netConfig.broadcastPort());
 		return true;
 	}
 
@@ -271,7 +271,7 @@ public class NetworkManager implements IServiceModule
 			logger.log(Level.INFO, String.format("IP변경 완료(%s)", inetAddress.getHostAddress()));
 			this.inetAddress = inetAddress;
 			this.unicastHandler.start(this.inetAddress, this.netConfig.unicastPort());
-			this.broadcastSender.start(this.inetAddress, this.netConfig.broadcastPort());
+			this.broadcastSender.start(this.netConfig.broadcastIA(NetworkConfig.DEFAULT_SUBNET), this.netConfig.broadcastPort());
 			this.rawSocketReceiver.start(this.netConfig.getNIC(), this.netConfig.broadcastPort());
 		}
 		

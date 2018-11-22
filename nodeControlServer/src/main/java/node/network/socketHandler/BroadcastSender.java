@@ -25,7 +25,7 @@ public class BroadcastSender
 	public static final Logger logger = LogWriter.createLogger(BroadcastSender.class, "broadcastS");
 	
 	private DatagramSocket socket;
-	private InetAddress sendAddr;
+	private InetAddress broadcastAddr;
 	private int port;
 
 	private boolean isWork;
@@ -36,11 +36,11 @@ public class BroadcastSender
 		this.isWork = false;
 	}
 	
-	public void start(InetAddress sendAddr, int port)
+	public void start(InetAddress broadcastAddr, int port)
 	{
 		if(this.isWork) return;
 		
-		this.sendAddr = sendAddr;
+		this.broadcastAddr = broadcastAddr;
 		this.port = port;
 		
 		logger.log(Level.INFO, "브로드캐스트 송신기 로드");
@@ -55,7 +55,7 @@ public class BroadcastSender
 		}
 		catch (SocketException e)
 		{
-			logger.log(Level.SEVERE, String.format("바인딩 실패(%s:%d)", this.sendAddr, this.port), e);
+			logger.log(Level.SEVERE, String.format("소켓 열기 실패(%s:%d)", this.broadcastAddr.getHostAddress(), this.port), e);
 			return;
 		}
 		this.isWork = true;
@@ -71,7 +71,7 @@ public class BroadcastSender
 		}
 		
 		DatagramPacket packet = new DatagramPacket(data, data.length);
-		packet.setAddress(this.sendAddr);
+		packet.setAddress(this.broadcastAddr);
 		packet.setPort(this.port);
 		try
 		{
