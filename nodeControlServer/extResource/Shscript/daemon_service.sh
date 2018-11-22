@@ -1,11 +1,9 @@
 #!/bin/bash
  
-BASE_DIR=/Project2018Servers/nodeControlServer/build/libs
+BASE_DIR=/root/Project2018Servers/nodeControlServer/build/libs
 START_COMMAND="java -jar $BASE_DIR/Project2018Servers.jar"
 PID_FILE=$BASE_DIR/dropwizard-rest-stub.pid
 LOG_DIR=$BASE_DIR/logs
- 
-mkdir $LOG_DIR
  
 start() {
   PID=`$START_COMMAND > $LOG_DIR/init.log 2>$LOG_DIR/init.error.log & echo $!`
