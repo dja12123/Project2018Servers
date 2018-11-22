@@ -230,10 +230,11 @@ public class TestMain implements Runnable
 				{
 					continue;
 				}
-				//byte[] copyBuf = Arrays.copyOfRange(packetBuffer, 28, readLen);
+				
 				System.out.println("수신중...");
-				if(readLen > 28)
+				if(readLen > 42)
 				{// header
+					
 					ByteBuffer buf = ByteBuffer.wrap(packetBuffer);
 					buf.position(23);
 					if(buf.get() != 0x11)
@@ -245,7 +246,8 @@ public class TestMain implements Runnable
 					{//dest port is 20080?
 						continue;
 					}
-					System.out.println(NetworkUtil.bytesToHex(packetBuffer, readLen));
+					byte[] copyBuf = Arrays.copyOfRange(packetBuffer, 42, readLen);
+					System.out.println(NetworkUtil.bytesToHex(copyBuf, copyBuf.length));
 				}
 				
 			}
