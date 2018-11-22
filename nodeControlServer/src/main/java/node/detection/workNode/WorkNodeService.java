@@ -14,6 +14,7 @@ import node.detection.NodeInfoProtocol;
 import node.detection.masterNode.MasterNodeService;
 import node.device.Device;
 import node.device.DeviceInfoManager;
+import node.gpio.led.LEDControl;
 import node.device.DeviceChangeEvent;
 import node.log.LogWriter;
 import node.network.NetworkManager;
@@ -174,6 +175,7 @@ public class WorkNodeService implements Runnable
 	{
 		if(data.key.equals(MasterNodeService.KPROTO_MASTER_BROADCAST))
 		{
+			LEDControl.ledControl.flick(0, 200, 0, 0, 100, 100);
 			NodeInfoProtocol nodeInfoProtocol = new NodeInfoProtocol(data.packet);
 			if(nodeInfoProtocol.getMasterNode().equals(this.masterNode))
 			{// 내 마스터 노드일경우!!
