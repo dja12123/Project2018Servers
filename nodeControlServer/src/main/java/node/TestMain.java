@@ -8,6 +8,7 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.logging.Level;
@@ -232,7 +233,18 @@ public class TestMain implements Runnable
 				//byte[] copyBuf = Arrays.copyOfRange(packetBuffer, 28, readLen);
 				System.out.println("수신중...");
 				if(readLen > 28)
-				{
+				{// header
+					ByteBuffer buf = ByteBuffer.wrap(packetBuffer);
+					buf.position(23);
+					if(buf.get() != 0x11)
+					{//isudp?
+						continue;
+					}
+					buf.position(36);
+					if(buf.getShort() != 20080)
+					{//dest port is 20080?
+						continue;
+					}
 					System.out.println(NetworkUtil.bytesToHex(packetBuffer, readLen));
 				}
 				
