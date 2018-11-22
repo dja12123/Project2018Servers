@@ -11,10 +11,7 @@ public class TestMain
 {
 	public static void main(String[] args) throws InterruptedException
 	{
-		WS2812.get().init(4); //init a chain of 64 LEDs
-		WS2812.get().clear();    
-		WS2812.get().setPixelColor(0, Color.RED); //sets the color of the fist LED to red
-		WS2812.get().show();
+
 		
 		WS2811.init(new WS2811Channel(
 	            10, // gpioPin
