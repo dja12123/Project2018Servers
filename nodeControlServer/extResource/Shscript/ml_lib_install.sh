@@ -6,6 +6,8 @@ if ! grep -q ".*PYSPARK_PYTHON.*" $bashrc; then
 	echo "export PYSPARK_PYTHON=python3" >> $bashrc
 fi
 
+. $bashrc
+
 if [ $? -eq 0 ]; then
 	echo "already installed"
 	exit 1
@@ -20,3 +22,9 @@ pip3 install tensorflow
 pip3 install tensorflowonspark
 pip3 install jupyter jupyter[notebook]
 pip3 install pygame
+
+echo "Reboot System?(y/n)"
+read answer
+if [ $answer = "y" ]; then
+	reboot
+fi
