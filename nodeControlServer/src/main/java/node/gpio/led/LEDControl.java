@@ -5,13 +5,6 @@ import java.util.ArrayList;
 import de.cacodaemon.rpiws28114j.StripType;
 import de.cacodaemon.rpiws28114j.WS2811;
 import de.cacodaemon.rpiws28114j.WS2811Channel;
-/*
-import com.diozero.util.SleepUtil;
-import com.diozero.ws281xj.LedDriverInterface;
-import com.diozero.ws281xj.PixelAnimations;
-import com.diozero.ws281xj.StripType;
-import com.diozero.ws281xj.spi.WS281xSpi;*/
-import de.pi3g.pi.ws2812.WS2812;
 
 public class LEDControl implements Runnable
 {
@@ -21,7 +14,6 @@ public class LEDControl implements Runnable
 
 	public static final LEDControl ledControl = new LEDControl();
 
-	private final WS2812 device;
 	private LEDControlInst[] infControllers;
 	private ArrayList<LEDControlInst> controllers;
 
@@ -29,13 +21,18 @@ public class LEDControl implements Runnable
 
 	private LEDControl()
 	{
-		//System.out.println("시작");
-		//this.ledDriver = new WS281xSpi(2, 0, StripType.WS2812, NUM_LED, LIGHT);
-		//this.ledDriver.allOff();
+		WS2811.init(new WS2811Channel(
+	            10, // gpioPin
+	            NUM_LED, //ledCount
+	            StripType.WS2811_STRIP_GRB,
+	            false, // invert
+	            128 // brightness
+	    ));
 
-		this.device = WS2812.get();
-		this.device.init(NUM_LED);
-		
+		WS2811.setPixel(0, 0x00FFFF);
+
+		WS2811.render();
+
 		
 		this.infControllers = new LEDControlInst[NUM_LED];
 		this.controllers = new ArrayList<>();
@@ -53,9 +50,9 @@ public class LEDControl implements Runnable
 	public synchronized LEDControlInst flick(int pixel, int lightTime, int blackTime, int repeat, int r,
 			int g, int b, int br, int bg, int bb)
 	{// LED번호, 켜지는시간, 꺼지는시간, 반복횟수, 켜짐색, 꺼짐색
-		/*lightTime /= SLEEP_TIME;
+		lightTime /= SLEEP_TIME;
 		blackTime /= SLEEP_TIME;
-		LEDControlInst controlInst = new LEDControlInst(this.ledDriver, pixel, lightTime, blackTime, repeat, r, g, b,
+		LEDControlInst controlInst = new LEDControlInst(pixel, lightTime, blackTime, repeat, r, g, b,
 				br, bg, bb);
 		if (repeat == -1)
 		{
@@ -65,7 +62,7 @@ public class LEDControl implements Runnable
 		{
 			this.controllers.add(controlInst);
 		}
-*/
+
 		return null;
 	}
 
@@ -166,7 +163,14 @@ public class LEDControl implements Runnable
 					}
 					this.infControllers[i].calcLED();
 				}
-				//SleepUtil.sleepMillis(SLEEP_TIME);
+				try
+				{
+					Thread.sleep(SLEEP_TIME);
+				}
+				catch (InterruptedException e)
+				{
+					
+				}
 			}
 		}
 	}
