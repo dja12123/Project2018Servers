@@ -25,7 +25,7 @@
 
     1. ~/Project2018Servers/nodeControlServer/extResource/Shscript/all_change_unix.sh
     2. ~/Project2018Servers/nodeControlServer/extResource/Shscript/init_rasp_pi.sh
-    - 스크립트가 하는일 : 저장소 KAIST로 바꿔줌, apt-get update, apt-get upgrade 실행, gradle, default-jdk 설치
+    - 스크립트가 하는일 : 저장소 KAIST로 바꿔줌, apt-get update, upgrade 실행, gradle, default-jdk 설치
     
     
 
