@@ -28,6 +28,12 @@ public class LEDControl
 		this.infControllers = new LEDControlInst[NUM_LED];
 		this.controllers = new ArrayList<>();
 		
+		for(int i = 0; i < NUM_LED; ++i)
+		{
+			this.ledDriver.setPixelColourRGB(i, 255, 255, 255);
+		}
+		this.ledDriver.render();
+		
 		this.worker = new Thread(this::run);
 		this.worker.start();
 	}

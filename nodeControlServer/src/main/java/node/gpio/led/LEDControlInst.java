@@ -82,7 +82,6 @@ public class LEDControlInst
 				
 				led_driver.setPixelColourRGB(this.pixel, this.r, this.g, this.b);
 				led_driver.render();
-				System.out.println("ON");
 				
 				this.isLight = true;
 				this.time = this.lightTime;
