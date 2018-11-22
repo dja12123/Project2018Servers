@@ -2,6 +2,6 @@
 
 cd ~/Project2018Servers/
 git pull
-gradle clean build
 gradle moveres
+gradle clean build
 sh ./nodeControlServer/extResource/Shscript/all_change_unix.sh
