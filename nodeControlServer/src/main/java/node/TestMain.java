@@ -25,7 +25,7 @@ public class TestMain
 		}
 		int brightness = 127;
 		
-		try (LedDriverInterface led_driver = new WS281xSpi(2, 0, StripType.WS2812, 4, 255)) {
+		try (LedDriverInterface led_driver = new WS281xSpi(2, 0, strip_type, pixels, brightness)) {
 			logger.info("All off");
 			led_driver.allOff();
 			SleepUtil.sleepMillis(500);
