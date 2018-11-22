@@ -129,7 +129,7 @@ public class LEDControl implements Runnable
 				}
 				for (int i = 0; i < NUM_LED; ++i)
 				{
-					if (ledState[i] == true)
+					if (ledState[i] == true || this.infControllers[i] == null)
 					{
 						continue;
 					}
