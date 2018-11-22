@@ -11,7 +11,7 @@ import com.diozero.ws281xj.spi.WS281xSpi;
 public class LEDControl implements Runnable
 {
 	public static final int NUM_LED = 4;
-	private static final int SLEEP_TIME = 100;
+	private static final int SLEEP_TIME = 10;
 
 	public static final LEDControl ledControl = new LEDControl();
 
@@ -140,12 +140,37 @@ public class LEDControl implements Runnable
 					}
 					else if (updateResult == LEDControlInst.STATE_END)
 					{
-						System.out.println("kill");
 						isUpdateLOW[inst.pixel] = true;
 						this.controllers.remove(i);
 					}
 				}
-				
+				for (int i = 0; i < NUM_LED; ++i)
+				{
+					if (isUpdateLOW[i] != true)
+					{
+						continue;
+					}
+					for (int j = 0; j < this.controllers.size(); ++j)
+					{
+						LEDControlInst inst = this.controllers.get(j);
+						if (inst.pixel == i)
+						{
+							if (inst.setLight())
+							{
+								isLight[i] = true;
+							}
+
+						}
+					}
+				}
+				for (int i = 0; i < NUM_LED; ++i)
+				{
+					if (this.infControllers[i] == null || isUpdateLOW[i] != true || isLight[i] == true)
+					{
+						continue;
+					}
+					this.infControllers[i].calcLED();
+				}
 
 				SleepUtil.sleepMillis(SLEEP_TIME);
 

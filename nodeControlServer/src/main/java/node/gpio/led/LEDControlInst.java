@@ -86,7 +86,6 @@ public class LEDControlInst
 				rtnValue = STATE_CHANGE_HIGH;
 			}
 		}
-		System.out.println(rtnValue);
 		return rtnValue;
 	}
 	
