@@ -175,7 +175,7 @@ public class WorkNodeService implements Runnable
 	{
 		if(data.key.equals(MasterNodeService.KPROTO_MASTER_BROADCAST))
 		{
-			LEDControl.ledControl.flick(0, 200, 0, 0, 100, 100);
+			LEDControl.ledControl.flick(0, 200, 0, 100, 100);
 			NodeInfoProtocol nodeInfoProtocol = new NodeInfoProtocol(data.packet);
 			if(nodeInfoProtocol.getMasterNode().equals(this.masterNode))
 			{// 내 마스터 노드일경우!!
