@@ -121,12 +121,13 @@ public class RawSocketReceiver implements Runnable
 				}
 				ByteBuffer buf = ByteBuffer.wrap(packetBuffer);
 				buf.position(23);
-				if(buf.get() != 0x11)
+				if(buf.get(23) != 0x11)
 				{//isudp?
 					continue;
 				}
-				buf.position(36);
-				int recvPort = buf.getShort();
+				
+				
+				int recvPort = buf.getShort(36);
 				System.out.println("pass2" + recvPort + " " + this.port);
 				System.out.println(NetworkUtil.bytesToHex(packetBuffer, readLen));
 				if(recvPort != this.port)
@@ -134,7 +135,7 @@ public class RawSocketReceiver implements Runnable
 					continue;
 				}
 				System.out.println("pass3");
-				readLen = buf.getShort() - 8;
+				readLen = buf.getShort(38) - 8;
 				byte[] copyBuf = Arrays.copyOfRange(packetBuffer, 42, 42 + readLen);
 				System.out.println("완료");
 				this.receiveCallback.accept(null, copyBuf);
