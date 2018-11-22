@@ -35,7 +35,7 @@ public class LEDControl implements Runnable
 		this.worker.start();
 	}
 
-	public synchronized LEDControlInst createLEDControl(int pixel, int lightTime, int blackTime, int repeat, int r,
+	public synchronized LEDControlInst flick(int pixel, int lightTime, int blackTime, int repeat, int r,
 			int g, int b, int br, int bg, int bb)
 	{
 		lightTime /= SLEEP_TIME;
@@ -54,9 +54,19 @@ public class LEDControl implements Runnable
 		return controlInst;
 	}
 
-	public LEDControlInst createLEDControl(int pixel, int lightTime, int blackTime, int repeat, int r, int g, int b)
+	public LEDControlInst flick(int pixel, int lightTime, int blackTime, int repeat, int r, int g, int b)
 	{
-		return this.createLEDControl(pixel, lightTime, blackTime, repeat, r, g, b, 0, 0, 0);
+		return this.flick(pixel, lightTime, blackTime, repeat, r, g, b, 0, 0, 0);
+	}
+	
+	public LEDControlInst flick(int pixel, int time, int repeat, int r, int g, int b)
+	{
+		return this.flick(pixel, time, time, repeat, r, g, b, 0, 0, 0);
+	}
+	
+	public LEDControlInst flick(int pixel, int lightTime, int r, int g, int b)
+	{// 지정한 시간만큼 LED점등
+		return this.flick(pixel, lightTime, 0, 1, r, g, b, 0, 0, 0);
 	}
 
 	public synchronized void killLEDControl(LEDControlInst inst)
@@ -87,7 +97,7 @@ public class LEDControl implements Runnable
 		int updateResult;
 		while (true)
 		{
-			try
+			synchronized (this)
 			{
 				for (int i = 0; i < NUM_LED; ++i)
 				{
@@ -138,11 +148,6 @@ public class LEDControl implements Runnable
 
 				SleepUtil.sleepMillis(SLEEP_TIME);
 
-			}
-
-			catch (Exception e)
-			{
-				e.printStackTrace();
 			}
 		}
 	}
