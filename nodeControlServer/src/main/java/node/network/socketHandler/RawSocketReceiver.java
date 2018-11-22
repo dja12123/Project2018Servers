@@ -128,16 +128,17 @@ public class RawSocketReceiver implements Runnable
 				buf.position(35);
 				int recvPort = buf.getShort();
 				System.out.println("pass2" + recvPort);
+				System.out.println(NetworkUtil.bytesToHex(packetBuffer, packetBuffer.length));
 				if(recvPort != this.port)
 				{//dest port is 20080?
 					continue;
 				}
-				System.out.println("pass3" + NetworkUtil.bytesToHex(packetBuffer, packetBuffer.length));
+				System.out.println("pass3");
 				readLen = buf.getShort() - 8;
 				byte[] copyBuf = Arrays.copyOfRange(packetBuffer, 42, 42 + readLen);
 				System.out.println("완료");
 				this.receiveCallback.accept(null, copyBuf);
-				System.out.println(NetworkUtil.bytesToHex(packetBuffer, 10));
+				
 			}
 			catch (IOException e)
 			{
