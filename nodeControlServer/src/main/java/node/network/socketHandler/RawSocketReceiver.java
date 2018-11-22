@@ -63,16 +63,6 @@ public class RawSocketReceiver implements Runnable
 		
 		try
 		{
-			CommandExecutor.executeCommand(String.format("ip link set %s promisc on", nic, false));
-		}
-		catch (Exception e)
-		{
-			logger.log(Level.SEVERE, "무작위 모드 변경 실패", e);
-			return;
-		}
-		
-		try
-		{
 			this.rawSocket.pmodeOpen(nic);
 		}
 		catch (IllegalStateException | IOException e)

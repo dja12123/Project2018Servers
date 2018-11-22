@@ -209,7 +209,18 @@ public class NetworkManager implements IServiceModule
 	public boolean startModule()
 	{
 		logger.log(Level.INFO, "네트워크 매니저 로드");
+		
 		this.netConfig.loadSetting();
+		
+		try
+		{
+			CommandExecutor.executeCommand(String.format("ip link set %s promisc on", this.netConfig.getNIC(), false));
+		}
+		catch (Exception e)
+		{
+			logger.log(Level.SEVERE, "무작위 모드 변경 실패", e);
+			return false;
+		}
 		
 		this.setInetAddr(this.netConfig.defaultAddr());
 		
