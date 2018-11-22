@@ -17,6 +17,7 @@ pip3 install tensorflow
 pip3 install tensorflowonspark
 pip3 install jupyter jupyter[notebook]
 pip3 install flask-socketio
+pip3 install pygame
 
 echo "Reboot System?(y/n)"
 read answer
