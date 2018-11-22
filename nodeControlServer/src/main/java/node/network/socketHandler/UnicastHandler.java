@@ -76,9 +76,7 @@ public class UnicastHandler
 		packet.setPort(this.port);
 		try
 		{
-			logger.log(Level.INFO, "전송시작");
 			this.socket.send(packet);
-			logger.log(Level.INFO, "전송완료");
 		}
 		catch (IOException e)
 		{
