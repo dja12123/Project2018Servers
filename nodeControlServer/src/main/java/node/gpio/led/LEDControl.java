@@ -1,12 +1,17 @@
 package node.gpio.led;
 
 import java.util.ArrayList;
+
+import de.cacodaemon.rpiws28114j.StripType;
+import de.cacodaemon.rpiws28114j.WS2811;
+import de.cacodaemon.rpiws28114j.WS2811Channel;
 /*
 import com.diozero.util.SleepUtil;
 import com.diozero.ws281xj.LedDriverInterface;
 import com.diozero.ws281xj.PixelAnimations;
 import com.diozero.ws281xj.StripType;
 import com.diozero.ws281xj.spi.WS281xSpi;*/
+import de.pi3g.pi.ws2812.WS2812;
 
 public class LEDControl implements Runnable
 {
@@ -16,7 +21,7 @@ public class LEDControl implements Runnable
 
 	public static final LEDControl ledControl = new LEDControl();
 
-	//private LedDriverInterface ledDriver;
+	private final WS2812 device;
 	private LEDControlInst[] infControllers;
 	private ArrayList<LEDControlInst> controllers;
 
@@ -24,10 +29,14 @@ public class LEDControl implements Runnable
 
 	private LEDControl()
 	{
-		System.out.println("시작");
+		//System.out.println("시작");
 		//this.ledDriver = new WS281xSpi(2, 0, StripType.WS2812, NUM_LED, LIGHT);
 		//this.ledDriver.allOff();
 
+		this.device = WS2812.get();
+		this.device.init(NUM_LED);
+		
+		
 		this.infControllers = new LEDControlInst[NUM_LED];
 		this.controllers = new ArrayList<>();
 

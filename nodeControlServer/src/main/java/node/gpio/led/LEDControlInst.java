@@ -1,5 +1,7 @@
 package node.gpio.led;
 
+import de.cacodaemon.rpiws28114j.WS2811;
+import de.pi3g.pi.ws2812.WS2812;
 
 public class LEDControlInst
 {
@@ -8,20 +10,20 @@ public class LEDControlInst
 	public static final int STATE_NORMAL = 0;
 	public static final int STATE_END = -1;
 	
-	//private LedDriverInterface led_driver;
-	 int pixel;
-	 int lightTime;
-	 int blackTime;
+	private final WS2812 device;
+	final int pixel;
+	final int lightTime;
+	final int blackTime;
 	int repeat;
-	 int r, g, b;
-	 int br, bg, bb;
+	final byte r, g, b;
+	final byte br, bg, bb;
 	
 	private int time;
 	private boolean isLight;
 	
-	/*LEDControlInst(LedDriverInterface led_driver, int pixel, int lightTime, int blackTime, int repeat, int r, int g, int b, int br, int bg, int bb)
+	LEDControlInst(WS2812 device, int pixel, int lightTime, int blackTime, int repeat, byte r, byte g, byte b, byte br, byte bg, byte bb)
 	{
-		//this.led_driver = led_driver;
+		this.device = device;
 		this.pixel = pixel;
 		this.lightTime = lightTime;
 		this.blackTime = blackTime;
@@ -35,10 +37,10 @@ public class LEDControlInst
 		
 		this.isLight = true;
 		this.time = this.lightTime;
-		//this.led_driver.setPixelColourRGB(this.pixel, this.r, this.g, this.b);
-		//this.led_driver.render();
+		device.setPixelColor(this.pixel, this.r, this.g, this.b);
+		device.show();
 	}
-	*/
+	
 	int calcLED()
 	{
 		if(this.repeat == 0)
@@ -102,5 +104,13 @@ public class LEDControlInst
 	{
 		//this.led_driver.setPixelColourRGB(this.pixel, 0, 0, 0);
 		//this.led_driver.render();
+	}
+	
+	private static int rgbToInt(int r, int g, int b)
+	{
+		int rgb = r;
+		rgb = (rgb << 8) + g;
+		rgb = (rgb << 8) + b;
+		return rgb;
 	}
 }
