@@ -69,9 +69,9 @@ public class LEDControl implements Runnable
 
 	public synchronized void killLEDControl(LEDControlInst inst)
 	{
-		if (inst.getRepeat() == -1)
+		if (inst.repeat == -1)
 		{
-			this.infControllers[inst.pixel()] = null;
+			this.infControllers[inst.pixel] = null;
 			return;
 		}
 
@@ -117,6 +117,7 @@ public class LEDControl implements Runnable
 
 		boolean[] isUpdateLOW = new boolean[NUM_LED];
 		boolean[] isLight = new boolean[NUM_LED];
+		int updateResult;
 		while (true)
 		{
 			try
@@ -131,18 +132,17 @@ public class LEDControl implements Runnable
 				{
 					LEDControlInst inst = this.controllers.get(i);
 					
-					int updateResult = inst.calcLED();
-					System.out.println(updateResult);/*
+					updateResult = inst.calcLED();
+					System.out.println(updateResult == LEDControlInst.STATE_CHANGE_LOW);
 					if (updateResult == LEDControlInst.STATE_CHANGE_LOW)
 					{
-						isUpdateLOW[inst.pixel()] = true;
+						isUpdateLOW[inst.pixel] = true;
 					}
 					else if (updateResult == LEDControlInst.STATE_END)
 					{
-						System.out.println("kill");
-						isUpdateLOW[inst.pixel()] = true;
+						isUpdateLOW[inst.pixel] = true;
 						this.controllers.remove(i);
-					}*/
+					}
 				}
 				for (int i = 0; i < NUM_LED; ++i)
 				{
@@ -150,10 +150,10 @@ public class LEDControl implements Runnable
 					{
 						continue;
 					}
-					for (int j = 0; j < this.controllers.size(); ++i)
+					for (int j = 0; j < this.controllers.size(); ++j)
 					{
 						LEDControlInst inst = this.controllers.get(j);
-						if (inst.pixel() == i)
+						if (inst.pixel == i)
 						{
 							if (inst.setLight())
 							{

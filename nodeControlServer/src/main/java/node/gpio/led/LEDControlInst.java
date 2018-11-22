@@ -10,12 +10,12 @@ public class LEDControlInst
 	public static final int STATE_END = -1;
 	
 	private LedDriverInterface led_driver;
-	private int pixel;
-	private int lightTime;
-	private int blackTime;
-	private int repeat;
-	private int r, g, b;
-	private int br, bg, bb;
+	final int pixel;
+	final int lightTime;
+	final int blackTime;
+	int repeat;
+	final int r, g, b;
+	final int br, bg, bb;
 	
 	private int time;
 	private boolean isLight;
@@ -38,16 +38,6 @@ public class LEDControlInst
 		this.time = 0;
 	}
 	
-	int getRepeat()
-	{
-		return this.repeat;
-	}
-	
-	int pixel()
-	{
-		return this.pixel;
-	}
-	
 	int calcLED()
 	{
 		if(this.repeat == 0)
@@ -66,8 +56,8 @@ public class LEDControlInst
 			}
 			else
 			{//led off
-				//this.led_driver.setPixelColourRGB(this.pixel, this.br, this.bg, this.bb);
-				//this.led_driver.render();
+				this.led_driver.setPixelColourRGB(this.pixel, this.br, this.bg, this.bb);
+				this.led_driver.render();
 				
 				this.isLight = false;
 				this.time = this.blackTime;
@@ -83,8 +73,8 @@ public class LEDControlInst
 			}
 			else
 			{// led on
-				//this.led_driver.setPixelColourRGB(this.pixel, this.r, this.g, this.b);
-				//this.led_driver.render();
+				this.led_driver.setPixelColourRGB(this.pixel, this.r, this.g, this.b);
+				this.led_driver.render();
 				
 				this.isLight = true;
 				this.time = this.lightTime;
@@ -96,7 +86,6 @@ public class LEDControlInst
 				rtnValue = STATE_CHANGE_HIGH;
 			}
 		}
-
 		return rtnValue;
 	}
 	
