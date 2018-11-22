@@ -82,6 +82,7 @@ public class LEDControl
 		boolean[] isLight = new boolean[NUM_LED];
 		while(true)
 		{
+			System.out.println("loop");
 			for(int i = 0; i < NUM_LED; ++i)
 			{
 				isUpdateLOW[i] = false;

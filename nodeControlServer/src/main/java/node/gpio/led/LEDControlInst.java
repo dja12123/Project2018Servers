@@ -70,7 +70,6 @@ public class LEDControlInst
 				this.time = this.blackTime;
 				return STATE_CHANGE_LOW;
 			}
-
 		}
 		else
 		{
