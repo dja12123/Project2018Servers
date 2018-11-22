@@ -34,8 +34,10 @@ public class LEDControlInst
 		this.bg = bg;
 		this.bb = bb;
 		
-		this.isLight = false;
-		this.time = 0;
+		this.isLight = true;
+		this.time = this.lightTime;
+		this.led_driver.setPixelColourRGB(this.pixel, this.r, this.g, this.b);
+		this.led_driver.render();
 	}
 	
 	int calcLED()

@@ -34,6 +34,12 @@ public class LEDControl implements Runnable
 		this.worker = new Thread(this);
 		this.worker.start();
 	}
+	
+	public LEDControlInst setDefaultFlick(int pixel, int lightTime, int blackTime, int r,
+			int g, int b, int br, int bg, int bb)
+	{
+		return this.flick(pixel, lightTime, blackTime, -1, r, g, b, br, bg, bb);
+	}
 
 	public synchronized LEDControlInst flick(int pixel, int lightTime, int blackTime, int repeat, int r,
 			int g, int b, int br, int bg, int bb)
