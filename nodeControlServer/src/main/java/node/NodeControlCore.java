@@ -108,7 +108,7 @@ public class NodeControlCore
 		
 		
 		//JNI링크 부분
-		File rawSocketLib = FileHandler.getExtResourceFile("rawsocket");
+		File rawSocketLib = FileHandler.getExtResourceFile("native");
 		StringBuffer libPathBuffer = new StringBuffer();
 		libPathBuffer.append(rawSocketLib.toString());
 		libPathBuffer.append(":");
