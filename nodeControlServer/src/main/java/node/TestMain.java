@@ -9,7 +9,6 @@ import com.diozero.ws281xj.PixelAnimations;
 import com.diozero.ws281xj.StripType;
 import com.diozero.ws281xj.spi.WS281xSpi;
 
-import de.pi3g.pi.ws2812.WS2812;
 import node.log.LogWriter;
 import node.network.socketHandler.RawSocketReceiver;
 
@@ -26,7 +25,7 @@ public class TestMain
 		}
 		int brightness = 127;
 		
-		try (LedDriverInterface led_driver = new WS281xSpi(2, 0, strip_type, pixels, brightness)) {
+		try (LedDriverInterface led_driver = new WS281xSpi(2, 0, StripType.WS2812, 4, 255)) {
 			logger.info("All off");
 			led_driver.allOff();
 			SleepUtil.sleepMillis(500);

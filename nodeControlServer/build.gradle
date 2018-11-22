@@ -30,7 +30,6 @@ dependencies
 {
 
     compile ('org.xerial:sqlite-jdbc:3.7.2')
-    compile group: 'net.java.dev.jna', name: 'jna', version: '5.1.0'
 	compile group: 'com.diozero', name: 'diozero-core', version: '0.11'
 	// https://mvnrepository.com/artifact/com.diozero/diozero-ws281x-java
 	compile group: 'com.diozero', name: 'diozero-ws281x-java', version: '0.11'
