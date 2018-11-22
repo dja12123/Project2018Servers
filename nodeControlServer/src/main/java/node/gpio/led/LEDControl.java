@@ -79,7 +79,7 @@ public class LEDControl implements Runnable
 	{
 		if (inst.repeat == -1)
 		{
-			this.infControllers[inst.pixel] = null;
+			this.killInfLED(inst.pixel);
 			return;
 		}
 
@@ -88,11 +88,17 @@ public class LEDControl implements Runnable
 		{
 			return;
 		}
+		this.controllers.get(index).killLED();
 		this.controllers.remove(index);
 	}
 
 	public synchronized void killInfLED(int pixel)
 	{
+		if(this.infControllers[pixel] != null)
+		{
+			this.infControllers[pixel].killLED();
+		}
+		
 		this.infControllers[pixel] = null;
 	}
 	

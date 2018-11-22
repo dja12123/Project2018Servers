@@ -44,8 +44,7 @@ public class LEDControlInst
 	{
 		if(this.repeat == 0)
 		{// -1일경우 계속 작동.
-			this.led_driver.setPixelColourRGB(this.pixel, 0, 0, 0);
-			this.led_driver.render();
+			this.killLED();
 			return STATE_END;
 			
 		}
@@ -98,5 +97,11 @@ public class LEDControlInst
 			return true;
 		}
 		return false;
+	}
+	
+	void killLED()
+	{
+		this.led_driver.setPixelColourRGB(this.pixel, 0, 0, 0);
+		this.led_driver.render();
 	}
 }
