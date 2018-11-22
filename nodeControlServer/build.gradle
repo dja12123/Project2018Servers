@@ -30,7 +30,7 @@ dependencies
 {
 
     compile ('org.xerial:sqlite-jdbc:3.7.2')
-    
+    compile group: 'net.java.dev.jna', name: 'jna', version: '5.1.0'
 
 	//compile ('org.nanohttpd:nanohttpd:2.3.1')
     // https://mvnrepository.com/artifact/org.nanohttpd/nanohttpd-websocket
