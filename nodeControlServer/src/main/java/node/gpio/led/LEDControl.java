@@ -98,13 +98,13 @@ public class LEDControl
 				this.notifyAll();
 			}
 
+			
 			for (int i = 0; i < NUM_LED; ++i)
 			{
 				this.ledDriver.setPixelColourRGB(i, 255, 255, 255);
 			}
-			this.ledDriver.render();
 
-			SleepUtil.sleepMillis(1000);
+			SleepUtil.sleepMillis(100);
 			for (int i = 0; i < NUM_LED; ++i)
 			{
 				this.ledDriver.setPixelColourRGB(i, 0, 0, 0);
