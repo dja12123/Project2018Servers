@@ -167,5 +167,9 @@ public class LEDControl
 				SleepUtil.sleepMillis(SLEEP_TIME);
 			}
 		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
 	}
 }
