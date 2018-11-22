@@ -1,3 +1,11 @@
+bashrc=/etc/bash.bashrc
+
+if ! grep -q ".*PYSPARK_PYTHON.*" $bashrc; then
+	echo "export PYSPARK_PYTHON=python3" >> $bashrc
+fi
+
+. $bashrc
+
 apt-get -y update
 
 apt -y install libatlas-base-dev
