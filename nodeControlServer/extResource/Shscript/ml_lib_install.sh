@@ -16,6 +16,7 @@ apt-get -y update
 
 apt -y install libatlas-base-dev
 
+apt-get -y install python3.6
 apt-get -y install python3-pip
 
 pip3 install tensorflow
