@@ -2,7 +2,6 @@ package node.gpio.led;
 
 import java.util.ArrayList;
 
-import com.diozero.util.SleepUtil;
 import com.diozero.ws281xj.LedDriverInterface;
 import com.diozero.ws281xj.PixelAnimations;
 import com.diozero.ws281xj.StripType;

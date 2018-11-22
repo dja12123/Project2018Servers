@@ -3,7 +3,6 @@ package node;
 import java.awt.Color;
 import java.util.logging.Logger;
 
-import com.diozero.util.SleepUtil;
 import com.diozero.ws281xj.LedDriverInterface;
 import com.diozero.ws281xj.PixelAnimations;
 import com.diozero.ws281xj.StripType;
