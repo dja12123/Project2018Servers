@@ -128,7 +128,7 @@ public class RawSocketReceiver implements Runnable
 				buf.position(35);
 				int recvPort = buf.getShort();
 				System.out.println("pass2" + recvPort);
-				System.out.println(NetworkUtil.bytesToHex(packetBuffer, packetBuffer.length));
+				System.out.println(NetworkUtil.bytesToHex(packetBuffer, readLen));
 				if(recvPort != this.port)
 				{//dest port is 20080?
 					continue;
