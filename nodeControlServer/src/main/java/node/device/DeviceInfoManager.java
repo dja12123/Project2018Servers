@@ -179,7 +179,7 @@ public class DeviceInfoManager extends Observable<DeviceChangeEvent> implements 
 		DeviceChangeEvent eventObj = new DeviceChangeEvent(DeviceChangeEvent.DISCONNECT_DEVICE, this.getDevice(uuid));
 		this.deviceMap.remove(uuid);
 		this.notifyObservers(NodeControlCore.mainThreadPool, eventObj);
-		logger.log(Level.INFO, "노드 사망");
+		logger.log(Level.INFO, String.format("노드 삭제(%s)", uuid.toString()));
 	}
 	
 	public synchronized int getNodeCount()
