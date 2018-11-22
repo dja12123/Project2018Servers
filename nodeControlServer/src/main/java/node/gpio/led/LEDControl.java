@@ -111,7 +111,10 @@ public class LEDControl
 			{
 				e1.printStackTrace();
 			}
-			this.ledDriver.allOff();
+			for (int i = 0; i < NUM_LED; ++i)
+			{
+				this.ledDriver.setPixelColourRGB(i, 0, 0, 0);
+			}
 
 			boolean[] isUpdateLOW = new boolean[NUM_LED];
 			boolean[] isLight = new boolean[NUM_LED];
