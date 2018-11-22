@@ -19,7 +19,7 @@ public class TestMain
 	public static void main(String[] args)
 	{
 
-		LEDControl.ledControl.createLEDControl(1, 300, 300, 30, 100, 200, 100, 0, 0, 0);
-
+		LEDControl.ledControl.createLEDControl(1, 1000, 1000, -1, 100, 200, 100, 0, 0, 0);
+		LEDControl.ledControl.createLEDControl(1, 300, 300, 100, 0, 200, 0, 0, 0, 0);
 	}
 }
