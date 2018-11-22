@@ -64,7 +64,7 @@ public class UnicastHandler
 	
 	public synchronized void sendMessage(byte[] data, InetAddress receiveAddr)
 	{
-		logger.log(Level.INFO, "마스터에게 알림");
+		
 		if(!this.isWork)
 		{
 			logger.log(Level.WARNING, "소켓 닫힘");
@@ -76,7 +76,9 @@ public class UnicastHandler
 		packet.setPort(this.port);
 		try
 		{
+			logger.log(Level.INFO, "전송시작");
 			this.socket.send(packet);
+			logger.log(Level.INFO, "전송완료");
 		}
 		catch (IOException e)
 		{
