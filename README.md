@@ -21,6 +21,13 @@
     4. 빌드한 프로젝트는 /root/Project2018Servers/builds/libs 에 있음
     * 패키지 설치가 불가능 할경우 apt-get update, apt-get upgrade
     
+*개발장비 자동 설정 스크립트
+
+    1. ~/Project2018Servers/nodeControlServer/extResource/Shscript/all_change_unix.sh
+    2. ~/Project2018Servers/nodeControlServer/extResource/Shscript/init_rasp_pi.sh
+    - 하는일 : 저장소 KAIST로 바꿔줌, apt-get update, apt-get upgrade 실행, apt-get install gradle, default-jdk 설치
+    
+    
 
 *그래들 명령어
 
