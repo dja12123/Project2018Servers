@@ -115,21 +115,20 @@ public class RawSocketReceiver implements Runnable
 			{
 				readLen = this.rawSocket.read(packetBuffer);
 
-				System.out.println("수신시작");
 				if(readLen <= 42)
 				{// header
 					continue;
 				}
-				System.out.println("pass1");
 				ByteBuffer buf = ByteBuffer.wrap(packetBuffer);
 				buf.position(23);
 				if(buf.get() != 0x11)
 				{//isudp?
 					continue;
 				}
-				System.out.println("pass2");
 				buf.position(36);
-				if(buf.getShort() != this.port)
+				int recvPort = buf.getShort();
+				System.out.println("pass2" + recvPort);
+				if(recvPort != this.port)
 				{//dest port is 20080?
 					continue;
 				}
