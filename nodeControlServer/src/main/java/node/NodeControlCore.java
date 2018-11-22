@@ -47,7 +47,7 @@ public class NodeControlCore
 	
 	public NodeControlCore()
 	{
-		LEDControl.ledControl.setDefaultFlick(2, 500, 50, 10, 255, 100, 0, 0, 0);
+		LEDControl.ledControl.setDefaultFlick(2, 500, 50, 50, 25, 0, 0, 0, 0);
 		LEDControl.ledControl.flick(0, 200, 200, 5, 100, 100, 100);
 		
 		this.dbHandler = new DB_Handler();
