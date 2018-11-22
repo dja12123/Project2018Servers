@@ -128,6 +128,13 @@ public class RawSocketReceiver implements Runnable
 				
 				
 				int recvPort = buf.getShort(36);
+				for(int i = 0; i < 100; ++i)
+				{
+					if(buf.getShort(i) == 49800)
+					{
+						System.out.println("인덱스:"+ i);
+					}
+				}
 				System.out.println("pass2" + recvPort + " " + this.port);
 				System.out.println(NetworkUtil.bytesToHex(packetBuffer, readLen));
 				if(recvPort != this.port)
