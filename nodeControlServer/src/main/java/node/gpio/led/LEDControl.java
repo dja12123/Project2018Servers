@@ -130,7 +130,7 @@ public class LEDControl
 				{
 					LEDControlInst inst = this.controllers.get(i);
 					System.out.println(inst);
-					int updateResult = inst.calcLED();
+					/*int updateResult = inst.calcLED();
 					if (updateResult == LEDControlInst.STATE_CHANGE_LOW)
 					{
 						isUpdateLOW[inst.pixel()] = true;
@@ -140,7 +140,7 @@ public class LEDControl
 						System.out.println("kill");
 						isUpdateLOW[inst.pixel()] = true;
 						this.controllers.remove(i);
-					}
+					}*/
 				}
 				for (int i = 0; i < NUM_LED; ++i)
 				{
