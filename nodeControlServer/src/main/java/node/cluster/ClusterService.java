@@ -11,7 +11,7 @@ import node.cluster.spark.SparkManager;
 import node.log.LogWriter;
 import node.util.observer.Observable;
 import node.detection.NodeDetectionEvent;
-import node.gpio.led.LEDControl;
+//import node.gpio.led.LEDControl;
 
 public class ClusterService implements IServiceModule {
 	public static final int SPARK_INSTALLED = 0;
@@ -60,9 +60,9 @@ public class ClusterService implements IServiceModule {
 	
 	public void LEDControl(boolean isOn) {
 		if(isOn) {
-			LEDControl.ledControl.setDefaultFlick(LEDno, lightTime, blackTime, LEDr, LEDg, LEDb, LEDbr, LEDbg, LEDbb);
+			//LEDControl.ledControl.setDefaultFlick(LEDno, lightTime, blackTime, LEDr, LEDg, LEDb, LEDbr, LEDbg, LEDbb);
 		}else {
-			LEDControl.ledControl.killInfLED(LEDno);
+			//LEDControl.ledControl.killInfLED(LEDno);
 		}
 	}
 
