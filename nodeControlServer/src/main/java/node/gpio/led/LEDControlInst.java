@@ -52,7 +52,9 @@ public class LEDControlInst
 	{
 		if(this.repeat == 0)
 		{// -1일경우 계속 작동.
+			System.out.println("return");
 			return STATE_END;
+			
 		}
 		
 		if(this.isLight)
@@ -63,11 +65,12 @@ public class LEDControlInst
 			}
 			else
 			{//led off
-				led_driver.setPixelColourRGB(this.pixel, this.br, this.bg, this.bb);
-				led_driver.render();
+				this.led_driver.setPixelColourRGB(this.pixel, this.br, this.bg, this.bb);
+				this.led_driver.render();
 				
 				this.isLight = false;
 				this.time = this.blackTime;
+				System.out.println("LEDOFF");
 				return STATE_CHANGE_LOW;
 			}
 		}
@@ -79,8 +82,9 @@ public class LEDControlInst
 			}
 			else
 			{// led on
-				led_driver.setPixelColourRGB(this.pixel, this.r, this.g, this.b);
+				this.led_driver.setPixelColourRGB(this.pixel, this.r, this.g, this.b);
 				this.led_driver.render();
+				
 				this.isLight = true;
 				this.time = this.lightTime;
 				if(this.repeat != -1)

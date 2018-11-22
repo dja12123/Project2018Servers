@@ -2,6 +2,7 @@ package node.gpio.led;
 
 import java.util.ArrayList;
 
+import com.diozero.util.SleepUtil;
 import com.diozero.ws281xj.LedDriverInterface;
 import com.diozero.ws281xj.PixelAnimations;
 import com.diozero.ws281xj.StripType;
@@ -103,14 +104,7 @@ public class LEDControl
 			}
 			this.ledDriver.render();
 
-			try
-			{
-				Thread.sleep(1000);
-			}
-			catch (InterruptedException e1)
-			{
-				e1.printStackTrace();
-			}
+			SleepUtil.sleepMillis(1000);
 			for (int i = 0; i < NUM_LED; ++i)
 			{
 				this.ledDriver.setPixelColourRGB(i, 0, 0, 0);
@@ -126,9 +120,7 @@ public class LEDControl
 					isUpdateLOW[i] = false;
 					isLight[i] = false;
 				}
-				synchronized (this)
-				{
-					System.out.println(this.controllers.size());
+			
 					for (int i = this.controllers.size() - 1; i >= 0; --i)
 					{
 						LEDControlInst inst = this.controllers.get(i);
@@ -171,15 +163,8 @@ public class LEDControl
 						}
 						this.infControllers[i].update();
 					}
-				}
-				try
-				{
-					Thread.sleep(SLEEP_TIME);
-				}
-				catch (InterruptedException e)
-				{
-					e.printStackTrace();
-				}
+				
+				SleepUtil.sleepMillis(SLEEP_TIME);
 			}
 		}
 	}
