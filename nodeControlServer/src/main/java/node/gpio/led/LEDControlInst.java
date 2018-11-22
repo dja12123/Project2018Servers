@@ -63,8 +63,8 @@ public class LEDControlInst
 			}
 			else
 			{//led off
-				led_driver.setPixelColourRGB(this.pixel, this.br, this.bg, this.bb);
-				led_driver.render();
+				this.led_driver.setPixelColourRGB(this.pixel, 1, 1, 1);
+				this.led_driver.render();
 				
 				this.isLight = false;
 				this.time = this.blackTime;
@@ -79,8 +79,9 @@ public class LEDControlInst
 			}
 			else
 			{// led on
-				led_driver.setPixelColourRGB(this.pixel, this.r, this.g, this.b);
+				this.led_driver.setPixelColourRGB(this.pixel, this.r, this.g, this.b);
 				this.led_driver.render();
+				
 				this.isLight = true;
 				this.time = this.lightTime;
 				if(this.repeat != -1)
