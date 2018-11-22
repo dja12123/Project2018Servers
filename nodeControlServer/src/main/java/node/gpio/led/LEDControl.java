@@ -117,6 +117,7 @@ public class LEDControl
 					}
 					else if(updateResult == LEDControlInst.STATE_END)
 					{
+						System.out.println("kill");
 						isUpdateLOW[inst.pixel()] = true;
 						this.controllers.remove(i);
 					}
