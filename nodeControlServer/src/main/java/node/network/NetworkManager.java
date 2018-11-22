@@ -39,7 +39,7 @@ public class NetworkManager implements IServiceModule
 	
 	public final DeviceInfoManager deviceInfoManager;
 	
-	private final BroadcastSender ipJumpBroadcast;
+	private final BroadcastSender broadcastSender;
 	private final RawSocketReceiver rawSocketReceiver;
 	private final UnicastHandler unicastHandler;
 	
@@ -55,7 +55,7 @@ public class NetworkManager implements IServiceModule
 		
 		this.deviceInfoManager = deviceInfoManager;
 
-		this.ipJumpBroadcast = new BroadcastSender();
+		this.broadcastSender = new BroadcastSender();
 		this.rawSocketReceiver = new RawSocketReceiver(this::socketRawByteReadCallback);
 		this.unicastHandler = new UnicastHandler(this::socketRawByteReadCallback);
 		
@@ -130,14 +130,14 @@ public class NetworkManager implements IServiceModule
 				}
 				catch (SplitPacketBuildFailureException e)
 				{
-					logger.log(Level.WARNING, "패킷 전송중 오류", e);
+					logger.log(Level.WARNING, "패킷 빌드중 오류", e);
 					return;
 				}
 				
 				splitData = splitPacket.getSplitePacket();
 				for(int i = 0; i < splitData.length; ++i)
 				{
-					this.ipJumpBroadcast.sendMessage(splitData[i]);
+					this.broadcastSender.sendMessage(splitData[i]);
 				}
 				//this.ipJumpBroadcast.ipJump();
 			}
@@ -215,7 +215,7 @@ public class NetworkManager implements IServiceModule
 		
 		this.unicastHandler.start(this.inetAddress, this.netConfig.unicastPort());
 		this.rawSocketReceiver.start(this.netConfig.getNIC(), this.netConfig.broadcastPort());
-		this.ipJumpBroadcast.start(this.inetAddress, this.netConfig.broadcastPort());
+		this.broadcastSender.start(this.inetAddress, this.netConfig.broadcastPort());
 		return true;
 	}
 
@@ -226,7 +226,7 @@ public class NetworkManager implements IServiceModule
 		
 		this.observerMap.clear();
 		this.unicastHandler.stop();
-		this.ipJumpBroadcast.stop();
+		this.broadcastSender.stop();
 		this.rawSocketReceiver.stop();
 	}
 	
@@ -258,7 +258,7 @@ public class NetworkManager implements IServiceModule
 		{
 			logger.log(Level.INFO, "IP변경 시작");
 			this.unicastHandler.stop();
-			this.ipJumpBroadcast.stop();
+			this.broadcastSender.stop();
 			this.rawSocketReceiver.stop();
 			try
 			{
@@ -271,7 +271,7 @@ public class NetworkManager implements IServiceModule
 			logger.log(Level.INFO, String.format("IP변경 완료(%s)", inetAddress.getHostAddress()));
 			this.inetAddress = inetAddress;
 			this.unicastHandler.start(this.inetAddress, this.netConfig.unicastPort());
-			this.ipJumpBroadcast.start(this.inetAddress, this.netConfig.broadcastPort());
+			this.broadcastSender.start(this.inetAddress, this.netConfig.broadcastPort());
 			this.rawSocketReceiver.start(this.netConfig.getNIC(), this.netConfig.broadcastPort());
 		}
 		

@@ -63,6 +63,7 @@ public class BroadcastSender
 	
 	public synchronized void sendMessage(byte[] data)
 	{
+		System.out.println("전송...");
 		if(!this.isWork)
 		{
 			logger.log(Level.WARNING, "소켓 닫힘");
