@@ -79,6 +79,7 @@ public class LEDControlInst
 			}
 			else
 			{// led on
+				System.out.println("ON");
 				led_driver.setPixelColourRGB(this.pixel, this.r, this.g, this.b);
 				led_driver.render();
 				
