@@ -22,7 +22,7 @@ public class LEDControl implements Runnable
 	private LEDControl()
 	{
 		WS2811.init(new WS2811Channel(
-	            9, // gpioPin
+	            10, // gpioPin
 	            NUM_LED, //ledCount
 	            StripType.WS2811_STRIP_GRB,
 	            false, // invert
