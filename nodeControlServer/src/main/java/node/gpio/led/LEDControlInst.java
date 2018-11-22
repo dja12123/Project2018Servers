@@ -50,6 +50,7 @@ public class LEDControlInst
 	
 	int update()
 	{
+		System.out.println("ON");
 		if(this.repeat == 0)
 		{// -1일경우 계속 작동.
 			return STATE_END;
@@ -57,7 +58,7 @@ public class LEDControlInst
 		
 		if(this.isLight)
 		{
-			if(this.time >= 0)
+			if(this.time > 0)
 			{
 				--this.time;
 			}
@@ -73,13 +74,13 @@ public class LEDControlInst
 		}
 		else
 		{
-			if(this.time >= 0)
+			if(this.time > 0)
 			{
 				--this.time;
 			}
 			else
 			{// led on
-				System.out.println("ON");
+				
 				led_driver.setPixelColourRGB(this.pixel, this.r, this.g, this.b);
 				led_driver.render();
 				
