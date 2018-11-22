@@ -30,7 +30,7 @@
     - gradle moveres (nodeControlServers/extResources/의 모든 파일들을 jar파일이 있는 위치로 이동)
    
    
-*ML관련 라이브러리 
+*ML관련 라이브러리 설치
 
     - ~/Project2018Servers/nodeControlServer/extResource/Shscript/ml_lib_install.sh
    
