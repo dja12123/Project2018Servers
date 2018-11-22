@@ -104,14 +104,7 @@ public class LEDControl
 			}
 			this.ledDriver.render();
 
-			try
-			{
-				Thread.sleep(1000);
-			}
-			catch (InterruptedException e1)
-			{
-				e1.printStackTrace();
-			}
+			SleepUtil.sleepMillis(1000);
 			for (int i = 0; i < NUM_LED; ++i)
 			{
 				this.ledDriver.setPixelColourRGB(i, 0, 0, 0);
