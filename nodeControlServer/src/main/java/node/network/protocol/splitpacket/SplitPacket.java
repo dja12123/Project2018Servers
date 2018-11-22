@@ -2,6 +2,7 @@ package node.network.protocol.splitpacket;
 
 import java.nio.ByteBuffer;
 import java.util.Arrays;
+import java.util.Base64;
 
 import node.network.NetworkUtil;
 import node.network.protocol.keyvaluePacket.PacketUtil;
