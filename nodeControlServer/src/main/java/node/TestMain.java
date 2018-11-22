@@ -22,7 +22,7 @@ public class TestMain
 	    ));
 	    
 
-		WS2811.setPixel(0, 0x00FF00);
+		WS2811.setPixel(0, 0x00FFF);
 
 		WS2811.render();
 		Thread.sleep(10000);
