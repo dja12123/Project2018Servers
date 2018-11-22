@@ -163,6 +163,5 @@ public class DB_Installer
 		}
 
 		databaseLogger.log(Level.INFO, "DB모듈 초기화 완료.");
-		new Exception().printStackTrace();
 	}
 }

@@ -1,5 +1,7 @@
 package node.gpio.led;
 
+import de.cacodaemon.rpiws28114j.WS2811;
+import de.pi3g.pi.ws2812.WS2812;
 
 public class LEDControlInst
 {
@@ -8,20 +10,18 @@ public class LEDControlInst
 	public static final int STATE_NORMAL = 0;
 	public static final int STATE_END = -1;
 	
-	//private LedDriverInterface led_driver;
-	 int pixel;
-	 int lightTime;
-	 int blackTime;
+	final int pixel;
+	final int lightTime;
+	final int blackTime;
 	int repeat;
-	 int r, g, b;
-	 int br, bg, bb;
+	final int r, g, b;
+	final int br, bg, bb;
 	
 	private int time;
 	private boolean isLight;
 	
-	/*LEDControlInst(LedDriverInterface led_driver, int pixel, int lightTime, int blackTime, int repeat, int r, int g, int b, int br, int bg, int bb)
+	LEDControlInst(int pixel, int lightTime, int blackTime, int repeat, int r, int g, int b, int br, int bg, int bb)
 	{
-		//this.led_driver = led_driver;
 		this.pixel = pixel;
 		this.lightTime = lightTime;
 		this.blackTime = blackTime;
@@ -35,10 +35,11 @@ public class LEDControlInst
 		
 		this.isLight = true;
 		this.time = this.lightTime;
-		//this.led_driver.setPixelColourRGB(this.pixel, this.r, this.g, this.b);
-		//this.led_driver.render();
+		
+		WS2811.setPixel(this.pixel, rgbToInt(this.r, this.g, this.b));
+		WS2811.render();
 	}
-	*/
+	
 	int calcLED()
 	{
 		if(this.repeat == 0)
@@ -56,9 +57,8 @@ public class LEDControlInst
 			}
 			else
 			{//led off
-				//this.led_driver.setPixelColourRGB(this.pixel, this.br, this.bg, this.bb);
-				//this.led_driver.render();
-				
+				WS2811.setPixel(this.pixel, rgbToInt(this.br, this.bg, this.bb));
+				WS2811.render();
 				this.isLight = false;
 				this.time = this.blackTime;
 				return STATE_LOW;
@@ -72,8 +72,8 @@ public class LEDControlInst
 			}
 			else
 			{// led on
-				//this.led_driver.setPixelColourRGB(this.pixel, this.r, this.g, this.b);
-				//this.led_driver.render();
+				WS2811.setPixel(this.pixel, rgbToInt(this.r, this.g, this.b));
+				WS2811.render();
 				
 				this.isLight = true;
 				this.time = this.lightTime;
@@ -91,8 +91,8 @@ public class LEDControlInst
 	{
 		if(this.isLight)
 		{
-			//led_driver.setPixelColourRGB(this.pixel, this.r, this.g, this.b);
-			//led_driver.render();
+			WS2811.setPixel(this.pixel, rgbToInt(this.r, this.g, this.b));
+			WS2811.render();
 			return true;
 		}
 		return false;
@@ -100,7 +100,15 @@ public class LEDControlInst
 	
 	void killLED()
 	{
-		//this.led_driver.setPixelColourRGB(this.pixel, 0, 0, 0);
-		//this.led_driver.render();
+		WS2811.setPixel(this.pixel, rgbToInt(0, 0, 0));
+		WS2811.render();
+	}
+	
+	private static int rgbToInt(int r, int g, int b)
+	{
+		int rgb = r;
+		rgb = (rgb << 8) + g;
+		rgb = (rgb << 8) + b;
+		return rgb;
 	}
 }
