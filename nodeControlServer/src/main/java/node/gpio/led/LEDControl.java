@@ -8,7 +8,7 @@ import com.diozero.ws281xj.PixelAnimations;
 import com.diozero.ws281xj.StripType;
 import com.diozero.ws281xj.spi.WS281xSpi;
 
-public class LEDControl
+public class LEDControl implements Runnable
 {
 	public static final int NUM_LED = 4;
 	private static final int SLEEP_TIME = 10;
@@ -27,7 +27,7 @@ public class LEDControl
 		this.infControllers = new LEDControlInst[NUM_LED];
 		this.controllers = new ArrayList<>();
 
-		this.worker = new Thread(this::run);
+		this.worker = new Thread(this);
 		this.worker.start();
 	}
 
@@ -87,8 +87,9 @@ public class LEDControl
 	{
 		this.infControllers[pixel] = null;
 	}
-
-	private void run()
+	
+	@Override
+	public void run()
 	{
 
 		LedDriverInterface iface = new WS281xSpi(2, 0, StripType.WS2812, NUM_LED, 255);
@@ -129,8 +130,9 @@ public class LEDControl
 				for (int i = this.controllers.size() - 1; i >= 0; --i)
 				{
 					LEDControlInst inst = this.controllers.get(i);
-					System.out.println(inst);
-					int updateResult = inst.calcLED();/*
+					
+					int updateResult = inst.calcLED();
+					System.out.println(updateResult);/*
 					if (updateResult == LEDControlInst.STATE_CHANGE_LOW)
 					{
 						isUpdateLOW[inst.pixel()] = true;
