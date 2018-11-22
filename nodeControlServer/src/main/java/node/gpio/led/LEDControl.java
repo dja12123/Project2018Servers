@@ -145,33 +145,7 @@ public class LEDControl implements Runnable
 						this.controllers.remove(i);
 					}
 				}
-				for (int i = 0; i < NUM_LED; ++i)
-				{
-					if (isUpdateLOW[i] != true)
-					{
-						continue;
-					}
-					for (int j = 0; j < this.controllers.size(); ++i)
-					{
-						LEDControlInst inst = this.controllers.get(j);
-						if (inst.pixel == i)
-						{
-							if (inst.setLight())
-							{
-								isLight[i] = true;
-							}
-
-						}
-					}
-				}
-				for (int i = 0; i < NUM_LED; ++i)
-				{
-					if (this.infControllers[i] == null || isUpdateLOW[i] != true || isLight[i] == true)
-					{
-						continue;
-					}
-					this.infControllers[i].calcLED();
-				}
+				
 
 				SleepUtil.sleepMillis(SLEEP_TIME);
 
