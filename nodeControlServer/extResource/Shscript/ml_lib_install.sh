@@ -2,7 +2,7 @@ dpkg -s "python3-pip" > /dev/null 2>&1
 
 bashrc=/etc/bash.bashrc
 
-if ! grep -q ".*PYSPARK_PYTHON.*" $bashrc: then
+if ! grep -q ".*PYSPARK_PYTHON.*" $bashrc; then
 	echo "export PYSPARK_PYTHON=python3" >> $bashrc
 fi
 
