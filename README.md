@@ -28,6 +28,11 @@
     2. ~/Project2018Servers/nodeControlServer/extResource/Shscript/init_rasp_pi.sh
     - 스크립트가 하는일 : 저장소 KAIST로 바꿔줌, apt-get update, upgrade 실행, gradle, default-jdk 설치
     
+*완전 자동 설정 스크립트
+
+    1. apt-get install git 후 프로젝트 받고 2번 
+    2. ~/Project2018Servers/nodeControlServer/extResource/Shscript/automatic_install_final.sh
+    
     
 
 *그래들 명령어
