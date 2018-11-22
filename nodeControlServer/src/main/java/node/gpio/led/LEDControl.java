@@ -24,7 +24,7 @@ public class LEDControl
 	{
 		try(LedDriverInterface iface = new WS281xSpi(2, 0, StripType.WS2812, NUM_LED, 255))
 		{
-			LEDControl.this.ledDriver = ledDriver;
+			this.ledDriver = iface;
 		}
 		System.out.println("시작");
 		this.infControllers = new LEDControlInst[NUM_LED];
