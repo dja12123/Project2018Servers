@@ -29,6 +29,8 @@
     - gradle buildtest -PmainClass={실행할클래스명}(ex. node.NodeControlCore) (테스트용jar 컴파일)
     - gradle moveres (nodeControlServers/extResources/의 모든 파일들을 jar파일이 있는 위치로 이동)
     
+*ML 라이브러리 설치
+    - ~/Project2018Servers/nodeControlServer/extResource/Shscript/ml_lib_install.sh
    
 *Spark 설치
 
