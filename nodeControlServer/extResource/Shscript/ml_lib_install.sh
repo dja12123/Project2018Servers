@@ -1,4 +1,4 @@
-dpkg -s "python-pip" &> /dev/null 2>&1
+dpkg -s "python-pip" &>/dev/null 2>&1
 
 if [ $? -eq 0 ]; then
 	echo "already installed"
