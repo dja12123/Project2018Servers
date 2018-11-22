@@ -179,7 +179,7 @@ public class TestMain implements Runnable
 		
 		try
 		{
-			this.rawSocket.pmodeOpen(nic, RawSocket.getProtocolByName("UDP"));
+			this.rawSocket.pmodeOpen(nic);
 			//this.rawSocket.setIPHeaderInclude(true);
 			//logger.log(Level.INFO, String.format("바인드:(%s)", nic));
 		}
