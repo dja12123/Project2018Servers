@@ -11,7 +11,7 @@ public class TestMain
 {
 	public static void main(String[] args) throws InterruptedException
 	{
-
+		NodeControlCore.init();
 		
 		WS2811.init(new WS2811Channel(
 	            10, // gpioPin
