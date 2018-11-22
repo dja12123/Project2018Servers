@@ -21,7 +21,7 @@ public class LEDControl implements Runnable
 
 	private LEDControl()
 	{
-		WS2811.init(new WS2811Channel(
+		/*WS2811.init(new WS2811Channel(
 	            10, // gpioPin
 	            NUM_LED, //ledCount
 	            StripType.WS2811_STRIP_GRB,
@@ -33,7 +33,7 @@ public class LEDControl implements Runnable
 
 		WS2811.render();
 
-		
+		*/
 		this.infControllers = new LEDControlInst[NUM_LED];
 		this.controllers = new ArrayList<>();
 
