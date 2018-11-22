@@ -1,4 +1,4 @@
-package node.network.packet;
+package node.network.protocol.keyvaluePacket;
 
 /**
   * @FileName : PacketBuildFailureException.java

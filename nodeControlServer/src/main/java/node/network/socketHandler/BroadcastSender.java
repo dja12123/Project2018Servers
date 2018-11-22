@@ -18,7 +18,7 @@ import node.bash.CommandExecutor;
 import node.log.LogWriter;
 import node.network.NetworkManager;
 import node.network.NetworkUtil;
-import node.network.packet.PacketUtil;
+import node.network.protocol.keyvaluePacket.PacketUtil;
 
 public class BroadcastSender
 {

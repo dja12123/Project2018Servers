@@ -19,8 +19,8 @@ import node.NodeControlCore;
 import node.db.DB_Handler;
 import node.log.LogWriter;
 import node.network.NetworkManager;
-import node.network.packet.PacketBuilder;
-import node.network.packet.PacketUtil;
+import node.network.protocol.keyvaluePacket.PacketBuilder;
+import node.network.protocol.keyvaluePacket.PacketUtil;
 import node.util.observer.Observable;
 
 public class DeviceInfoManager extends Observable<DeviceChangeEvent> implements IServiceModule, Runnable

@@ -1,10 +1,10 @@
-package node.network.spiltpacket;
+package node.network.protocol.splitpacket;
 
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 
 import node.network.NetworkUtil;
-import node.network.packet.PacketUtil;
+import node.network.protocol.keyvaluePacket.PacketUtil;
 
 public class SplitPacket
 {

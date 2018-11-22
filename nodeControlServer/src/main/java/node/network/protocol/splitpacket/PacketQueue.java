@@ -1,4 +1,4 @@
-package node.network.spiltpacket;
+package node.network.protocol.splitpacket;
 
 import java.util.Date;
 

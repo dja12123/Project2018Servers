@@ -1,4 +1,4 @@
-package node.network.encpacket;
+package node.network.protocol.encpacket;
 
 public class EncPacket 
 {

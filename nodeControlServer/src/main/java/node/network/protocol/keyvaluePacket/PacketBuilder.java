@@ -1,4 +1,4 @@
-package node.network.packet;
+package node.network.protocol.keyvaluePacket;
 
 import java.nio.ByteBuffer;
 import java.util.UUID;

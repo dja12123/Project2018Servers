@@ -6,10 +6,10 @@ import java.util.UUID;
 import java.util.logging.Level;
 
 import node.device.Device;
-import node.network.packet.Packet;
-import node.network.packet.PacketBuildFailureException;
-import node.network.packet.PacketBuilder;
-import node.network.packet.PacketUtil;
+import node.network.protocol.keyvaluePacket.Packet;
+import node.network.protocol.keyvaluePacket.PacketBuildFailureException;
+import node.network.protocol.keyvaluePacket.PacketBuilder;
+import node.network.protocol.keyvaluePacket.PacketUtil;
 
 public class NodeInfoProtocol
 {

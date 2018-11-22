@@ -1,4 +1,4 @@
-package node.network.encpacket;
+package node.network.protocol.encpacket;
 
 import java.nio.ByteBuffer;
 import java.security.Key;

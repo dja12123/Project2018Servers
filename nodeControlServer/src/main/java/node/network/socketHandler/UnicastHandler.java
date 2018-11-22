@@ -13,7 +13,7 @@ import java.util.logging.Logger;
 
 import node.log.LogWriter;
 import node.network.NetworkUtil;
-import node.network.packet.PacketUtil;
+import node.network.protocol.keyvaluePacket.PacketUtil;
 
 public class UnicastHandler
 {

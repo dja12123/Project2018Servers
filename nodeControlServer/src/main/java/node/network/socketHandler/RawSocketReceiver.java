@@ -27,7 +27,7 @@ import node.log.LogWriter;
 import node.network.NetworkConfig;
 import node.network.NetworkManager;
 import node.network.NetworkUtil;
-import node.network.packet.PacketUtil;
+import node.network.protocol.keyvaluePacket.PacketUtil;
 
 public class RawSocketReceiver implements Runnable
 {

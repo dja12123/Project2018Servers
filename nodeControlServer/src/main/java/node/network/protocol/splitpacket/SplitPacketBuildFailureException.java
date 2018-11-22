@@ -1,4 +1,4 @@
-package node.network.spiltpacket;
+package node.network.protocol.splitpacket;
 
 public class SplitPacketBuildFailureException extends Exception
 {

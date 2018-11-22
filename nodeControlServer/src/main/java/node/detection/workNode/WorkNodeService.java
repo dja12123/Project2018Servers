@@ -17,10 +17,10 @@ import node.device.DeviceInfoManager;
 import node.device.DeviceChangeEvent;
 import node.log.LogWriter;
 import node.network.NetworkManager;
+import node.network.protocol.keyvaluePacket.Packet;
+import node.network.protocol.keyvaluePacket.PacketBuildFailureException;
+import node.network.protocol.keyvaluePacket.PacketBuilder;
 import node.network.NetworkEvent;
-import node.network.packet.Packet;
-import node.network.packet.PacketBuildFailureException;
-import node.network.packet.PacketBuilder;
 import node.util.observer.Observable;
 import node.util.observer.Observer;
 

@@ -2,7 +2,7 @@ package node.network;
 
 import java.net.InetAddress;
 
-import node.network.packet.Packet;
+import node.network.protocol.keyvaluePacket.Packet;
 
 public class NetworkEvent
 {

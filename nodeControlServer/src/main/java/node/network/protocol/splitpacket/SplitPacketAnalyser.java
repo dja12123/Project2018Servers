@@ -1,4 +1,4 @@
-package node.network.spiltpacket;
+package node.network.protocol.splitpacket;
 // 현재 splitPacket 프로토콜은 UDP패킷을 수신할 때 IP스푸핑을 사용한 응용 레벨 서비스 거부 공격에 대응할 수 없습니다. 개선 필요
 
 import java.net.InetAddress;

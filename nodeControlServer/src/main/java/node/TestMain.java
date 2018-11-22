@@ -23,7 +23,7 @@ import node.bash.CommandExecutor;
 import node.fileIO.FileHandler;
 import node.log.LogWriter;
 import node.network.NetworkUtil;
-import node.network.packet.PacketUtil;
+import node.network.protocol.keyvaluePacket.PacketUtil;
 import node.network.socketHandler.RawSocketReceiver;
 
 public class TestMain implements Runnable
