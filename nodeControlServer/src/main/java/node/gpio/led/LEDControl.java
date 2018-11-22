@@ -92,7 +92,7 @@ public class LEDControl implements Runnable
 	public void run()
 	{
 
-		LedDriverInterface iface = new WS281xSpi(2, 0, StripType.WS2812, NUM_LED, 255);
+		LedDriverInterface iface = new WS281xSpi(2, 0, StripType.WS2812, NUM_LED, 200);
 		this.ledDriver = iface;
 		synchronized (this)
 		{
