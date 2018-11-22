@@ -90,15 +90,17 @@ public class LEDControl
 
 	private void run()
 	{
-		try (LedDriverInterface iface = new WS281xSpi(2, 0, StripType.WS2812, NUM_LED, 255))
+		try
 		{
+			
+			LedDriverInterface iface = new WS281xSpi(2, 0, StripType.WS2812, NUM_LED, 255);
 			this.ledDriver = iface;
 			synchronized (this)
 			{
 				this.notifyAll();
 			}
 
-			for(int k = 0; k < 10000; ++k)
+			for(int k = 0; k < 3; ++k)
 			{
 				for (int i = 0; i < NUM_LED; ++i)
 				{
