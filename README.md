@@ -30,7 +30,7 @@
     
 *완전 자동 설정 스크립트
 
-    1. apt-get install git 후 프로젝트 받고 2번 
+    1. apt-get install git 후 프로젝트 받고 2번 진행 할 것.
     2. ~/Project2018Servers/nodeControlServer/extResource/Shscript/automatic_install_final.sh
     
     
