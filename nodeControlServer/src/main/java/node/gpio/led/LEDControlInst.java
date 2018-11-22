@@ -92,7 +92,7 @@ public class LEDControlInst
 					--this.repeat;
 				}
 				System.out.println("LEDON");
-				return STATE_CHANGE_HIGH;
+				//return STATE_CHANGE_HIGH;
 			}
 		}
 
