@@ -266,7 +266,7 @@ public class NetworkManager implements IServiceModule
 			}
 			catch (Exception e)
 			{
-				e.printStackTrace();
+				logger.log(Level.SEVERE, "IP변경중 오류", e);
 			}
 			logger.log(Level.INFO, String.format("IP변경 완료(%s)", inetAddress.getHostAddress()));
 			this.inetAddress = inetAddress;
