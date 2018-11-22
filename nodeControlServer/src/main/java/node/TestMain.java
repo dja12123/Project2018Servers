@@ -16,13 +16,13 @@ public class TestMain
 		WS2811.init(new WS2811Channel(
 	            10, // gpioPin
 	            4, //ledCount
-	            StripType.WS2811_STRIP_RGB,
+	            StripType.WS2811_STRIP_GRB,
 	            false, // invert
 	            128 // brightness
 	    ));
 	    
 
-		WS2811.setPixel(0, 0x00FFF);
+		WS2811.setPixel(0, 0x00FFFF);
 
 		WS2811.render();
 		Thread.sleep(10000);
