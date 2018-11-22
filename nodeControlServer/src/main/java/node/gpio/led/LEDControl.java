@@ -118,6 +118,7 @@ public class LEDControl implements Runnable
 		boolean[] isUpdateLOW = new boolean[NUM_LED];
 		boolean[] isLight = new boolean[NUM_LED];
 		int updateResult;
+		int idx;
 		while (true)
 		{
 			try
@@ -136,15 +137,14 @@ public class LEDControl implements Runnable
 					System.out.println(updateResult == LEDControlInst.STATE_CHANGE_LOW);
 					if (updateResult == LEDControlInst.STATE_CHANGE_LOW)
 					{
-						System.out.println("멈춤?");
-						int idx = inst.pixel();
+						idx = inst.pixel();
 						isUpdateLOW[idx] = true;
-						System.out.println("멈춤!!");
 					}
 					else if (updateResult == LEDControlInst.STATE_END)
 					{
 						System.out.println("kill");
-						isUpdateLOW[inst.pixel()] = true;
+						idx = inst.pixel();
+						isUpdateLOW[idx] = true;
 						this.controllers.remove(i);
 					}
 				}
