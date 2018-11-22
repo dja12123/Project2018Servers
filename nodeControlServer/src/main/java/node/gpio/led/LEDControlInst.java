@@ -1,8 +1,5 @@
 package node.gpio.led;
 
-import de.cacodaemon.rpiws28114j.WS2811;
-import de.pi3g.pi.ws2812.WS2812;
-
 public class LEDControlInst
 {
 	public static final int STATE_LOW = 2;
@@ -36,8 +33,8 @@ public class LEDControlInst
 		this.isLight = true;
 		this.time = this.lightTime;
 		
-		WS2811.setPixel(this.pixel, rgbToInt(this.r, this.g, this.b));
-		WS2811.render();
+		//WS2811.setPixel(this.pixel, rgbToInt(this.r, this.g, this.b));
+		//WS2811.render();
 	}
 	
 	int calcLED()
@@ -57,8 +54,8 @@ public class LEDControlInst
 			}
 			else
 			{//led off
-				WS2811.setPixel(this.pixel, rgbToInt(this.br, this.bg, this.bb));
-				WS2811.render();
+				//WS2811.setPixel(this.pixel, rgbToInt(this.br, this.bg, this.bb));
+				//WS2811.render();
 				this.isLight = false;
 				this.time = this.blackTime;
 				return STATE_LOW;
@@ -72,8 +69,8 @@ public class LEDControlInst
 			}
 			else
 			{// led on
-				WS2811.setPixel(this.pixel, rgbToInt(this.r, this.g, this.b));
-				WS2811.render();
+				//WS2811.setPixel(this.pixel, rgbToInt(this.r, this.g, this.b));
+				//WS2811.render();
 				
 				this.isLight = true;
 				this.time = this.lightTime;
@@ -91,8 +88,8 @@ public class LEDControlInst
 	{
 		if(this.isLight)
 		{
-			WS2811.setPixel(this.pixel, rgbToInt(this.r, this.g, this.b));
-			WS2811.render();
+			//WS2811.setPixel(this.pixel, rgbToInt(this.r, this.g, this.b));
+			//WS2811.render();
 			return true;
 		}
 		return false;
@@ -100,8 +97,8 @@ public class LEDControlInst
 	
 	void killLED()
 	{
-		WS2811.setPixel(this.pixel, rgbToInt(0, 0, 0));
-		WS2811.render();
+		//WS2811.setPixel(this.pixel, rgbToInt(0, 0, 0));
+		//WS2811.render();
 	}
 	
 	private static int rgbToInt(int r, int g, int b)
