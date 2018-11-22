@@ -2,9 +2,6 @@ package node.gpio.led;
 
 import java.util.ArrayList;
 
-import de.cacodaemon.rpiws28114j.StripType;
-import de.cacodaemon.rpiws28114j.WS2811;
-import de.cacodaemon.rpiws28114j.WS2811Channel;
 
 public class LEDControl implements Runnable
 {
