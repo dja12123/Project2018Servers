@@ -92,7 +92,11 @@ public class LEDControl
 		try (LedDriverInterface iface = new WS281xSpi(2, 0, StripType.WS2812, NUM_LED, 255))
 		{
 			this.ledDriver = iface;
-			this.notifyAll();
+			synchronized (this)
+			{
+				this.notifyAll();
+			}
+			
 			System.out.println(Thread.currentThread().getName());
 
 			for (int i = 0; i < NUM_LED; ++i)
