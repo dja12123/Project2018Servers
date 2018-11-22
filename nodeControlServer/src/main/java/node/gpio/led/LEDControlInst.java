@@ -80,8 +80,7 @@ public class LEDControlInst
 			else
 			{// led on
 				led_driver.setPixelColourRGB(this.pixel, this.r, this.g, this.b);
-				led_driver.render();
-				
+				this.led_driver.render();
 				this.isLight = true;
 				this.time = this.lightTime;
 				if(this.repeat != -1)
