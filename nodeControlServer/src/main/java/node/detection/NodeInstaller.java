@@ -82,8 +82,8 @@ public class NodeInstaller implements Runnable
 		{
 			//마스터 노드 감지
 			logger.log(Level.INFO, String.format("마스터 노드 감지(%s)", this.masterNodeData.getMasterNode().toString()));
-			this.nodeDetectionService.workNodeSelectionCallback(this.masterNodeData);
 			this.stop();
+			this.nodeDetectionService.workNodeSelectionCallback(this.masterNodeData);
 			return;
 		}
 		int randomWaitTime = (int)(Math.random() * this.randomWaitTime);
@@ -95,8 +95,8 @@ public class NodeInstaller implements Runnable
 		catch (InterruptedException e)
 		{
 			logger.log(Level.INFO, String.format("마스터 노드 감지(%s)", this.masterNodeData.getMasterNode().toString()));
-			this.nodeDetectionService.workNodeSelectionCallback(this.masterNodeData);
 			this.stop();
+			this.nodeDetectionService.workNodeSelectionCallback(this.masterNodeData);
 			return;
 		}
 		logger.log(Level.INFO, "마스터 노드 선언");
