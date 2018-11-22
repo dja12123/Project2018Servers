@@ -130,7 +130,7 @@ public class LEDControl
 				{
 					LEDControlInst inst = this.controllers.get(i);
 					System.out.println(inst);
-					/*int updateResult = inst.calcLED();
+					int updateResult = inst.calcLED();/*
 					if (updateResult == LEDControlInst.STATE_CHANGE_LOW)
 					{
 						isUpdateLOW[inst.pixel()] = true;
