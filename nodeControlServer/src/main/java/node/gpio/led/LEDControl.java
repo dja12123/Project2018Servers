@@ -28,12 +28,6 @@ public class LEDControl
 		this.infControllers = new LEDControlInst[NUM_LED];
 		this.controllers = new ArrayList<>();
 		
-		for(int i = 0; i < NUM_LED; ++i)
-		{
-			this.ledDriver.setPixelColourRGB(i, 255, 255, 255);
-		}
-		this.ledDriver.render();
-		
 		this.worker = new Thread(this::run);
 		this.worker.start();
 	}
@@ -84,6 +78,23 @@ public class LEDControl
 	
 	private void run()
 	{
+		for(int i = 0; i < NUM_LED; ++i)
+		{
+			this.ledDriver.setPixelColourRGB(i, 255, 255, 255);
+		}
+		this.ledDriver.render();
+		
+		try
+		{
+			Thread.sleep(1000);
+		}
+		catch (InterruptedException e1)
+		{
+			e1.printStackTrace();
+		}
+		this.ledDriver.allOff();
+		
+		
 		boolean[] isUpdateLOW = new boolean[NUM_LED];
 		boolean[] isLight = new boolean[NUM_LED];
 		while(true)
