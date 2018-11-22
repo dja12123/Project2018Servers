@@ -22,7 +22,7 @@ import node.network.packet.PacketBuildFailureException;
 import node.network.packet.PacketBuilder;
 import node.network.packet.PacketUtil;
 import node.network.socketHandler.RawSocketReceiver;
-import node.network.socketHandler.BroadcastHandler;
+import node.network.socketHandler.BroadcastSender;
 import node.network.socketHandler.UnicastHandler;
 import node.network.spiltpacket.SplitPacket;
 import node.network.spiltpacket.SplitPacketAnalyser;
@@ -35,9 +35,11 @@ public class NetworkManager implements IServiceModule
 {
 	public static final Logger logger = LogWriter.createLogger(NetworkManager.class, "network");
 	
+	private final NetworkConfig netConfig;
+	
 	public final DeviceInfoManager deviceInfoManager;
 	
-	private final BroadcastHandler ipJumpBroadcast;
+	private final BroadcastSender ipJumpBroadcast;
 	private final RawSocketReceiver rawSocketReceiver;
 	private final UnicastHandler unicastHandler;
 	
@@ -49,9 +51,11 @@ public class NetworkManager implements IServiceModule
 	
 	public NetworkManager(DeviceInfoManager deviceInfoManager)
 	{
+		this.netConfig = new NetworkConfig();
+		
 		this.deviceInfoManager = deviceInfoManager;
 
-		this.ipJumpBroadcast = new BroadcastHandler(this::socketRawByteReadCallback);
+		this.ipJumpBroadcast = new BroadcastSender();
 		this.rawSocketReceiver = new RawSocketReceiver(this::socketRawByteReadCallback);
 		this.unicastHandler = new UnicastHandler(this::socketRawByteReadCallback);
 		
@@ -119,7 +123,7 @@ public class NetworkManager implements IServiceModule
 			SplitPacket splitPacket;
 			if(packet.isBroadcast())
 			{
-				id = SplitPacketUtil.createSplitPacketID(NetworkUtil.broadcastIA(NetworkUtil.DEFAULT_SUBNET));
+				id = SplitPacketUtil.createSplitPacketID(this.netConfig.broadcastIA(NetworkConfig.DEFAULT_SUBNET));
 				try
 				{
 					splitPacket = new SplitPacket(id, packet.getRawData());
@@ -165,8 +169,13 @@ public class NetworkManager implements IServiceModule
 	
 	public void socketRawByteReadCallback(InetAddress addr, byte[] packetBuffer)
 	{// 소켓에서 받은 RAW데이터를 패킷 분석기에 집어넣기
+		if(addr == null)
+		{
+			addr = this.netConfig.broadcastIA(NetworkConfig.DEFAULT_SUBNET);
+		}
+		final InetAddress cAddr = addr;
 		NodeControlCore.mainThreadPool.execute(()->{
-			this.splitPacketAnalyser.analysePacket(addr, packetBuffer);
+			this.splitPacketAnalyser.analysePacket(cAddr, packetBuffer);
 		});
 	}
 	
@@ -200,12 +209,13 @@ public class NetworkManager implements IServiceModule
 	public boolean startModule()
 	{
 		logger.log(Level.INFO, "네트워크 매니저 로드");
+		this.netConfig.loadSetting();
 		
-		this.setInetAddr(NetworkUtil.defaultAddr());
+		this.setInetAddr(this.netConfig.defaultAddr());
 		
-		this.unicastHandler.start(this.inetAddress);
-		this.rawSocketReceiver.start(NetworkUtil.getNIC());
-		this.ipJumpBroadcast.start(this.inetAddress);
+		this.unicastHandler.start(this.inetAddress, this.netConfig.unicastPort());
+		this.rawSocketReceiver.start(this.netConfig.getNIC(), this.netConfig.broadcastPort());
+		this.ipJumpBroadcast.start(this.inetAddress, this.netConfig.broadcastPort());
 		return true;
 	}
 
@@ -238,8 +248,8 @@ public class NetworkManager implements IServiceModule
 		}
 		command.add(String.format("ifdown -a"));
 
-		command.add(String.format("ip addr flush dev %s", NetworkUtil.getNIC()));
-		command.add(String.format("ip addr add %s/24 brd + dev %s", inetAddress.getHostAddress(), NetworkUtil.getNIC()));
+		command.add(String.format("ip addr flush dev %s", this.netConfig.getNIC()));
+		command.add(String.format("ip addr add %s/24 brd + dev %s", inetAddress.getHostAddress(), this.netConfig.getNIC()));
 		
 		command.add(String.format("ip route add default via %s", gatewayAddr));
 		command.add(String.format("ifup -a"));
@@ -260,9 +270,9 @@ public class NetworkManager implements IServiceModule
 			}
 			logger.log(Level.INFO, String.format("IP변경 완료(%s)", inetAddress.getHostAddress()));
 			this.inetAddress = inetAddress;
-			this.unicastHandler.start(this.inetAddress);
-			this.ipJumpBroadcast.start(this.inetAddress);
-			this.rawSocketReceiver.start(NetworkUtil.getNIC());
+			this.unicastHandler.start(this.inetAddress, this.netConfig.unicastPort());
+			this.ipJumpBroadcast.start(this.inetAddress, this.netConfig.broadcastPort());
+			this.rawSocketReceiver.start(this.netConfig.getNIC(), this.netConfig.broadcastPort());
 		}
 		
 		

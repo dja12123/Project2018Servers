@@ -19,13 +19,13 @@ public class UnicastHandler
 {
 	public static final Logger logger = LogWriter.createLogger(UnicastHandler.class, "unicast");
 	
-	private InetAddress inetAddress;
+	private InetAddress senderAddress;
 	private DatagramSocket socket;
-
+	private int port;
+	
 	private boolean isWork;
 	
 	private Thread worker;
-	
 
 	private BiConsumer<InetAddress, byte[]> receiveCallback;
 	
@@ -39,15 +39,17 @@ public class UnicastHandler
 		this.worker = null;
 	}
 	
-	public void start(InetAddress inetAddress)
+	public void start(InetAddress senderAddress, int port)
 	{
 		if(this.isWork) return;
-		this.isWork = true;
+		
+		this.senderAddress = senderAddress;
+		this.port = port;
 		
 		try
 		{
 			this.socket = new DatagramSocket(null);
-			this.socket.bind(new InetSocketAddress(this.inetAddress, NetworkUtil.unicastPort()));
+			this.socket.bind(new InetSocketAddress(this.senderAddress, this.port));
 		}
 		catch (SocketException e)
 		{
@@ -55,10 +57,12 @@ public class UnicastHandler
 		}
 		
 		this.worker = new Thread(this::run);
+		
+		this.isWork = true;
 		this.worker.start();
 	}
 	
-	public synchronized void sendMessage(byte[] data, InetAddress addr)
+	public synchronized void sendMessage(byte[] data, InetAddress receiveAddr)
 	{
 		if(!this.isWork)
 		{
@@ -67,8 +71,8 @@ public class UnicastHandler
 		}
 		
 		DatagramPacket packet = new DatagramPacket(data, data.length);
-		packet.setAddress(addr);
-		packet.setPort(NetworkUtil.unicastPort());
+		packet.setAddress(receiveAddr);
+		packet.setPort(this.port);
 		try
 		{
 			this.socket.send(packet);

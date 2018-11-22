@@ -7,6 +7,7 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.net.SocketException;
+import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.function.BiConsumer;
 import java.util.logging.Level;
@@ -23,6 +24,7 @@ import node.NodeControlCore;
 import node.bash.CommandExecutor;
 import node.device.DeviceInfoManager;
 import node.log.LogWriter;
+import node.network.NetworkConfig;
 import node.network.NetworkManager;
 import node.network.NetworkUtil;
 import node.network.packet.PacketUtil;
@@ -37,8 +39,8 @@ public class RawSocketReceiver implements Runnable
 	
 	private RawSocket rawSocket;
 
-	private int port;
 	private String nic;
+	private int port;
 	
 	private BiConsumer<InetAddress, byte[]> receiveCallback;
 	
@@ -49,17 +51,19 @@ public class RawSocketReceiver implements Runnable
 		this.dgramSocket = null;
 	}
 
-	public void start(String nic)
+	public void start(String nic, int port)
 	{
 		if(this.isWork) return;
-		this.isWork = true;
+		
+		this.nic = nic;
+		this.port = port;
 		
 		this.rawSocket = new RawSocket();
 		this.worker = new Thread(this);
 		
 		try
 		{
-			CommandExecutor.executeCommand(String.format("ip link set %s promisc on", nic));
+			CommandExecutor.executeCommand(String.format("ip link set %s promisc on", nic, false));
 		}
 		catch (Exception e)
 		{
@@ -69,10 +73,7 @@ public class RawSocketReceiver implements Runnable
 		
 		try
 		{
-			this.rawSocket.open(RawSocket.PF_INET, RawSocket.getProtocolByName("UDP"));
-			this.rawSocket.setIPHeaderInclude(true);
-			//this.rawSocket.bindDevice(nic);
-			//logger.log(Level.INFO, String.format("바인드:(%s)", nic));
+			this.rawSocket.pmodeOpen(nic);
 		}
 		catch (IllegalStateException | IOException e)
 		{
@@ -80,8 +81,7 @@ public class RawSocketReceiver implements Runnable
 			return;
 		}
 		
-	
-		
+		this.isWork = true;
 		this.worker.start();
 		return;
 	}
@@ -106,23 +106,35 @@ public class RawSocketReceiver implements Runnable
 	public void run()
 	{
 		logger.log(Level.INFO, "로우 소켓 수신 시작");
-		byte[] packetBuffer = new byte[PacketUtil.HEADER_SIZE + PacketUtil.MAX_SIZE_KEY + PacketUtil.MAX_SIZE_DATA];
+		byte[] packetBuffer = new byte[NetworkConfig.DFT_WINDOW_SIZE];
 		int readLen = 0;
 		
 		while(this.isWork)
 		{
 			try
 			{
-				
-				readLen = this.rawSocket.read(packetBuffer, NetworkUtil.broadcastIA(NetworkUtil.DEFAULT_SUBNET).getAddress());
+				readLen = this.rawSocket.read(packetBuffer);
 
-				if(readLen < 28)
-				{
-					continue;
+				System.out.println("수신시작");
+				if(readLen > 42)
+				{// header
+					
+					ByteBuffer buf = ByteBuffer.wrap(packetBuffer);
+					buf.position(23);
+					if(buf.get() != 0x11)
+					{//isudp?
+						continue;
+					}
+					buf.position(36);
+					if(buf.getShort() != this.port)
+					{//dest port is 20080?
+						continue;
+					}
+					readLen = buf.getShort() - 8;
 				}
-				byte[] copyBuf = Arrays.copyOfRange(packetBuffer, 28, readLen);
-			
-				this.receiveCallback.accept(NetworkUtil.broadcastIA(NetworkUtil.DEFAULT_SUBNET), copyBuf);
+				byte[] copyBuf = Arrays.copyOfRange(packetBuffer, 42, 42 + readLen);
+				System.out.println("완료");
+				this.receiveCallback.accept(null, copyBuf);
 				System.out.println(NetworkUtil.bytesToHex(packetBuffer, 10));
 			}
 			catch (IOException e)
@@ -138,47 +150,4 @@ public class RawSocketReceiver implements Runnable
 		}
 		logger.log(Level.INFO, "로우 소켓 수신 종료");
 	}
-}
-
-
-class NodeControlICMP extends ICMPPacket
-{
-	private static int IP_HEADER_SIZE = 20;
-	
-	private static int TYPE_NODE_ASSIGN = 14;
-	private static int CODE_BROADCAST = 0;
-	
-	public NodeControlICMP(byte[] pdata)
-	{
-		super(1);
-		byte[] fullPacket = new byte[IP_HEADER_SIZE + 8 + pdata.length];
-		System.arraycopy(pdata, 0, fullPacket, 20 + 8, pdata.length);
-		
-		this.setData(fullPacket);
-		
-		this.setIPVersion(4);
-		this.setIPHeaderLength(5);
-		this.setIPPacketLength(fullPacket.length);
-		this.setFragmentOffset(0x0400);
-		this.setTTL(0x64);
-		this.setProtocol(IPPacket.PROTOCOL_ICMP);
-		
-		this.setType(TYPE_NODE_ASSIGN);
-		this.setCode(CODE_BROADCAST);
-		
-		this.computeICMPChecksum();
-		this.computeIPChecksum();
-	}
-	
-	public byte[] getData()
-	{
-		return this._data_;
-	}
-
-	@Override
-	public int getICMPHeaderByteLength()
-	{
-		return 4;
-	}
-	
 }

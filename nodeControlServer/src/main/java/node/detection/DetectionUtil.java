@@ -7,6 +7,7 @@ import java.util.logging.Level;
 
 import node.NodeControlCore;
 import node.device.DeviceInfoManager;
+import node.network.NetworkConfig;
 import node.network.NetworkUtil;
 
 public class DetectionUtil
@@ -24,7 +25,7 @@ public class DetectionUtil
 	{
 		String masterIP = NodeControlCore.getProp(PROP_masternodeIP);
 		
-		String fullIP = String.format("%s.%s", NetworkUtil.DEFAULT_SUBNET, masterIP);
+		String fullIP = String.format("%s.%s", NetworkConfig.DEFAULT_SUBNET, masterIP);
 		try
 		{
 			masterAddr = InetAddress.getByName(fullIP);
@@ -36,7 +37,7 @@ public class DetectionUtil
 		
 		String workDefaultIP = NodeControlCore.getProp(PROP_worknodeDefaultIP);
 		
-		fullIP = String.format("%s.%s", NetworkUtil.DEFAULT_SUBNET, workDefaultIP);
+		fullIP = String.format("%s.%s", NetworkConfig.DEFAULT_SUBNET, workDefaultIP);
 		try
 		{
 			workDefaultAddr = InetAddress.getByName(fullIP);
