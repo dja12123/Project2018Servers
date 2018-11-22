@@ -4,7 +4,7 @@ import com.diozero.ws281xj.LedDriverInterface;
 
 public class LEDControlInst
 {
-	public static int STATE_CHANGE_LOW = 2;
+	public static int STATE_CHANGE_LOW = 100;
 	public static int STATE_CHANGE_HIGH = 1;
 	public static int STATE_NORMAL = 0;
 	public static int STATE_END = -1;
@@ -72,7 +72,7 @@ public class LEDControlInst
 				this.isLight = false;
 				this.time = this.blackTime;
 				System.out.println("LEDOFF");
-				rtnValue =  STATE_CHANGE_LOW;
+				rtnValue = STATE_CHANGE_LOW;
 			}
 		}
 		else
