@@ -132,7 +132,7 @@ public class RawSocketReceiver implements Runnable
 				{//dest port is 20080?
 					continue;
 				}
-				System.out.println("pass3");
+				System.out.println("pass3" + NetworkUtil.bytesToHex(packetBuffer, packetBuffer.length));
 				readLen = buf.getShort() - 8;
 				byte[] copyBuf = Arrays.copyOfRange(packetBuffer, 42, 42 + readLen);
 				System.out.println("완료");
