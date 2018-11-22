@@ -229,9 +229,13 @@ public class TestMain implements Runnable
 				{
 					continue;
 				}
-				byte[] copyBuf = Arrays.copyOfRange(packetBuffer, 28, readLen);
+				//byte[] copyBuf = Arrays.copyOfRange(packetBuffer, 28, readLen);
 				System.out.println("수신중...");
-				System.out.println(NetworkUtil.bytesToHex(packetBuffer, 20));
+				if(readLen > 28)
+				{
+					System.out.println(NetworkUtil.bytesToHex(packetBuffer, readLen));
+				}
+				
 			}
 			catch (IOException e)
 			{
