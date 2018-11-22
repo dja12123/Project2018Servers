@@ -33,6 +33,18 @@ public class LEDControl
 	public synchronized LEDControlInst createLEDControl(int pixel, int lightTime, int blackTime, int repeat, int r,
 			int g, int b, int br, int bg, int bb)
 	{
+		if(this.ledDriver == null)
+		{
+			try
+			{
+				this.wait();
+			}
+			catch (InterruptedException e)
+			{
+
+				e.printStackTrace();
+			}
+		}
 		lightTime /= SLEEP_TIME;
 		blackTime /= SLEEP_TIME;
 		LEDControlInst controlInst = new LEDControlInst(this.ledDriver, pixel, lightTime, blackTime, repeat, r, g, b,
@@ -80,6 +92,7 @@ public class LEDControl
 		try (LedDriverInterface iface = new WS281xSpi(2, 0, StripType.WS2812, NUM_LED, 255))
 		{
 			this.ledDriver = iface;
+			this.notifyAll();
 			System.out.println(Thread.currentThread().getName());
 
 			for (int i = 0; i < NUM_LED; ++i)
