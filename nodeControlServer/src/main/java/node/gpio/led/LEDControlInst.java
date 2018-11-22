@@ -4,8 +4,8 @@ import com.diozero.ws281xj.LedDriverInterface;
 
 public class LEDControlInst
 {
-	public static final int STATE_CHANGE_LOW = 2;
-	public static final int STATE_CHANGE_HIGH = 1;
+	public static final int STATE_LOW = 2;
+	public static final int STATE_HIGH = 1;
 	public static final int STATE_NORMAL = 0;
 	public static final int STATE_END = -1;
 	
@@ -61,7 +61,7 @@ public class LEDControlInst
 				
 				this.isLight = false;
 				this.time = this.blackTime;
-				return STATE_CHANGE_LOW;
+				return STATE_LOW;
 			}
 		}
 		else
@@ -81,7 +81,7 @@ public class LEDControlInst
 				{
 					--this.repeat;
 				}
-				return STATE_CHANGE_HIGH;
+				return STATE_HIGH;
 			}
 		}
 		return STATE_NORMAL;

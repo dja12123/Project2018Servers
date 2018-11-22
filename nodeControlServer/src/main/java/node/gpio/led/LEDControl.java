@@ -83,9 +83,7 @@ public class LEDControl implements Runnable
 	@Override
 	public void run()
 	{
-
-		boolean[] isUpdateLOW = new boolean[NUM_LED];
-		boolean[] isLight = new boolean[NUM_LED];
+		boolean[] ledState = new boolean[NUM_LED];
 		int updateResult;
 		while (true)
 		{
@@ -93,8 +91,7 @@ public class LEDControl implements Runnable
 			{
 				for (int i = 0; i < NUM_LED; ++i)
 				{
-					isUpdateLOW[i] = false;
-					isLight[i] = false;
+					ledState[i] = false;
 				}
 
 				for (int i = this.controllers.size() - 1; i >= 0; --i)
@@ -102,19 +99,18 @@ public class LEDControl implements Runnable
 					LEDControlInst inst = this.controllers.get(i);
 					
 					updateResult = inst.calcLED();
-					if (updateResult == LEDControlInst.STATE_CHANGE_LOW)
+					if (updateResult == LEDControlInst.STATE_HIGH)
 					{
-						isUpdateLOW[inst.pixel] = true;
+						ledState[inst.pixel] = true;
 					}
 					else if (updateResult == LEDControlInst.STATE_END)
 					{
-						isUpdateLOW[inst.pixel] = true;
 						this.controllers.remove(i);
 					}
 				}
 				for (int i = 0; i < NUM_LED; ++i)
 				{
-					if (isUpdateLOW[i] != true)
+					if (ledState[i] == true)
 					{
 						continue;
 					}
@@ -125,7 +121,7 @@ public class LEDControl implements Runnable
 						{
 							if (inst.setLight())
 							{
-								isLight[i] = true;
+								ledState[i] = true;
 							}
 
 						}
@@ -133,7 +129,7 @@ public class LEDControl implements Runnable
 				}
 				for (int i = 0; i < NUM_LED; ++i)
 				{
-					if (this.infControllers[i] == null || isUpdateLOW[i] == true || isLight[i] == true)
+					if (ledState[i] == true)
 					{
 						continue;
 					}
