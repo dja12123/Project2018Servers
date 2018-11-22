@@ -68,6 +68,7 @@ public class LEDControlInst
 				
 				this.isLight = false;
 				this.time = this.blackTime;
+				System.out.println("LEDOFF");
 				return STATE_CHANGE_LOW;
 			}
 		}
