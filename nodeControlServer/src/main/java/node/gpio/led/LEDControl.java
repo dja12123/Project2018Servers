@@ -122,7 +122,7 @@ public class LEDControl
 				}
 				synchronized (this)
 				{
-					System.out.println("CHECK");
+
 					for (int i = this.controllers.size() - 1; i >= 0; --i)
 					{
 						LEDControlInst inst = this.controllers.get(i);

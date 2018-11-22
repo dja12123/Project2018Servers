@@ -66,7 +66,7 @@ public class LEDControlInst
 			else
 			{//led off
 				this.led_driver.setPixelColourRGB(this.pixel, this.br, this.bg, this.bb);
-				this.led_driver.render();
+				//this.led_driver.render();
 				
 				this.isLight = false;
 				this.time = this.blackTime;
