@@ -29,6 +29,10 @@ public class LEDControl implements Runnable
 		this.ledDriver.setRedComponent(0, 100);
 		this.ledDriver.setBlueComponent(0, 100);
 		this.ledDriver.setGreenComponent(0, 100);
+		this.ledDriver.setPixelColourRGB(1, 0, 0, 0);
+		this.ledDriver.setPixelColourRGB(2, 0, 0, 0);
+		this.ledDriver.setPixelColourRGB(3, 0, 0, 0);
+		//this.ledDriver.setPixelColourRGB(1, 0, 0, 0);
 		this.ledDriver.render();
 		SleepUtil.sleepMillis(1000);
 		this.ledDriver.setPixelColourRGB(0, 0, 0, 0);
