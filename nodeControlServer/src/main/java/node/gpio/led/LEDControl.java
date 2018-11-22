@@ -120,9 +120,7 @@ public class LEDControl
 					isUpdateLOW[i] = false;
 					isLight[i] = false;
 				}
-				synchronized (this)
-				{
-
+			
 					for (int i = this.controllers.size() - 1; i >= 0; --i)
 					{
 						LEDControlInst inst = this.controllers.get(i);
@@ -165,7 +163,7 @@ public class LEDControl
 						}
 						this.infControllers[i].update();
 					}
-				}
+				
 				SleepUtil.sleepMillis(SLEEP_TIME);
 			}
 		}
