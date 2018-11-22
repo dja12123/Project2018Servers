@@ -120,31 +120,18 @@ public class RawSocketReceiver implements Runnable
 					continue;
 				}
 				ByteBuffer buf = ByteBuffer.wrap(packetBuffer);
-				buf.position(23);
 				if(buf.get(23) != 0x11)
 				{//isudp?
 					continue;
 				}
-				
-				
-				int recvPort = buf.getShort(36);
-				for(int i = 0; i < 100; ++i)
-				{
-					if(buf.getShort(i) == 49800)
-					{
-						System.out.println("인덱스:"+ i);
-					}
-				}
-				System.out.println("pass2" + recvPort + " " + this.port);
-				System.out.println(NetworkUtil.bytesToHex(packetBuffer, readLen));
-				if(recvPort != this.port)
+				if(Short.toUnsignedInt(buf.getShort(36)) != this.port)
 				{//dest port is 20080?
 					continue;
 				}
-				System.out.println("pass3");
-				readLen = buf.getShort(38) - 8;
+				
+				readLen = Short.toUnsignedInt(buf.getShort(38)) - 8;
 				byte[] copyBuf = Arrays.copyOfRange(packetBuffer, 42, 42 + readLen);
-				System.out.println("완료");
+
 				this.receiveCallback.accept(null, copyBuf);
 				
 			}
