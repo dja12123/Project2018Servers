@@ -157,7 +157,6 @@ public class LEDControl implements Runnable
 					}
 					this.infControllers[i].calcLED();
 				}
-
 				SleepUtil.sleepMillis(SLEEP_TIME);
 			}
 		}

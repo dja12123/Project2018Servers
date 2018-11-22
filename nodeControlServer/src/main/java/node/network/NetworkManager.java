@@ -175,6 +175,7 @@ public class NetworkManager implements IServiceModule
 		}
 		final InetAddress cAddr = addr;
 		NodeControlCore.mainThreadPool.execute(()->{
+			System.out.println("로우소켓수신완료");
 			this.splitPacketAnalyser.analysePacket(cAddr, packetBuffer);
 		});
 	}

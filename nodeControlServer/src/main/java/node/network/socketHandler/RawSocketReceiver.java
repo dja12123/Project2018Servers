@@ -35,8 +35,7 @@ public class RawSocketReceiver implements Runnable
 	
 	private Thread worker;
 	private boolean isWork;
-	private DatagramSocket dgramSocket;
-	
+
 	private RawSocket rawSocket;
 
 	private String nic;
@@ -48,7 +47,7 @@ public class RawSocketReceiver implements Runnable
 	{
 		this.receiveCallback = receiveCallback;
 		this.rawSocket = null;
-		this.dgramSocket = null;
+
 	}
 
 	public void start(String nic, int port)
