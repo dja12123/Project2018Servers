@@ -130,7 +130,7 @@ public class LEDControl
 				{
 					LEDControlInst inst = this.controllers.get(i);
 					System.out.println(inst);
-					int updateResult = inst.update();
+					int updateResult = inst.calcLED();
 					if (updateResult == LEDControlInst.STATE_CHANGE_LOW)
 					{
 						isUpdateLOW[inst.pixel()] = true;
@@ -167,7 +167,7 @@ public class LEDControl
 					{
 						continue;
 					}
-					this.infControllers[i].update();
+					this.infControllers[i].calcLED();
 				}
 
 				SleepUtil.sleepMillis(SLEEP_TIME);

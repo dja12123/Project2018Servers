@@ -48,7 +48,7 @@ public class LEDControlInst
 		return this.pixel;
 	}
 	
-	int update()
+	int calcLED()
 	{
 		if(this.repeat == 0)
 		{// -1일경우 계속 작동.
