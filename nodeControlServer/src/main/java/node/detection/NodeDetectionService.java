@@ -11,6 +11,7 @@ import node.detection.masterNode.MasterNodeService;
 import node.detection.workNode.WorkNodeService;
 import node.device.Device;
 import node.device.DeviceInfoManager;
+import node.gpio.led.LEDControl;
 import node.log.LogWriter;
 import node.network.NetworkManager;
 import node.util.observer.Observable;
@@ -59,6 +60,8 @@ public class NodeDetectionService extends Observable<NodeDetectionEvent> impleme
 		
 		NodeDetectionEvent e = new NodeDetectionEvent(null, false, NodeDetectionEvent.STATE_FAIL);
 		this.notifyObservers(NodeControlCore.mainThreadPool, e);
+		
+		LEDControl.ledControl.setDefaultFlick(0, 800, 200, 128, 0, 0, 0, 0, 0);
 	}
 	
 	public synchronized void workNodeSelectionCallback(NodeInfoProtocol nodeInfoProtocol)
@@ -72,6 +75,8 @@ public class NodeDetectionService extends Observable<NodeDetectionEvent> impleme
 		Device masterNode = this.deviceInfoManager.getDevice(this.masterNode);
 		NodeDetectionEvent e = new NodeDetectionEvent(masterNode.getInetAddr(), false, NodeDetectionEvent.STATE_UPLINK);
 		this.notifyObservers(NodeControlCore.mainThreadPool, e);
+		
+		LEDControl.ledControl.setDefaultFlick(0, 800, 200, 0, 128, 0, 0, 0, 0);
 	}
 	
 	public synchronized void masterNodeSelectionCallback()
@@ -85,6 +90,8 @@ public class NodeDetectionService extends Observable<NodeDetectionEvent> impleme
 		Device masterNode = this.deviceInfoManager.getDevice(this.masterNode);
 		NodeDetectionEvent e = new NodeDetectionEvent(masterNode.getInetAddr(), true, NodeDetectionEvent.STATE_UPLINK);
 		this.notifyObservers(NodeControlCore.mainThreadPool, e);
+		
+		LEDControl.ledControl.setDefaultFlick(0, 800, 200, 0, 128, 128, 0, 0, 0);
 	}
 	
 	public UUID getMasterNode()
