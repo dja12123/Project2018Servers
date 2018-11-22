@@ -10,12 +10,12 @@ public class LEDControlInst
 	public static final int STATE_END = -1;
 	
 	private LedDriverInterface led_driver;
-	private int pixel;
-	private int lightTime;
-	private int blackTime;
-	private int repeat;
-	private int r, g, b;
-	private int br, bg, bb;
+	final int pixel;
+	final int lightTime;
+	final int blackTime;
+	int repeat;
+	final int r, g, b;
+	final int br, bg, bb;
 	
 	private int time;
 	private boolean isLight;
@@ -36,16 +36,6 @@ public class LEDControlInst
 		
 		this.isLight = false;
 		this.time = 0;
-	}
-	
-	int getRepeat()
-	{
-		return this.repeat;
-	}
-	
-	int pixel()
-	{
-		return this.pixel;
 	}
 	
 	int calcLED()
