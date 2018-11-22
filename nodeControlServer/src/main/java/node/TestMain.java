@@ -246,7 +246,8 @@ public class TestMain implements Runnable
 					{//dest port is 20080?
 						continue;
 					}
-					byte[] copyBuf = Arrays.copyOfRange(packetBuffer, 42, readLen);
+					int payloadSize = buf.getShort() - 8;
+					byte[] copyBuf = Arrays.copyOfRange(packetBuffer, 42, 42 + payloadSize);
 					System.out.println(NetworkUtil.bytesToHex(copyBuf, copyBuf.length));
 				}
 				
