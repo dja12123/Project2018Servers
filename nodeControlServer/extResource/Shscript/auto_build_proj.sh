@@ -1,7 +1,6 @@
 #!/bin/bash
 
 cd ~/Project2018Servers/
-rm -r ./nodeControlServer/extResource/Shscript/*
 git pull
 gradle clean build
 gradle moveres
