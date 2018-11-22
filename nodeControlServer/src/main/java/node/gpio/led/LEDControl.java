@@ -11,7 +11,7 @@ import com.diozero.ws281xj.spi.WS281xSpi;
 public class LEDControl implements Runnable
 {
 	public static final int NUM_LED = 4;
-	private static final int SLEEP_TIME = 10;
+	private static final int SLEEP_TIME = 100;
 
 	public static final LEDControl ledControl = new LEDControl();
 
