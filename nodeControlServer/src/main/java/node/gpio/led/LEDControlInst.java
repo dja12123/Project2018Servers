@@ -50,9 +50,12 @@ public class LEDControlInst
 	
 	int update()
 	{
+		System.out.println("CHECK");
 		if(this.repeat == 0)
 		{// -1일경우 계속 작동.
+			System.out.println("return");
 			return STATE_END;
+			
 		}
 		
 		if(this.isLight)
