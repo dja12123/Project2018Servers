@@ -25,7 +25,12 @@ public class LEDControl implements Runnable
 	{
 		System.out.println("시작");
 		this.ledDriver  = new WS281xSpi(2, 0, StripType.WS2812, NUM_LED, 200);
-		
+		this.ledDriver.allOff();
+		this.ledDriver.setPixelColourRGB(0, 100, 100, 100);
+		this.ledDriver.render();
+		SleepUtil.sleepMillis(1000);
+		this.ledDriver.setPixelColourRGB(0, 0, 0, 0);
+		this.ledDriver.render();
 		this.infControllers = new LEDControlInst[NUM_LED];
 		this.controllers = new ArrayList<>();
 
