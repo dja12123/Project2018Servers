@@ -133,7 +133,6 @@ public class LEDControl implements Runnable
 					LEDControlInst inst = this.controllers.get(i);
 					
 					updateResult = inst.calcLED();
-					System.out.println(updateResult == LEDControlInst.STATE_CHANGE_LOW);
 					if (updateResult == LEDControlInst.STATE_CHANGE_LOW)
 					{
 						isUpdateLOW[inst.pixel] = true;
