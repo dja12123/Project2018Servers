@@ -256,8 +256,7 @@ public class NetworkManager implements IServiceModule
 			e.printStackTrace();
 		}
 
-		synchronized (this)
-		{
+		
 			logger.log(Level.INFO, "IP변경 시작");
 			this.unicastHandler.stop();
 			this.broadcastSender.stop();
@@ -281,7 +280,7 @@ public class NetworkManager implements IServiceModule
 			this.unicastHandler.start(this.inetAddress, this.netConfig.unicastPort());
 			this.broadcastSender.start(this.netConfig.broadcastIA(NetworkConfig.DEFAULT_SUBNET), this.netConfig.broadcastPort());
 			this.rawSocketReceiver.start(this.netConfig.getNIC(), this.netConfig.broadcastPort());
-		}
+		
 		
 		
 	}
