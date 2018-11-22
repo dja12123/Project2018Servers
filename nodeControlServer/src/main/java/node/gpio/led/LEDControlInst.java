@@ -1,6 +1,5 @@
 package node.gpio.led;
 
-import com.diozero.ws281xj.LedDriverInterface;
 
 public class LEDControlInst
 {
@@ -9,20 +8,20 @@ public class LEDControlInst
 	public static final int STATE_NORMAL = 0;
 	public static final int STATE_END = -1;
 	
-	private LedDriverInterface led_driver;
-	final int pixel;
-	final int lightTime;
-	final int blackTime;
+	//private LedDriverInterface led_driver;
+	 int pixel;
+	 int lightTime;
+	 int blackTime;
 	int repeat;
-	final int r, g, b;
-	final int br, bg, bb;
+	 int r, g, b;
+	 int br, bg, bb;
 	
 	private int time;
 	private boolean isLight;
 	
-	LEDControlInst(LedDriverInterface led_driver, int pixel, int lightTime, int blackTime, int repeat, int r, int g, int b, int br, int bg, int bb)
+	/*LEDControlInst(LedDriverInterface led_driver, int pixel, int lightTime, int blackTime, int repeat, int r, int g, int b, int br, int bg, int bb)
 	{
-		this.led_driver = led_driver;
+		//this.led_driver = led_driver;
 		this.pixel = pixel;
 		this.lightTime = lightTime;
 		this.blackTime = blackTime;
@@ -39,7 +38,7 @@ public class LEDControlInst
 		//this.led_driver.setPixelColourRGB(this.pixel, this.r, this.g, this.b);
 		//this.led_driver.render();
 	}
-	
+	*/
 	int calcLED()
 	{
 		if(this.repeat == 0)

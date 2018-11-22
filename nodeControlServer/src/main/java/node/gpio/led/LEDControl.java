@@ -1,12 +1,12 @@
 package node.gpio.led;
 
 import java.util.ArrayList;
-
+/*
 import com.diozero.util.SleepUtil;
 import com.diozero.ws281xj.LedDriverInterface;
 import com.diozero.ws281xj.PixelAnimations;
 import com.diozero.ws281xj.StripType;
-import com.diozero.ws281xj.spi.WS281xSpi;
+import com.diozero.ws281xj.spi.WS281xSpi;*/
 
 public class LEDControl implements Runnable
 {
@@ -16,7 +16,7 @@ public class LEDControl implements Runnable
 
 	public static final LEDControl ledControl = new LEDControl();
 
-	private LedDriverInterface ledDriver;
+	//private LedDriverInterface ledDriver;
 	private LEDControlInst[] infControllers;
 	private ArrayList<LEDControlInst> controllers;
 
@@ -44,7 +44,7 @@ public class LEDControl implements Runnable
 	public synchronized LEDControlInst flick(int pixel, int lightTime, int blackTime, int repeat, int r,
 			int g, int b, int br, int bg, int bb)
 	{// LED번호, 켜지는시간, 꺼지는시간, 반복횟수, 켜짐색, 꺼짐색
-		lightTime /= SLEEP_TIME;
+		/*lightTime /= SLEEP_TIME;
 		blackTime /= SLEEP_TIME;
 		LEDControlInst controlInst = new LEDControlInst(this.ledDriver, pixel, lightTime, blackTime, repeat, r, g, b,
 				br, bg, bb);
@@ -56,8 +56,8 @@ public class LEDControl implements Runnable
 		{
 			this.controllers.add(controlInst);
 		}
-
-		return controlInst;
+*/
+		return null;
 	}
 
 	public LEDControlInst flick(int pixel, int lightTime, int blackTime, int repeat, int r, int g, int b)
@@ -157,7 +157,7 @@ public class LEDControl implements Runnable
 					}
 					this.infControllers[i].calcLED();
 				}
-				SleepUtil.sleepMillis(SLEEP_TIME);
+				//SleepUtil.sleepMillis(SLEEP_TIME);
 			}
 		}
 	}
