@@ -232,8 +232,6 @@ public class NetworkManager implements IServiceModule
 	
 	public void setInetAddr(InetAddress inetAddress)
 	{
-		ArrayList<String> command = new ArrayList<String>();
-		
 		byte[] myAddrByte = inetAddress.getAddress();
 		myAddrByte[3] = 1;
 		String gatewayAddr = null;
@@ -246,14 +244,7 @@ public class NetworkManager implements IServiceModule
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		command.add(String.format("ifdown -a"));
 
-		command.add(String.format("ip addr flush dev %s", this.netConfig.getNIC()));
-		command.add(String.format("ip addr add %s/24 brd + dev %s", inetAddress.getHostAddress(), this.netConfig.getNIC()));
-		
-		command.add(String.format("ip route add default via %s", gatewayAddr));
-		command.add(String.format("ifup -a"));
-		
 		synchronized (this)
 		{
 			logger.log(Level.INFO, "IP변경 시작");
@@ -262,7 +253,13 @@ public class NetworkManager implements IServiceModule
 			this.rawSocketReceiver.stop();
 			try
 			{
-				CommandExecutor.executeBash(command);
+				CommandExecutor.executeCommand(String.format("ifdown -a"));
+				
+				CommandExecutor.executeCommand(String.format("ip addr flush dev %s", this.netConfig.getNIC()));
+				CommandExecutor.executeCommand(String.format("ip addr add %s/24 brd + dev %s", inetAddress.getHostAddress(), this.netConfig.getNIC()));
+				
+				CommandExecutor.executeCommand(String.format("ip route add default via %s", gatewayAddr));
+				CommandExecutor.executeCommand(String.format("ifup -a"));
 			}
 			catch (Exception e)
 			{

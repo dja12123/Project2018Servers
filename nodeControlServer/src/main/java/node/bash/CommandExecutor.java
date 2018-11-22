@@ -17,7 +17,7 @@ public class CommandExecutor {
 	//매개변수로 ArrayList<문자열> 타입으로 넘기면 bash명령이 한줄씩 실행됨
 	public static final Logger cmdlogger = LogWriter.createLogger(CommandExecutor.class, "cmd");
 	public static final String lineSeparator = System.getProperty("line.separator");
-	
+	/*
 	public static void executeBash(ArrayList<String> cmd) throws Exception {
 		//StringBuffer successOutput = new StringBuffer();
 		//StringBuffer errorOutput = new StringBuffer();
@@ -42,7 +42,7 @@ public class CommandExecutor {
 	        }
 	        process.waitFor();
 	        
-	        /*//shell 실행이 정상종료/ 비정상종료 됬을때 콘솔에 로그 표시
+	        //shell 실행이 정상종료/ 비정상종료 됬을때 콘솔에 로그 표시
 	        if(process.exitValue() == 0) {
 	        	System.out.println("Succeed Process# Here Printed Process log");
 	        	System.out.println(successOutput.toString());
@@ -55,7 +55,7 @@ public class CommandExecutor {
 	        if(errorOutput.length() != 0) {
 	        	System.out.println("Shell Error#Here Printed Shell log");
 	        	System.out.println(errorOutput.toString());
-	        }*/
+	        }
 	        
 	    }
 	    finally {
@@ -64,7 +64,7 @@ public class CommandExecutor {
 	    }
 	    successBufferReader.close();
         errorBufferReader.close();
-	}
+	}*/
 	
 	//명령을 mv -r /df /fd 하고 싶으면 매개변수로 ("mv -r /df /fd") 이런식으로 넘기면 명령줄 실행
 	public static String executeCommand(String cmd) throws Exception {
