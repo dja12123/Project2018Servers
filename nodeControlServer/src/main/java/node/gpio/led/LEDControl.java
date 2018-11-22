@@ -90,7 +90,7 @@ public class LEDControl
 			}
 			synchronized (this)
 			{
-				for(int i = this.controllers.size() - 1; i >= 0; ++i)
+				for(int i = this.controllers.size() - 1; i >= 0; --i)
 				{
 					LEDControlInst inst = this.controllers.get(i);
 					int updateResult = inst.update();
