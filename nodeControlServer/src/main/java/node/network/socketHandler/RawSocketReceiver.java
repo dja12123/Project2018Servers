@@ -116,22 +116,25 @@ public class RawSocketReceiver implements Runnable
 				readLen = this.rawSocket.read(packetBuffer);
 
 				System.out.println("수신시작");
-				if(readLen > 42)
+				if(readLen <= 42)
 				{// header
-					
-					ByteBuffer buf = ByteBuffer.wrap(packetBuffer);
-					buf.position(23);
-					if(buf.get() != 0x11)
-					{//isudp?
-						continue;
-					}
-					buf.position(36);
-					if(buf.getShort() != this.port)
-					{//dest port is 20080?
-						continue;
-					}
-					readLen = buf.getShort() - 8;
+					continue;
 				}
+				System.out.println("pass1");
+				ByteBuffer buf = ByteBuffer.wrap(packetBuffer);
+				buf.position(23);
+				if(buf.get() != 0x11)
+				{//isudp?
+					continue;
+				}
+				System.out.println("pass2");
+				buf.position(36);
+				if(buf.getShort() != this.port)
+				{//dest port is 20080?
+					continue;
+				}
+				System.out.println("pass3");
+				readLen = buf.getShort() - 8;
 				byte[] copyBuf = Arrays.copyOfRange(packetBuffer, 42, 42 + readLen);
 				System.out.println("완료");
 				this.receiveCallback.accept(null, copyBuf);
