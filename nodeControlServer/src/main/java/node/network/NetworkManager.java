@@ -116,7 +116,8 @@ public class NetworkManager implements IServiceModule
 	
 	public void sendMessage(Packet packet)
 	{
-
+		NodeControlCore.mainThreadPool.execute(()->
+		{
 			byte[] id;
 			byte[][] splitData;
 			SplitPacket splitPacket;
@@ -160,11 +161,10 @@ public class NetworkManager implements IServiceModule
 				splitData = splitPacket.getSplitePacket();
 				for(int i = 0; i < splitData.length; ++i)
 				{
-					logger.log(Level.INFO, "전송시작");
 					this.unicastHandler.sendMessage(splitData[i], d.getInetAddr());
 				}
 			}
-		
+		});
 	}
 	
 	public void socketRawByteReadCallback(InetAddress addr, byte[] packetBuffer)
