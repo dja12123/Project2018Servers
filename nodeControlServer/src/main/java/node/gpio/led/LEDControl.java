@@ -14,7 +14,7 @@ public class LEDControl
 	
 	public static final LEDControl ledControl = new LEDControl();
 	
-	private final LedDriverInterface ledDriver;
+	private LedDriverInterface ledDriver;
 	private LEDControlInst[] infControllers;
 	private ArrayList<LEDControlInst> controllers;
 	
@@ -22,8 +22,11 @@ public class LEDControl
 	
 	private LEDControl()
 	{
-		this.ledDriver = new WS281xSpi(2, 0, StripType.WS2812, NUM_LED, 255);
-		
+		try(LedDriverInterface iface = new WS281xSpi(2, 0, StripType.WS2812, NUM_LED, 255))
+		{
+			LEDControl.this.ledDriver = ledDriver;
+		}
+		System.out.println("시작");
 		this.infControllers = new LEDControlInst[NUM_LED];
 		this.controllers = new ArrayList<>();
 		

@@ -22,6 +22,5 @@ public class TestMain
 		LEDControl.ledControl.createLEDControl(1, 500, 300, 30, 100, 200, 100, 0, 0, 0);
 		LEDControl.ledControl.createLEDControl(2, 500, 300, 30, 100, 200, 100, 0, 0, 0);
 		LEDControl.ledControl.createLEDControl(3, 500, 300, 30, 100, 200, 100, 0, 0, 0);
-
 	}
 }
