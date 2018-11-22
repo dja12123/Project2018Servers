@@ -12,6 +12,7 @@ public class LEDControl implements Runnable
 {
 	public static final int NUM_LED = 4;
 	private static final int SLEEP_TIME = 10;
+	private static final int LIGHT = 128;
 
 	public static final LEDControl ledControl = new LEDControl();
 
@@ -24,7 +25,7 @@ public class LEDControl implements Runnable
 	private LEDControl()
 	{
 		System.out.println("시작");
-		this.ledDriver = new WS281xSpi(2, 0, StripType.WS2812, NUM_LED, 128);
+		this.ledDriver = new WS281xSpi(2, 0, StripType.WS2812, NUM_LED, LIGHT);
 		this.ledDriver.allOff();
 
 		this.infControllers = new LEDControlInst[NUM_LED];
