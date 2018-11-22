@@ -64,12 +64,13 @@ public class UnicastHandler
 	
 	public synchronized void sendMessage(byte[] data, InetAddress receiveAddr)
 	{
+		logger.log(Level.INFO, "마스터에게 알림");
 		if(!this.isWork)
 		{
 			logger.log(Level.WARNING, "소켓 닫힘");
 			return;
 		}
-		logger.log(Level.WARNING, "마스터에게 알림");
+		
 		DatagramPacket packet = new DatagramPacket(data, data.length);
 		packet.setAddress(receiveAddr);
 		packet.setPort(this.port);

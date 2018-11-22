@@ -261,20 +261,29 @@ public class NetworkManager implements IServiceModule
 			this.unicastHandler.stop();
 			this.broadcastSender.stop();
 			this.rawSocketReceiver.stop();
-			try
+			
+			boolean ischange = false;
+			while(!ischange)
 			{
-				CommandExecutor.executeCommand(String.format("ifdown -a"));
+				try
+				{
+					CommandExecutor.executeCommand(String.format("ifdown -a"));
+					
+					CommandExecutor.executeCommand(String.format("ip addr flush dev %s", this.netConfig.getNIC()));
+					CommandExecutor.executeCommand(String.format("ip addr add %s/24 brd + dev %s", inetAddress.getHostAddress(), this.netConfig.getNIC()));
+					
+					CommandExecutor.executeCommand(String.format("ip route add default via %s", gatewayAddr));
+					CommandExecutor.executeCommand(String.format("ifup -a"));
+					ischange = true;
+				}
+				catch (Exception e)
+				{
+					ischange = false;
+					logger.log(Level.SEVERE, "IP변경중 오류", e);
+				}
 				
-				CommandExecutor.executeCommand(String.format("ip addr flush dev %s", this.netConfig.getNIC()));
-				CommandExecutor.executeCommand(String.format("ip addr add %s/24 brd + dev %s", inetAddress.getHostAddress(), this.netConfig.getNIC()));
-				
-				CommandExecutor.executeCommand(String.format("ip route add default via %s", gatewayAddr));
-				CommandExecutor.executeCommand(String.format("ifup -a"));
 			}
-			catch (Exception e)
-			{
-				logger.log(Level.SEVERE, "IP변경중 오류", e);
-			}
+
 			logger.log(Level.INFO, String.format("IP변경 완료(%s)", inetAddress.getHostAddress()));
 			this.inetAddress = inetAddress;
 			this.unicastHandler.start(this.inetAddress, this.netConfig.unicastPort());
