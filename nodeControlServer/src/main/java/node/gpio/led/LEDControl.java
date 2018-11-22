@@ -37,13 +37,13 @@ public class LEDControl implements Runnable
 	
 	public LEDControlInst setDefaultFlick(int pixel, int lightTime, int blackTime, int r,
 			int g, int b, int br, int bg, int bb)
-	{
+	{// LED의 기본 플리크 상태를 설정
 		return this.flick(pixel, lightTime, blackTime, -1, r, g, b, br, bg, bb);
 	}
 
 	public synchronized LEDControlInst flick(int pixel, int lightTime, int blackTime, int repeat, int r,
 			int g, int b, int br, int bg, int bb)
-	{
+	{// LED번호, 켜지는시간, 꺼지는시간, 반복횟수, 켜짐색, 꺼짐색
 		lightTime /= SLEEP_TIME;
 		blackTime /= SLEEP_TIME;
 		LEDControlInst controlInst = new LEDControlInst(this.ledDriver, pixel, lightTime, blackTime, repeat, r, g, b,
@@ -61,12 +61,12 @@ public class LEDControl implements Runnable
 	}
 
 	public LEDControlInst flick(int pixel, int lightTime, int blackTime, int repeat, int r, int g, int b)
-	{
+	{// 꺼짐색이 000
 		return this.flick(pixel, lightTime, blackTime, repeat, r, g, b, 0, 0, 0);
 	}
 	
 	public LEDControlInst flick(int pixel, int time, int repeat, int r, int g, int b)
-	{
+	{// 켜지는시간, 꺼지는시간 설정 없음
 		return this.flick(pixel, time, time, repeat, r, g, b, 0, 0, 0);
 	}
 	
@@ -153,7 +153,6 @@ public class LEDControl implements Runnable
 				}
 
 				SleepUtil.sleepMillis(SLEEP_TIME);
-
 			}
 		}
 	}
