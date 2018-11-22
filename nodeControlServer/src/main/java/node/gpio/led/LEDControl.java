@@ -24,6 +24,8 @@ public class LEDControl implements Runnable
 	private LEDControl()
 	{
 		System.out.println("시작");
+		this.ledDriver  = new WS281xSpi(2, 0, StripType.WS2812, NUM_LED, 200);
+		
 		this.infControllers = new LEDControlInst[NUM_LED];
 		this.controllers = new ArrayList<>();
 
@@ -34,18 +36,6 @@ public class LEDControl implements Runnable
 	public synchronized LEDControlInst createLEDControl(int pixel, int lightTime, int blackTime, int repeat, int r,
 			int g, int b, int br, int bg, int bb)
 	{
-		if (this.ledDriver == null)
-		{
-			try
-			{
-				this.wait();
-			}
-			catch (InterruptedException e)
-			{
-
-				e.printStackTrace();
-			}
-		}
 		lightTime /= SLEEP_TIME;
 		blackTime /= SLEEP_TIME;
 		LEDControlInst controlInst = new LEDControlInst(this.ledDriver, pixel, lightTime, blackTime, repeat, r, g, b,
@@ -92,29 +82,6 @@ public class LEDControl implements Runnable
 	public void run()
 	{
 
-		LedDriverInterface iface = new WS281xSpi(2, 0, StripType.WS2812, NUM_LED, 255);
-		this.ledDriver = iface;
-		synchronized (this)
-		{
-			this.notifyAll();
-		}
-
-		for (int k = 0; k < 3; ++k)
-		{
-			for (int i = 0; i < NUM_LED; ++i)
-			{
-				this.ledDriver.setPixelColourRGB(i, 255, 255, 255);
-			}
-			this.ledDriver.render();
-			SleepUtil.sleepMillis(100);
-			for (int i = 0; i < NUM_LED; ++i)
-			{
-				this.ledDriver.setPixelColourRGB(i, 0, 0, 0);
-			}
-			this.ledDriver.render();
-			SleepUtil.sleepMillis(100);
-		}
-
 		boolean[] isUpdateLOW = new boolean[NUM_LED];
 		boolean[] isLight = new boolean[NUM_LED];
 		int updateResult;
@@ -133,7 +100,6 @@ public class LEDControl implements Runnable
 					LEDControlInst inst = this.controllers.get(i);
 					
 					updateResult = inst.calcLED();
-					System.out.println(updateResult == LEDControlInst.STATE_CHANGE_LOW);
 					if (updateResult == LEDControlInst.STATE_CHANGE_LOW)
 					{
 						isUpdateLOW[inst.pixel] = true;

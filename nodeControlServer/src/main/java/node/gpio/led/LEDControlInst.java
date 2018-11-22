@@ -4,7 +4,7 @@ import com.diozero.ws281xj.LedDriverInterface;
 
 public class LEDControlInst
 {
-	public static final int STATE_CHANGE_LOW = 100;
+	public static final int STATE_CHANGE_LOW = 2;
 	public static final int STATE_CHANGE_HIGH = 1;
 	public static final int STATE_NORMAL = 0;
 	public static final int STATE_END = -1;
@@ -42,11 +42,11 @@ public class LEDControlInst
 	{
 		if(this.repeat == 0)
 		{// -1일경우 계속 작동.
-			System.out.println("return");
+			this.led_driver.setPixelColourRGB(this.pixel, 0, 0, 0);
+			this.led_driver.render();
 			return STATE_END;
 			
 		}
-		int rtnValue = STATE_NORMAL;
 		
 		if(this.isLight)
 		{
@@ -62,7 +62,7 @@ public class LEDControlInst
 				this.isLight = false;
 				this.time = this.blackTime;
 				System.out.println("LEDOFF");
-				rtnValue = STATE_CHANGE_LOW;
+				return STATE_CHANGE_LOW;
 			}
 		}
 		else
@@ -83,10 +83,10 @@ public class LEDControlInst
 					--this.repeat;
 				}
 				System.out.println("LEDON");
-				rtnValue = STATE_CHANGE_HIGH;
+				return STATE_CHANGE_HIGH;
 			}
 		}
-		return rtnValue;
+		return STATE_NORMAL;
 	}
 	
 	boolean setLight()
