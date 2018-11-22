@@ -48,7 +48,7 @@ public class LEDControlInst
 		return this.pixel;
 	}
 	
-	int update()
+	int calcLED()
 	{
 		if(this.repeat == 0)
 		{// -1일경우 계속 작동.
@@ -56,6 +56,7 @@ public class LEDControlInst
 			return STATE_END;
 			
 		}
+		int rtnValue = STATE_NORMAL;
 		
 		if(this.isLight)
 		{
@@ -71,7 +72,7 @@ public class LEDControlInst
 				this.isLight = false;
 				this.time = this.blackTime;
 				System.out.println("LEDOFF");
-				//return STATE_CHANGE_LOW;
+				rtnValue =  STATE_CHANGE_LOW;
 			}
 		}
 		else
@@ -92,11 +93,11 @@ public class LEDControlInst
 					--this.repeat;
 				}
 				System.out.println("LEDON");
-				//return STATE_CHANGE_HIGH;
+				rtnValue = STATE_CHANGE_HIGH;
 			}
 		}
 
-		return STATE_NORMAL;
+		return rtnValue;
 	}
 	
 	boolean setLight()
