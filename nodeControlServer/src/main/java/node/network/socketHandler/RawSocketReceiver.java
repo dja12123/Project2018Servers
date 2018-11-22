@@ -125,7 +125,7 @@ public class RawSocketReceiver implements Runnable
 				{//isudp?
 					continue;
 				}
-				buf.position(36);
+				buf.position(35);
 				int recvPort = buf.getShort();
 				System.out.println("pass2" + recvPort);
 				if(recvPort != this.port)
