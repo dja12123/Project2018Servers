@@ -127,48 +127,49 @@ public class LEDControl
 					isLight[i] = false;
 				}
 			
-					for (int i = this.controllers.size() - 1; i >= 0; --i)
+				for (int i = this.controllers.size() - 1; i >= 0; --i)
+				{
+					LEDControlInst inst = this.controllers.get(i);
+					System.out.println(inst);
+					int updateResult = inst.update();
+					if (updateResult == LEDControlInst.STATE_CHANGE_LOW)
 					{
-						LEDControlInst inst = this.controllers.get(i);
-						int updateResult = inst.update();
-						if (updateResult == LEDControlInst.STATE_CHANGE_LOW)
-						{
-							isUpdateLOW[inst.pixel()] = true;
-						}
-						else if (updateResult == LEDControlInst.STATE_END)
-						{
-							System.out.println("kill");
-							isUpdateLOW[inst.pixel()] = true;
-							this.controllers.remove(i);
-						}
+						isUpdateLOW[inst.pixel()] = true;
 					}
-					for (int i = 0; i < NUM_LED; ++i)
+					else if (updateResult == LEDControlInst.STATE_END)
 					{
-						if (isUpdateLOW[i] != true)
+						System.out.println("kill");
+						isUpdateLOW[inst.pixel()] = true;
+						this.controllers.remove(i);
+					}
+				}
+				for (int i = 0; i < NUM_LED; ++i)
+				{
+					if (isUpdateLOW[i] != true)
+					{
+						continue;
+					}
+					for (int j = 0; j < this.controllers.size(); ++i)
+					{
+						LEDControlInst inst = this.controllers.get(j);
+						if (inst.pixel() == i)
 						{
-							continue;
-						}
-						for (int j = 0; j < this.controllers.size(); ++i)
-						{
-							LEDControlInst inst = this.controllers.get(j);
-							if (inst.pixel() == i)
+							if (inst.setLight())
 							{
-								if (inst.setLight())
-								{
-									isLight[i] = true;
-								}
-
+								isLight[i] = true;
 							}
+
 						}
 					}
-					for (int i = 0; i < NUM_LED; ++i)
+				}
+				for (int i = 0; i < NUM_LED; ++i)
+				{
+					if (this.infControllers[i] == null || isUpdateLOW[i] != true || isLight[i] == true)
 					{
-						if (this.infControllers[i] == null || isUpdateLOW[i] != true || isLight[i] == true)
-						{
-							continue;
-						}
-						this.infControllers[i].update();
+						continue;
 					}
+					this.infControllers[i].update();
+				}
 				
 				SleepUtil.sleepMillis(SLEEP_TIME);
 			}
