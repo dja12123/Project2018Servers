@@ -24,9 +24,6 @@ public class BroadcastSender
 {
 	public static final Logger logger = LogWriter.createLogger(BroadcastSender.class, "broadcastS");
 	
-	private static final String PROP_BroadcastIPstart = "broadcastIPstart";
-	private static final String PROP_BroadcastIPend = "broadcastIPend";
-	
 	private DatagramSocket socket;
 	private InetAddress sendAddr;
 	private int port;
@@ -53,8 +50,8 @@ public class BroadcastSender
 		try
 		{
 			this.socket = new DatagramSocket();
-			this.socket.bind(new InetSocketAddress(this.sendAddr, this.port));
-			//this.socket.setBroadcast(true);
+			//this.socket.bind(new InetSocketAddress(this.sendAddr, this.port));
+			this.socket.setBroadcast(true);
 		}
 		catch (SocketException e)
 		{
