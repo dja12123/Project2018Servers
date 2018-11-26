@@ -55,6 +55,7 @@ public class LEDControl implements Runnable
 			catch (IOException e)
 			{
 				LEDControl.logger.log(Level.SEVERE, "I2C통신 오류", e);
+				this.i2cDevice = null;
 				return;
 			}
 		}
