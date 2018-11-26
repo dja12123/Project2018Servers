@@ -21,7 +21,7 @@ public class TestMain
 	{
 		NodeControlCore.init();
 		WebManager manager = new WebManager();
-		manager.startModule();
+		
 		manager.webSocketHandler.addObserver("test", new Observer<WebEvent>() {
 			
 			@Override
@@ -36,6 +36,8 @@ public class TestMain
 				
 			}
 		});
+		
+		manager.startModule();
 }
 	
 }
