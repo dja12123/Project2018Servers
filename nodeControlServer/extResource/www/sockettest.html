@@ -3,7 +3,7 @@
 	    <meta charset="utf-8"/>
 	    <title>WebSocket Test</title>
 	    <script language="javascript" type="text/javascript">
-	        var wsUri = "ws://server.gompanglab.com:50981/";
+	        var wsUri = "ws://192.168.0.38::8080/";
 	        var output;
 	        function init() {
 	            output = document.getElementById("output");
@@ -51,7 +51,6 @@
 	        
 	        function sendMsg() {
 	            websocket.doSend("test=abcdefg");
-	            //
 	        }
 	   </script>
 	</head>
