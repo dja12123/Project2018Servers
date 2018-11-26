@@ -63,6 +63,7 @@ public class WebSocketData extends WebSocket
 		}
 		else
 		{
+			logger.log(Level.SEVERE, "웹 소켓 Key-Value 에러");
 			return;
 		}
 		Observable<WebEvent> observable = observerMap.get(send.key);
@@ -72,18 +73,18 @@ public class WebSocketData extends WebSocket
 			return;
 		}
 		
-		logger.log(Level.INFO, frame.toString());
 		try {
 			sendFrame(frame);
-
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
 		for (int i = 0; i < observable.size(); ++i)
 		{
 			observable.notifyObservers(NodeControlCore.mainThreadPool, send);
 		}
+		
+		logger.log(Level.INFO, frame.toString());
 	}
 	
 	@Override
