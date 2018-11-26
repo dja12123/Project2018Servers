@@ -22,7 +22,7 @@ public class TestMain
 			while (true)
 			{
 				
-				writeBuf(writeData, 1, 100, 0, 100);
+				writeBuf(writeData, 1, 255, 0, 255);
 				device.write(writeData);
 				System.out.println("Waitingconds");
 				Thread.sleep(100);
