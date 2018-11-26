@@ -8,42 +8,32 @@ import com.pi4j.io.i2c.I2CDevice;
 import com.pi4j.io.i2c.I2CFactory;
 import com.pi4j.io.i2c.I2CFactory.UnsupportedBusNumberException;
 
+import node.util.observer.Observable;
+import node.util.observer.Observer;
+import node.web.WebEvent;
+import node.web.WebManager;
+
 public class TestMain
 {
 	public static void main(String[] args) throws InterruptedException
 	{
-		Scanner sc = new Scanner(System.in);
-		
-		try
-		{
-			System.out.println("Creatingbus");
-			I2CBus bus = I2CFactory.getInstance(I2CBus.BUS_1);
-			I2CDevice device = bus.getDevice(0x04);
-
-			byte[] writeData = new byte[8];
+		NodeControlCore.init();
+		WebManager manager = new WebManager();
+		manager.startModule();
+		manager.webSocketHandler.addObserver("test", new Observer<WebEvent>() {
 			
-			while (true)
-			{
-				System.out.println("Input");
-				int no = sc.nextInt();
-				int r = sc.nextInt();
-				int g = sc.nextInt();
-				int b = sc.nextInt();
-			//writeBuf(writeData, no, r, g, b);
-				device.write(writeData);
-				System.out.println("Waitingconds");
-
+			@Override
+			public void update(Observable<WebEvent> object, WebEvent data) {
+				System.out.println(data.key);
+				try {
+					data.channel.send("Hello World!!");
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
 			}
-		}
-		catch (IOException ex)
-		{
-			ex.printStackTrace();
-		}
-		catch (UnsupportedBusNumberException e)
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
+		});
+}
 	
 }

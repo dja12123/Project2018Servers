@@ -9,8 +9,8 @@ import node.log.LogWriter;
 
 public class WebManager implements IServiceModule {
 	private static final Logger logger = LogWriter.createLogger(WebManager.class, "WebService");
-	HTTPServer httpServer;
-	WebSocketHandler webSocketHandler;
+	private final HTTPServer httpServer;
+	public final WebSocketHandler webSocketHandler;
 	// 옵저버 관련된 코드 이곳에 모두 추가
 	
 	public WebManager() {
