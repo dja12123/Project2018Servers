@@ -13,7 +13,7 @@ public class TestMain
 		try
 		{
 			System.out.println("Creatingbus");
-			I2CBus bus = I2CFactory.getInstance(I2CBus.BUS_1);
+			I2CBus bus = I2CFactory.getInstance(I2CBus.BUS_0);
 			System.out.println("Creatingdevice");
 			I2CDevice device = bus.getDevice(0x04);
 
