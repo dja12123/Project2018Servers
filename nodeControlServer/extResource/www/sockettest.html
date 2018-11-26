@@ -26,6 +26,7 @@
 	        }
 	        function onOpen(evt) {
 	            writeToScreen("CONNECTED");
+	            websocket.doSend("hi");
 	        }
 	        function onClose(evt) {
 	            writeToScreen("DISCONNECTED");
