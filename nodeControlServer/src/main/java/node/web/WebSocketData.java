@@ -71,7 +71,12 @@ public class WebSocketData extends WebSocket
 		{
 			return;
 		}
-		//sendFrame(channel);
+		try {
+			sendFrame(channel);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		for (int i = 0; i < observable.size(); ++i)
 		{
 			observable.notifyObservers(NodeControlCore.mainThreadPool, send);
