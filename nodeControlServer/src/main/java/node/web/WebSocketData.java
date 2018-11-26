@@ -47,13 +47,6 @@ public class WebSocketData extends WebSocket
 	@Override
 	protected void onMessage(WebSocketFrame frame) 
 	{
-		try {
-			frame.setUnmasked();
-			sendFrame(frame);
-		} catch (IOException e) {
-			logger.log(Level.SEVERE, "웹 소켓 프레임 전송 에러", e);
-		}
-		
 		String str = frame.getTextPayload();
 		String[] kv = str.split(KEY_VALUE_SEPERATOR);
 		WebEvent send;
@@ -79,10 +72,10 @@ public class WebSocketData extends WebSocket
 		}
 
 		
-		/*for (int i = 0; i < observable.size(); ++i)
+		for (int i = 0; i < observable.size(); ++i)
 		{
 			observable.notifyObservers(NodeControlCore.mainThreadPool, send);
-		}*/
+		}
 		
 		logger.log(Level.INFO, frame.toString());
 	}
