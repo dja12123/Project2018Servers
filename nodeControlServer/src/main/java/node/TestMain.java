@@ -26,7 +26,7 @@ public class TestMain
 			
 			@Override
 			public void update(Observable<WebEvent> object, WebEvent data) {
-				Logger.getLogger("websocket").log(Level.INFO, "테스트 메인 > 옵저버 > 업데이트");
+				Logger.getLogger("websocket").log(Level.INFO, object.toString() + ", " + data.value);
 				try {
 					Logger.getLogger("websocket").log(Level.INFO, "테스트 메인 > 옵저버 > 업데이트 > 소켓 보냄 ");
 					data.channel.send("Hello world!!!");
