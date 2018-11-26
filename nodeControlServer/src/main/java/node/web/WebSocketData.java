@@ -45,11 +45,11 @@ public class WebSocketData extends WebSocket
 	}
 	
 	@Override
-	protected void onMessage(WebSocketFrame channel) 
+	protected void onMessage(WebSocketFrame frame) 
 	{
-		channel.setUnmasked();
+		frame.setUnmasked();
 		
-		String str = channel.getTextPayload();
+		String str = frame.getTextPayload();
 		String[] kv = str.split(KEY_VALUE_SEPERATOR);
 		WebEvent send;
 		
@@ -71,8 +71,10 @@ public class WebSocketData extends WebSocket
 		{
 			return;
 		}
+		
 		try {
-			sendFrame(channel);
+			sendFrame(frame);
+			logger.log(Level.INFO, frame.toString());
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -81,9 +83,6 @@ public class WebSocketData extends WebSocket
 		{
 			observable.notifyObservers(NodeControlCore.mainThreadPool, send);
 		}
-		
-		
-		logger.log(Level.INFO, channel.toString());
 	}
 	
 	@Override
