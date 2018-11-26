@@ -21,6 +21,7 @@ public class TestMain
 			
 			while (true)
 			{
+				
 				writeBuf(writeData, 1, 100, 0, 100);
 				device.write(writeData);
 				System.out.println("Waitingconds");
