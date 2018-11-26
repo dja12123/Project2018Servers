@@ -13,7 +13,7 @@ import node.detection.NodeInfoProtocol;
 import node.detection.workNode.WorkNodeService;
 import node.device.Device;
 import node.device.DeviceInfoManager;
-//import node.gpio.led.LEDControl;
+import node.gpio.led.LEDControl;
 import node.device.DeviceChangeEvent;
 import node.log.LogWriter;
 import node.network.NetworkManager;
@@ -116,7 +116,7 @@ public class MasterNodeService implements Runnable
 			}
 			if(data.key.equals(WorkNodeService.KPROTO_NODE_INFO_MSG))
 			{
-				//LEDControl.ledControl.flick(1, 200, 100, 100, 0);
+				LEDControl.ledControl.flick(1, 200, 100, 100, 0);
 				if(this.deviceInfoManager.deviceExist(sender))
 				{// 기존 노드일때
 					Device device = this.deviceInfoManager.getDevice(sender);
@@ -124,7 +124,7 @@ public class MasterNodeService implements Runnable
 					if(device.getInetAddr() == null || deviceInet == null)
 					{// ip가 없을때 ip를 새로 할당
 						deviceInet = this.ipManager.assignmentInetAddr(sender);
-						//LEDControl.ledControl.flick(0, 200, 4, 0, 100, 0);
+						LEDControl.ledControl.flick(0, 200, 4, 0, 100, 0);
 						logger.log(Level.INFO, String.format("노드에 IP 할당 (%s, %s)", device.uuid.toString(), deviceInet.getHostAddress()));
 					}
 					
@@ -135,7 +135,7 @@ public class MasterNodeService implements Runnable
 					InetAddress inetAddr =  this.ipManager.assignmentInetAddr(sender);
 					this.deviceInfoManager.updateDevice(sender, inetAddr, false);
 					logger.log(Level.INFO, String.format("새 노드 접근 (%s %s)", sender.toString(), inetAddr.getHostAddress()));
-					//LEDControl.ledControl.flick(0, 200, 4, 200, 0, 200);
+					LEDControl.ledControl.flick(0, 200, 4, 200, 0, 200);
 				}
 			}
 			if(data.key.equals(KPROTO_MASTER_BROADCAST))
@@ -166,7 +166,7 @@ public class MasterNodeService implements Runnable
 				this.ipManager.removeInetAddr(data.device.uuid);
 			}
 			logger.log(Level.INFO, String.format("노드 연결 끊김  (%s)", data.device.uuid));
-			//LEDControl.ledControl.flick(0, 200, 4, 200, 0, 0);
+			LEDControl.ledControl.flick(0, 200, 4, 200, 0, 0);
 		}
 	}
 
