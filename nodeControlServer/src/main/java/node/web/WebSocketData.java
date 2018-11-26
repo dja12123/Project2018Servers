@@ -82,6 +82,11 @@ public class WebSocketData extends WebSocket
 			observable.notifyObservers(NodeControlCore.mainThreadPool, send);
 		}
 		
+		try {
+			this.send("abcd");
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		logger.log(Level.INFO, frame.toString());
 	}
 	
