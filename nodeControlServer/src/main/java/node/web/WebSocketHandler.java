@@ -60,6 +60,7 @@ public class WebSocketHandler extends NanoWSD implements IServiceModule
 		}
 		
 		ob.addObserver(observer);
+		logger.log(Level.INFO, "소켓 옵저버 등록 완료 > " + key);
 	}
 	
 	public void removeObserver(String key, Observer<WebEvent> observer) 
