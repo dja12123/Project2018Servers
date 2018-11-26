@@ -26,7 +26,7 @@
 	        }
 	        function onOpen(evt) {
 	            writeToScreen("CONNECTED");
-	            doSend("test=abcdefg");
+	            doSend("WebSocket rocks");
 	        }
 	        function onClose(evt) {
 	            writeToScreen("DISCONNECTED");
@@ -49,10 +49,16 @@
 	            output.appendChild(pre);
 	        }
 	        window.addEventListener("load", init, false);  
+	        
+	        function sendMsg() {
+	            doSend("test=abcdefg");
+	        }
 	   </script>
 	</head>
 	<body>
 		<h2>WebSocket Test</h2>
+		
+		<button type="button" onClick="sendMsg()">보내기</button>
 		
 		<div id="output">
 		
