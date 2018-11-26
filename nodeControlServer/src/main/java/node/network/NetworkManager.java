@@ -252,45 +252,33 @@ public class NetworkManager implements IServiceModule
 		}
 		catch (UnknownHostException e)
 		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.log(Level.SEVERE, "게이트웨이 주소 오류", e);
 		}
 
+		logger.log(Level.INFO, "IP변경 시작");
+		this.unicastHandler.stop();
+		this.broadcastSender.stop();
+		this.rawSocketReceiver.stop();
 		
-			logger.log(Level.INFO, "IP변경 시작");
-			this.unicastHandler.stop();
-			this.broadcastSender.stop();
-			this.rawSocketReceiver.stop();
+		try
+		{
+			CommandExecutor.executeCommand(String.format("ifdown -a"));
 			
-			boolean ischange = false;
-			while(!ischange)
-			{
-				try
-				{
-					CommandExecutor.executeCommand(String.format("ifdown -a"));
-					
-					CommandExecutor.executeCommand(String.format("ip addr flush dev %s", this.netConfig.getNIC()));
-					CommandExecutor.executeCommand(String.format("ip addr add %s/24 brd + dev %s", inetAddress.getHostAddress(), this.netConfig.getNIC()));
-					
-					CommandExecutor.executeCommand(String.format("ip route add default via %s", gatewayAddr));
-					CommandExecutor.executeCommand(String.format("ifup -a"));
-					ischange = true;
-				}
-				catch (Exception e)
-				{
-					ischange = false;
-					logger.log(Level.SEVERE, "IP변경중 오류", e);
-				}
-				
-			}
+			CommandExecutor.executeCommand(String.format("ip addr flush dev %s", this.netConfig.getNIC()));
+			CommandExecutor.executeCommand(String.format("ip addr add %s/24 brd + dev %s", inetAddress.getHostAddress(), this.netConfig.getNIC()));
+			
+			CommandExecutor.executeCommand(String.format("ip route add default via %s", gatewayAddr));
+			CommandExecutor.executeCommand(String.format("ifup -a"));
+		}
+		catch (Exception e)
+		{
+			logger.log(Level.SEVERE, "IP변경중 오류", e);
+		}
 
-			logger.log(Level.INFO, String.format("IP변경 완료(%s)", inetAddress.getHostAddress()));
-			this.inetAddress = inetAddress;
-			this.unicastHandler.start(this.inetAddress, this.netConfig.unicastPort());
-			this.broadcastSender.start(this.netConfig.broadcastIA(NetworkConfig.DEFAULT_SUBNET), this.netConfig.broadcastPort());
-			this.rawSocketReceiver.start(this.netConfig.getNIC(), this.netConfig.broadcastPort());
-		
-		
-		
+		logger.log(Level.INFO, String.format("IP변경 완료(%s)", inetAddress.getHostAddress()));
+		this.inetAddress = inetAddress;
+		this.unicastHandler.start(this.inetAddress, this.netConfig.unicastPort());
+		this.broadcastSender.start(this.netConfig.broadcastIA(NetworkConfig.DEFAULT_SUBNET), this.netConfig.broadcastPort());
+		this.rawSocketReceiver.start(this.netConfig.getNIC(), this.netConfig.broadcastPort());
 	}
 }
