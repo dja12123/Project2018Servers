@@ -72,9 +72,10 @@ public class WebSocketData extends WebSocket
 			return;
 		}
 		
+		logger.log(Level.INFO, frame.toString());
 		try {
 			sendFrame(frame);
-			logger.log(Level.INFO, frame.toString());
+
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
