@@ -2,6 +2,7 @@ package node;
 
 import java.io.IOException;
 import java.util.Scanner;
+import java.util.logging.Logger;
 
 import com.pi4j.io.i2c.I2CBus;
 import com.pi4j.io.i2c.I2CDevice;
@@ -27,6 +28,7 @@ public class TestMain
 				System.out.println(data.key);
 				try {
 					data.channel.send("Hello World!!");
+					Logger.getLogger("테스트 메인 > 옵저버 > 소켓 보냄 ")
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();

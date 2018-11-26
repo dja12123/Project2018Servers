@@ -1,8 +1,6 @@
 package node.web;
 
-import org.nanohttpd.protocols.websockets.WebSocketFrame;
-
-//channel 이용해야 함
+//import org.nanohttpd.protocols.websockets.WebSocketFrame;
 
 public class WebEvent 
 {

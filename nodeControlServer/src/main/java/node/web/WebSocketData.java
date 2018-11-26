@@ -74,6 +74,7 @@ public class WebSocketData extends WebSocket
 		
 		for (int i = 0; i < observable.size(); ++i)
 		{
+			logger.log(Level.INFO, "옵저버에게 알림: " + send.key + ", " + send.value);
 			observable.notifyObservers(NodeControlCore.mainThreadPool, send);
 		}
 		
