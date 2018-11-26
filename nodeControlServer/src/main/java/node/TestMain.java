@@ -1,6 +1,8 @@
 package node;
 
 import java.io.IOException;
+import java.util.Scanner;
+
 import com.pi4j.io.i2c.I2CBus;
 import com.pi4j.io.i2c.I2CDevice;
 import com.pi4j.io.i2c.I2CFactory;
@@ -10,6 +12,8 @@ public class TestMain
 {
 	public static void main(String[] args) throws InterruptedException
 	{
+		Scanner sc = new Scanner(System.in);
+		
 		try
 		{
 			System.out.println("Creatingbus");
@@ -21,11 +25,15 @@ public class TestMain
 			
 			while (true)
 			{
-				
-				writeBuf(writeData, 1, 255, 0, 255);
+				System.out.println("Input");
+				int no = sc.nextInt();
+				int r = sc.nextInt();
+				int g = sc.nextInt();
+				int b = sc.nextInt();
+				writeBuf(writeData, no, r, g, b);
 				device.write(writeData);
 				System.out.println("Waitingconds");
-				Thread.sleep(100);
+
 			}
 		}
 		catch (IOException ex)
