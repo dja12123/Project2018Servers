@@ -68,6 +68,7 @@ public class WebSocketData extends WebSocket
 		
 		if (observable == null) 
 		{
+			logger.log(Level.INFO, "웹 소켓 옵저버가 비어 있음");
 			return;
 		}
 
