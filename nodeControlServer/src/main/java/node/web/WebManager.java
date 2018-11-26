@@ -30,7 +30,7 @@ public class WebManager implements IServiceModule {
 		logger.log(Level.INFO, "웹 서비스 시작");
 		try
 		{
-			this.webSocketHandler.start();
+			this.webSocketHandler.start(1000);
 		}
 		catch (IOException e)
 		{
