@@ -1,6 +1,7 @@
 package node;
 
 import java.io.IOException;
+import java.util.logging.Level;
 import java.util.Scanner;
 import java.util.logging.Logger;
 
@@ -27,7 +28,7 @@ public class TestMain
 			public void update(Observable<WebEvent> object, WebEvent data) {
 				System.out.println(data.key);
 				try {
-					Logger.getLogger("테스트 메인 > 옵저버 > 소켓 보냄 ");
+					Logger.getLogger("websocket").log(Level.INFO, "테스트 메인 > 옵저버 > 소켓 보냄 ");
 					data.channel.send("Hello world!!!");
 				} catch (IOException e) {
 					e.printStackTrace();
