@@ -38,7 +38,7 @@ public class LEDControl implements Runnable
 		try
 		{
 			I2CBus bus = I2CFactory.getInstance(I2CBus.BUS_1);
-			this.i2cDevice = bus.getDevice(0x04);
+			this.i2cDevice = bus.getDevice(8);
 		}
 		catch (UnsupportedBusNumberException | IOException e)
 		{
