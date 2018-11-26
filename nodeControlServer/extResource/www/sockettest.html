@@ -26,14 +26,12 @@
 	        }
 	        function onOpen(evt) {
 	            writeToScreen("CONNECTED");
-	            doSend("WebSocket rocks");
 	        }
 	        function onClose(evt) {
 	            writeToScreen("DISCONNECTED");
 	        }
 	        function onMessage(evt) {
 	            writeToScreen('<span style="color: blue;">RESPONSE: ' + evt.data + '</span>');
-	            websocket.close();
 	        }
 	        function onError(evt) {
 	            writeToScreen('<span style="color: red;">ERROR:</span> ' + evt.data);
@@ -51,7 +49,7 @@
 	        window.addEventListener("load", init, false);  
 	        
 	        function sendMsg() {
-	            doSend("test=abcdefg");
+	            websocket.doSend("test=abcdefg");
 	        }
 	   </script>
 	</head>
