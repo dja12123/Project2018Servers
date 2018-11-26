@@ -65,6 +65,7 @@ public class WebSocketData extends WebSocket
 			return;
 		}
 		
+		observerMap.put(kv[0], new Observable<WebEvent>());
 		Observable<WebEvent> observable = observerMap.get(send.key);
 		
 		if (observable == null) 
@@ -74,6 +75,7 @@ public class WebSocketData extends WebSocket
 		}
 
 		logger.log(Level.INFO, "observable size >> " + observable.size());
+		
 		for (int i = 0; i < observable.size(); ++i)
 		{
 			logger.log(Level.INFO, "옵저버에게 알림: " + send.key + ", " + send.value);
