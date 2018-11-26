@@ -27,10 +27,9 @@ public class TestMain
 			public void update(Observable<WebEvent> object, WebEvent data) {
 				System.out.println(data.key);
 				try {
-					data.channel.send("Hello World!!");
 					Logger.getLogger("테스트 메인 > 옵저버 > 소켓 보냄 ");
+					data.channel.send("Hello world!!!");
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 				
