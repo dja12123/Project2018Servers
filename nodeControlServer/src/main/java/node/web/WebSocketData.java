@@ -64,6 +64,9 @@ public class WebSocketData extends WebSocket
 			logger.log(Level.SEVERE, "웹 소켓 Key-Value 에러");
 			return;
 		}
+		
+		observerMap.put(kv[0], new Observable<WebEvent>());
+		
 		Observable<WebEvent> observable = observerMap.get(send.key);
 		
 		if (observable == null) 
