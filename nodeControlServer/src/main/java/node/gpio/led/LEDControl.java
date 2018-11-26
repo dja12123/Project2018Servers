@@ -48,7 +48,15 @@ public class LEDControl implements Runnable
 		
 		for(int i = 0; i < NUM_LED; ++i)
 		{
-			this.writeRGB(i, 0, 0, 0);
+			try
+			{
+				this.writeRGB(i, 0, 0, 0);
+			}
+			catch (IOException e)
+			{
+				LEDControl.logger.log(Level.SEVERE, "I2C통신 오류", e);
+				return;
+			}
 		}
 		
 		this.infControllers = new LEDControlInst[NUM_LED];
@@ -58,7 +66,7 @@ public class LEDControl implements Runnable
 		this.worker.start();
 	}
 	
-	private void writeRGB(int pixel, int r, int g, int b)
+	private void writeRGB(int pixel, int r, int g, int b) throws IOException
 	{
 		byte[] buffer = new byte[8];
 		buffer[0] = 0x00;
@@ -69,14 +77,9 @@ public class LEDControl implements Runnable
 		buffer[5] =(byte)g;
 		buffer[6] = 0x00;
 		buffer[7] =(byte)b;
-		try
-		{
-			this.i2cDevice.write(buffer);
-		}
-		catch (IOException e)
-		{
-			LEDControl.logger.log(Level.SEVERE, "I2C통신 오류", e);
-		}
+
+		this.i2cDevice.write(buffer);
+
 	}
 	
 	public LEDControlInst setDefaultFlick(int pixel, int lightTime, int blackTime, int r,
