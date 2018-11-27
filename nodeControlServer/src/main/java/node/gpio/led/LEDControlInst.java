@@ -41,7 +41,6 @@ public class LEDControlInst
 		this.isLight = true;
 		this.time = this.lightTime;
 		this.buffer = new byte[8];
-		this.writeRGB(this.r, this.g, this.b);
 	}
 	
 	int calcLED()

@@ -10,6 +10,7 @@ import com.pi4j.io.i2c.I2CDevice;
 import com.pi4j.io.i2c.I2CFactory;
 import com.pi4j.io.i2c.I2CFactory.UnsupportedBusNumberException;
 
+import node.NodeControlCore;
 import node.log.LogWriter;
 import node.network.NetworkManager;
 
@@ -106,6 +107,8 @@ public class LEDControl implements Runnable
 		bb = (int)(LIGHT * bb);
 		LEDControlInst controlInst = new LEDControlInst(this.i2cDevice, pixel, lightTime, blackTime, repeat, r, g, b,
 				br, bg, bb);
+		
+		NodeControlCore.mainThreadPool.execute(()->controlInst.setLight());
 		if (repeat == -1)
 		{
 			this.infControllers[pixel] = controlInst;
@@ -146,7 +149,7 @@ public class LEDControl implements Runnable
 		{
 			return;
 		}
-		this.controllers.get(index).killLED();
+		NodeControlCore.mainThreadPool.execute(()->this.controllers.get(index).killLED());
 		this.controllers.remove(index);
 	}
 
@@ -154,7 +157,7 @@ public class LEDControl implements Runnable
 	{
 		if(this.infControllers[pixel] != null)
 		{
-			this.infControllers[pixel].killLED();
+			NodeControlCore.mainThreadPool.execute(()->this.infControllers[pixel].killLED());
 		}
 		
 		this.infControllers[pixel] = null;
