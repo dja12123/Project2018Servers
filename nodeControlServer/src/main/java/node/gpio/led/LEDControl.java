@@ -93,6 +93,7 @@ public class LEDControl implements Runnable
 	public synchronized LEDControlInst flick(int pixel, int lightTime, int blackTime, int repeat, int r,
 			int g, int b, int br, int bg, int bb)
 	{// LED번호, 켜지는시간, 꺼지는시간, 반복횟수, 켜짐색, 꺼짐색
+		System.out.println("funcstart");
 		if(this.i2cDevice == null)
 		{
 			return null;
@@ -117,7 +118,7 @@ public class LEDControl implements Runnable
 		{
 			this.controllers.add(controlInst);
 		}
-
+		System.out.println("funcend");
 		return controlInst;
 	}
 
