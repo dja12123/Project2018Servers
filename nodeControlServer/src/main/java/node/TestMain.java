@@ -23,7 +23,7 @@ public class TestMain
 	{
 		
 
-		font = Font.createFont(Font.TRUETYPE_FONT, TestMain.class.getResourceAsStream("/font/D2Coding.ttf"));
+		font = Font.createFont(Font.TRUETYPE_FONT, TestMain.class.getResourceAsStream("/font/neodgm.ttf"));
 		font = font.deriveFont(Font.PLAIN, 12);
 
 		OLEDDisplay display = new OLEDDisplay();
