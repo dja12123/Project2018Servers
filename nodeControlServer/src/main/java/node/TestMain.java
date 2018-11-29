@@ -29,7 +29,7 @@ public class TestMain
 		while(true)
 		{
 			display.clear();
-			BufferedImage img = stringToBufferedImage("테스트가나다안녕:"+x);
+			BufferedImage img = stringToBufferedImage("테스트:"+x);
 			System.out.println(img.getWidth() + " " + img.getHeight());
 			for(int i = 0; i < img.getWidth(); ++i)
 			{
@@ -71,16 +71,14 @@ public class TestMain
 	    //Then, we have to draw the string on the final image
 
 	    //Create a new image where to print the character
-	    img = new BufferedImage((int) Math.ceil(rect.getWidth()), (int) Math.ceil(rect.getHeight()), BufferedImage.TYPE_4BYTE_ABGR);
+	    img = new BufferedImage((int)rect.getWidth(), (int)rect.getHeight(), BufferedImage.TYPE_4BYTE_ABGR);
 	    g = img.getGraphics();
 	    g.setFont(font);
 	    
 	    //Calculate x and y for that string
-	    FontMetrics fm = g.getFontMetrics();
-	    int x = 0;
-	    int y = fm.getAscent(); //getAscent() = baseline
+
 	    g.setColor(Color.gray);
-	    g.drawString(s, x, y);
+	    g.drawString(s, 0, 0);
 	    
 	    //Release resources
 	    g.dispose();
