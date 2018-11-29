@@ -38,15 +38,28 @@ public class TestMain
 	public static void main(String[] args) throws IOException, ReflectiveOperationException, UnsupportedBusNumberException, InterruptedException, FontFormatException
 	{
 		font = Font.createFont(Font.TRUETYPE_FONT, TestMain.class.getResourceAsStream("/font/neodgm.ttf"));
-		font = font.deriveFont(Font.PLAIN, 16);
+		font = font.deriveFont(Font.PLAIN, 12);
 		OLEDDisplay display = new OLEDDisplay();
-		int i = 0;
+		int x = 0;
 		while(true)
 		{
 			display.clear();
-			display.drawImage(stringToBufferedImage("카운트:"+i), 25, 25);
+			BufferedImage img = stringToBufferedImage("카운트:"+x);
+			for(int i = 0; i < img.getWidth(); ++i)
+			{
+				for(int j = 0; j < img.getHeight(); ++j)
+				{
+					if(img.getRGB(i, j) != 0)
+					{
+						display.setPixel(i, j, true);
+					}
+				}
+			}
+			
+
+			
 			display.update();
-			++i;
+			++x;
 		
 			Thread.sleep(100);
 		}
