@@ -27,7 +27,7 @@ public class TestMain
 {
 	public static void main(String[] args) throws InterruptedException, IOException, UnsupportedBusNumberException
 	{
-		SSD1306 ssd1306 = new SSD1306MockImpl(128, 64);
+		SSD1306 ssd1306 = new SSD1306I2CImpl(128, 64, RaspiPin.GPIO_15, I2CBus.BUS_1, 0x3C);
 		Graphics graphics = ssd1306.getGraphics();
 
 		ssd1306.startup(false);
