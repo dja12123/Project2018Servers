@@ -27,7 +27,7 @@ import node.web.WebManager;
 
 public class TestMain
 {
-	public static void main(String[] args) throws IOException, ReflectiveOperationException, UnsupportedBusNumberException
+	public static void main(String[] args) throws IOException, ReflectiveOperationException, UnsupportedBusNumberException, InterruptedException
 	{
 		Display disp = new Display(128, 64, GpioFactory.getInstance(), I2CFactory.getInstance(I2CBus.BUS_1), 0x3D);
 
@@ -55,6 +55,7 @@ public class TestMain
 		// Set some pixels in the buffer manually
 
 		disp.display();
+		Thread.sleep(3000);
 		// Send the buffer to the display again, now with the modified pixels
 	}
 }
