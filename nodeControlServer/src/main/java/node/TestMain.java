@@ -60,9 +60,9 @@ public class TestMain
 					}
 				}
 			}*/
-			for(int i = 0; i < 10; ++i)
+			for(int i = 0; i < 128; ++i)
 			{
-				for(int j = 0; j < i; ++j)
+				for(int j = 0; j < 64; ++j)
 				{
 					display.setPixel(i, j, true);
 				}
