@@ -44,7 +44,7 @@ public class TestMain
 		while(true)
 		{
 			display.clear();
-			display.drawImage(stringToBufferedImage("count:"+i), 25, 25);
+			display.drawImage(stringToBufferedImage("카운트:"+i), 25, 25);
 			display.update();
 			++i;
 		
