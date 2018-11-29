@@ -64,7 +64,7 @@ public class TestMain
         int height = fm.getHeight();
         g2d.dispose();
 
-        img = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+        img = new BufferedImage(width, height, BufferedImage.TYPE_BYTE_BINARY);
         g2d = img.createGraphics();
         g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
 
