@@ -70,7 +70,6 @@ public class TestMain
 
         g2d.setFont(font);
         fm = g2d.getFontMetrics();
-        g2d.setColor(Color.BLACK);
         g2d.drawString(s, 0, fm.getAscent());
         g2d.dispose();
         return img;
