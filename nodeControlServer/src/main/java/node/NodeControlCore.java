@@ -85,6 +85,7 @@ public class NodeControlCore
     			display.drawStringCentered("count:"+i, Font.FONT_5X8, 25, true);
     			try
 				{
+    				display.clear();
 					display.update();
 				}
 				catch (IOException e)
