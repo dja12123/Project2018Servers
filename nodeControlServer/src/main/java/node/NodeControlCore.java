@@ -83,7 +83,8 @@ public class NodeControlCore
     		while(true)
     		{
     			display.clear();
-    			display.drawStringCentered("count:"+i, Font.FONT_5X8, 25, true);
+
+    			display.drawStringCentered("count:"+i, Font.FONT_4X5, 25, true);
     			try
 				{
     				
