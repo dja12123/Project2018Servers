@@ -54,7 +54,7 @@ public class TestMain
 	    Graphics g = img.getGraphics();
 
 	    //Set the font to be used when drawing the string
-	    java.awt.Font f = new java.awt.Font("Tahoma", java.awt.Font.PLAIN, 10);
+	    java.awt.Font f = new java.awt.Font("Tahoma", java.awt.Font.PLAIN, 14);
 	    g.setFont(f);
 
 	    //Get the string visual bounds
