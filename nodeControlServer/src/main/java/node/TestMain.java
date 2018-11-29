@@ -85,11 +85,12 @@ public class TestMain
 	    img = new BufferedImage((int) Math.ceil(rect.getWidth()), (int) Math.ceil(rect.getHeight()), BufferedImage.TYPE_4BYTE_ABGR);
 	    g = img.getGraphics();
 	    g.setFont(font);
-
+	    
 	    //Calculate x and y for that string
 	    FontMetrics fm = g.getFontMetrics();
 	    int x = 0;
 	    int y = fm.getAscent(); //getAscent() = baseline
+	    g.setColor(Color.WHITE);
 	    g.drawString(s, x, y);
 	    
 	    //Release resources
