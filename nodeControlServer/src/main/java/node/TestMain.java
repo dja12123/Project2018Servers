@@ -37,6 +37,25 @@ public class TestMain
 	public static Font font;
 	public static void main(String[] args) throws IOException, ReflectiveOperationException, UnsupportedBusNumberException, InterruptedException, FontFormatException
 	{
+		
+		Thread t = new Thread(()->{
+			while(true)
+			{
+				System.out.println("test");
+				try
+				{
+					Thread.sleep(100);
+				}
+				catch (InterruptedException e)
+				{
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+
+		});
+		t.start();
+		
 		font = Font.createFont(Font.TRUETYPE_FONT, TestMain.class.getResourceAsStream("/font/neodgm.ttf"));
 		font = font.deriveFont(Font.PLAIN, 12);
 		OLEDDisplay display = new OLEDDisplay();
