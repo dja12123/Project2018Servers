@@ -60,54 +60,6 @@ public class NodeControlCore
     
     public static void main(String[] args) throws InterruptedException
 	{
-    	
-    	Thread t = new Thread(()->{
-    		
-    		OLEDDisplay display = null;
-			try
-			{
-				display = new OLEDDisplay();
-				
-			}
-			catch (IOException e1)
-			{
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
-			catch (UnsupportedBusNumberException e1)
-			{
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
-			int i = 0;
-    		while(true)
-    		{
-    			display.clear();
-    			display.drawStringCentered("count:"+i, Font.FONT_5X8, 25, true);
-    			try
-				{
-    				
-					display.update();
-				}
-				catch (IOException e)
-				{
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-    			++i;
-    			try
-				{
-					Thread.sleep(100);
-				}
-				catch (InterruptedException e)
-				{
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-    			
-    		}
-    	});
-    	t.start();
     	if(!init())
     	{
     		logger.log(Level.SEVERE, "초기화 실패");

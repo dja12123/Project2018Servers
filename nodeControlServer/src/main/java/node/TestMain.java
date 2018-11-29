@@ -1,15 +1,11 @@
 package node;
 
 
-import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontFormatException;
 import java.awt.FontMetrics;
-import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
-import java.awt.font.FontRenderContext;
-import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import com.pi4j.io.i2c.I2CFactory.UnsupportedBusNumberException;
@@ -74,6 +70,5 @@ public class TestMain
         g2d.drawString(s, 0, fm.getAscent());
         g2d.dispose();
         return img;
-
 	}
 }
