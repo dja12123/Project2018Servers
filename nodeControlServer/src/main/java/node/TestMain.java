@@ -45,6 +45,7 @@ public class TestMain
 		{
 			display.clear();
 			BufferedImage img = stringToBufferedImage("카운트:"+x);
+			System.out.println(img.getWidth() + " " + img.getHeight());
 			for(int i = 0; i < img.getWidth(); ++i)
 			{
 				for(int j = 0; j < img.getHeight(); ++j)
