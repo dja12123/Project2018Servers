@@ -16,6 +16,7 @@ import net.fauxpark.oled.Graphics;
 import net.fauxpark.oled.SSD1306;
 import net.fauxpark.oled.font.CodePage1252;
 import net.fauxpark.oled.impl.SSD1306I2CImpl;
+import net.fauxpark.oled.impl.SSD1306MockImpl;
 import net.fauxpark.oled.impl.SSD1306SPIImpl;
 import node.util.observer.Observable;
 import node.util.observer.Observer;
@@ -26,7 +27,7 @@ public class TestMain
 {
 	public static void main(String[] args) throws InterruptedException, IOException, UnsupportedBusNumberException
 	{
-		SSD1306 ssd1306 = new SSD1306I2CImpl(128, 64, RaspiPin.GPIO_15, I2CBus.BUS_1, 0x3D);
+		SSD1306 ssd1306 = new SSD1306MockImpl(128, 64);
 		Graphics graphics = ssd1306.getGraphics();
 
 		ssd1306.startup(false);
