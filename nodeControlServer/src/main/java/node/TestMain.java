@@ -27,7 +27,7 @@ public class TestMain
 {
 	public static void main(String[] args) throws InterruptedException, IOException, UnsupportedBusNumberException
 	{
-		SSD1306 ssd1306 = new SSD1306I2CImpl(128, 64, RaspiPin.GPIO_15, I2CBus.BUS_1, 0x3C);
+		SSD1306 ssd1306 = new SSD1306MockImpl(128, 64);
 		Graphics graphics = ssd1306.getGraphics();
 
 		ssd1306.startup(false);
@@ -41,7 +41,7 @@ public class TestMain
 		// Writes "Hello world!" at (20,20) using the Windows-1252 charset
 		graphics.text(20, 20, new CodePage1252(), "Hello world!");
 		ssd1306.display();
-		ssd1306.reset();
+		Thread.sleep(3000);
 
 		
 	}
