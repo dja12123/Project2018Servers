@@ -59,10 +59,11 @@ public class TestMain
         g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
         g2d.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_NORMALIZE);
         g2d.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_OFF);
-
+        
         g2d.setFont(font);
         fm = g2d.getFontMetrics();
         g2d.setColor(Color.BLACK);
+        g2d.setColor(Color.white);
         g2d.drawString(s, 0, fm.getAscent());
         g2d.dispose();
         return img;
