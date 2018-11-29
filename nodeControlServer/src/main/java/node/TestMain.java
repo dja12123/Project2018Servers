@@ -1,6 +1,12 @@
 package node;
 
 
+import java.awt.Color;
+import java.awt.FontMetrics;
+import java.awt.Graphics;
+import java.awt.font.FontRenderContext;
+import java.awt.geom.Rectangle2D;
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.Scanner;
@@ -27,6 +33,51 @@ public class TestMain
 {
 	public static void main(String[] args) throws IOException, ReflectiveOperationException, UnsupportedBusNumberException, InterruptedException
 	{
+		OLEDDisplay display = new OLEDDisplay();
+		int i = 0;
+		while(true)
+		{
+			display.clear();
+			display.drawImage(stringToBufferedImage("count:"+i), 25, 25);
+			display.update();
+			++i;
+		
+			Thread.sleep(100);
+		}
+		
+		
+	}
+	public static BufferedImage stringToBufferedImage(String s) {
+	    //First, we have to calculate the string's width and height
 
+	    BufferedImage img = new BufferedImage(1, 1, BufferedImage.TYPE_4BYTE_ABGR);
+	    Graphics g = img.getGraphics();
+
+	    //Set the font to be used when drawing the string
+	    java.awt.Font f = new java.awt.Font("Tahoma", java.awt.Font.PLAIN, 10);
+	    g.setFont(f);
+
+	    //Get the string visual bounds
+	    FontRenderContext frc = g.getFontMetrics().getFontRenderContext();
+	    Rectangle2D rect = f.getStringBounds(s, frc);
+	    //Release resources
+	    g.dispose();
+	    //Then, we have to draw the string on the final image
+
+	    //Create a new image where to print the character
+	    img = new BufferedImage((int) Math.ceil(rect.getWidth()), (int) Math.ceil(rect.getHeight()), BufferedImage.TYPE_4BYTE_ABGR);
+	    g = img.getGraphics();
+	    g.setFont(f);
+
+	    //Calculate x and y for that string
+	    FontMetrics fm = g.getFontMetrics();
+	    int x = 0;
+	    int y = fm.getAscent(); //getAscent() = baseline
+	    g.drawString(s, x, y);
+	    
+	    //Release resources
+	    g.dispose();
+	    //Return the image
+	    return img;
 	}
 }
