@@ -30,7 +30,6 @@ public class TestMain
 		Graphics graphics = ssd1306.getGraphics();
 
 		ssd1306.startup(false);
-
 		// Draws a line from the top left to the bottom right of the display
 		graphics.line(0, 0, 127, 63);
 
@@ -39,6 +38,8 @@ public class TestMain
 
 		// Writes "Hello world!" at (20,20) using the Windows-1252 charset
 		graphics.text(20, 20, new CodePage1252(), "Hello world!");
+		Thread.sleep(10000);
+		
 	}
 
 }
