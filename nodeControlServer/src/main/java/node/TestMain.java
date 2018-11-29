@@ -46,7 +46,7 @@ public class TestMain
 			display.clear();
 			BufferedImage img = stringToBufferedImage("카운트:"+x);
 			System.out.println(img.getWidth() + " " + img.getHeight());
-			for(int i = 0; i < img.getWidth(); ++i)
+			/*for(int i = 0; i < img.getWidth(); ++i)
 			{
 				for(int j = 0; j < img.getHeight(); ++j)
 				{
@@ -58,6 +58,13 @@ public class TestMain
 					{
 						display.setPixel(i, j, true);
 					}
+				}
+			}*/
+			for(int i = 0; i < 10; ++i)
+			{
+				for(int j = 0; j < i; ++j)
+				{
+					display.setPixel(i, j, true);
 				}
 			}
 			
