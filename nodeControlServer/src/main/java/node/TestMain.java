@@ -41,7 +41,8 @@ public class TestMain
 		// Writes "Hello world!" at (20,20) using the Windows-1252 charset
 		graphics.text(20, 20, new CodePage1252(), "Hello world!");
 		ssd1306.display();
-		Thread.sleep(10000);
+		ssd1306.reset();
+
 		
 	}
 
