@@ -10,6 +10,8 @@ import com.pi4j.io.i2c.I2CDevice;
 import com.pi4j.io.i2c.I2CFactory;
 import com.pi4j.io.i2c.I2CFactory.UnsupportedBusNumberException;
 
+import de.pi3g.pi.oled.Font;
+import de.pi3g.pi.oled.OLEDDisplay;
 import node.util.observer.Observable;
 import node.util.observer.Observer;
 import node.web.WebEvent;
@@ -17,27 +19,12 @@ import node.web.WebManager;
 
 public class TestMain
 {
-	public static void main(String[] args) throws InterruptedException
+	public static void main(String[] args) throws InterruptedException, IOException, UnsupportedBusNumberException
 	{
-		NodeControlCore.init();
-		WebManager manager = new WebManager();
-		
-		manager.webSocketHandler.addObserver("test", new Observer<WebEvent>() {
-			
-			@Override
-			public void update(Observable<WebEvent> object, WebEvent data) {
-				Logger.getLogger("websocket").log(Level.INFO, object.toString() + ", " + data.value);
-				try {
-					Logger.getLogger("websocket").log(Level.INFO, "테스트 메인 > 옵저버 > 업데이트 > 소켓 보냄 ");
-					data.channel.send("Hello world!!!");
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-				
-			}
-		});
-		
-		manager.startModule();
-}
-	
+		OLEDDisplay display = new OLEDDisplay();
+		display.drawStringCentered("Hello World!", Font.FONT_5X8, 25, true);
+		display.update();
+		Thread.sleep(10000);
+	}
+
 }
