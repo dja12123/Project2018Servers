@@ -2,11 +2,14 @@ package node;
 
 
 import java.awt.Color;
+import java.awt.Font;
+import java.awt.FontFormatException;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.font.FontRenderContext;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.Scanner;
@@ -22,7 +25,7 @@ import com.pi4j.io.i2c.I2CFactory.UnsupportedBusNumberException;
 import com.pi4j.io.spi.SpiChannel;
 import com.pi4j.io.spi.SpiFactory;
 
-import de.pi3g.pi.oled.Font;
+
 import de.pi3g.pi.oled.OLEDDisplay;
 import node.util.observer.Observable;
 import node.util.observer.Observer;
@@ -31,8 +34,10 @@ import node.web.WebManager;
 
 public class TestMain
 {
-	public static void main(String[] args) throws IOException, ReflectiveOperationException, UnsupportedBusNumberException, InterruptedException
+	public static Font font;
+	public static void main(String[] args) throws IOException, ReflectiveOperationException, UnsupportedBusNumberException, InterruptedException, FontFormatException
 	{
+		font = Font.createFont(Font.TRUETYPE_FONT, new FileInputStream("font/D2Coding"));
 		OLEDDisplay display = new OLEDDisplay();
 		int i = 0;
 		while(true)
@@ -49,7 +54,7 @@ public class TestMain
 	}
 	public static BufferedImage stringToBufferedImage(String s) {
 	    //First, we have to calculate the string's width and height
-
+		
 	    BufferedImage img = new BufferedImage(1, 1, BufferedImage.TYPE_4BYTE_ABGR);
 	    Graphics g = img.getGraphics();
 
