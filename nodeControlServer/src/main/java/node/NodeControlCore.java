@@ -1,6 +1,7 @@
 package node;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.util.Properties;
@@ -9,6 +10,10 @@ import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.pi4j.io.i2c.I2CFactory.UnsupportedBusNumberException;
+
+import de.pi3g.pi.oled.Font;
+import de.pi3g.pi.oled.OLEDDisplay;
 import node.cluster.ClusterService;
 import node.db.DB_Handler;
 import node.detection.NodeDetectionService;
@@ -55,6 +60,52 @@ public class NodeControlCore
     
     public static void main(String[] args) throws InterruptedException
 	{
+    	
+    	Thread t = new Thread(()->{
+    		
+    		OLEDDisplay display = null;
+			try
+			{
+				display = new OLEDDisplay();
+			}
+			catch (IOException e1)
+			{
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			catch (UnsupportedBusNumberException e1)
+			{
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			int i = 0;
+    		while(true)
+    		{
+    			
+    			display.drawStringCentered("count:"+i, Font.FONT_5X8, 25, true);
+    			try
+				{
+					display.update();
+				}
+				catch (IOException e)
+				{
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+    			++i;
+    			try
+				{
+					Thread.sleep(100);
+				}
+				catch (InterruptedException e)
+				{
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+    			
+    		}
+    	});
+    	t.start();
     	if(!init())
     	{
     		logger.log(Level.SEVERE, "초기화 실패");
