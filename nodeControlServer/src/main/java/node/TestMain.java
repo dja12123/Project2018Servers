@@ -40,6 +40,7 @@ public class TestMain
 
 					if(img.getRGB(i, j) != 0)
 					{
+						System.out.println(img.getRGB(i, j));
 						display.setPixel(i, j, true);
 					}
 				}
