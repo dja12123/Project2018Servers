@@ -37,7 +37,7 @@ public class TestMain
 	public static Font font;
 	public static void main(String[] args) throws IOException, ReflectiveOperationException, UnsupportedBusNumberException, InterruptedException, FontFormatException
 	{
-		font = Font.createFont(Font.TRUETYPE_FONT, TestMain.class.getResourceAsStream("font/D2Coding"));
+		font = Font.createFont(Font.TRUETYPE_FONT, TestMain.class.getResourceAsStream("font/D2Coding.ttf"));
 		OLEDDisplay display = new OLEDDisplay();
 		int i = 0;
 		while(true)
