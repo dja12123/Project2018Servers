@@ -77,7 +77,7 @@ public class TestMain
 	    
 	    //Calculate x and y for that string
 
-	    g.setColor(Color.gray);
+	    //g.setColor(Color.gray);
 	    g.drawString(s, 0, 0);
 	    
 	    //Release resources
