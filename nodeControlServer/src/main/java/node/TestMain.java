@@ -6,6 +6,8 @@ import java.awt.Font;
 import java.awt.FontFormatException;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.awt.font.FontRenderContext;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
@@ -56,33 +58,31 @@ public class TestMain
 		
 	}
 	public static BufferedImage stringToBufferedImage(String s) {
-	    //First, we have to calculate the string's width and height
-		
-	    BufferedImage img = new BufferedImage(1, 1, BufferedImage.TYPE_4BYTE_ABGR);
-	    Graphics g = img.getGraphics();
-	    //Set the font to be used when drawing the string
-	    g.setFont(font);
+		BufferedImage img = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g2d = img.createGraphics();
+   
+        g2d.setFont(font);
+        FontMetrics fm = g2d.getFontMetrics();
+        int width = fm.stringWidth(s);
+        int height = fm.getHeight();
+        g2d.dispose();
 
-	    //Get the string visual bounds
-	    FontRenderContext frc = g.getFontMetrics().getFontRenderContext();
-	    Rectangle2D rect = font.getStringBounds(s, frc);
-	    //Release resources
-	    g.dispose();
-	    //Then, we have to draw the string on the final image
+        img = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+        g2d = img.createGraphics();
+        g2d.setRenderingHint(RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY);
+        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        g2d.setRenderingHint(RenderingHints.KEY_COLOR_RENDERING, RenderingHints.VALUE_COLOR_RENDER_QUALITY);
+        g2d.setRenderingHint(RenderingHints.KEY_DITHERING, RenderingHints.VALUE_DITHER_ENABLE);
+        g2d.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_ON);
+        g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+        g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+        g2d.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
+        g2d.setFont(font);
+        fm = g2d.getFontMetrics();
+        g2d.setColor(Color.BLACK);
+        g2d.drawString(s, 0, fm.getAscent());
+        g2d.dispose();
+        return img;
 
-	    //Create a new image where to print the character
-	    img = new BufferedImage((int)rect.getWidth(), (int)rect.getHeight(), BufferedImage.TYPE_4BYTE_ABGR);
-	    g = img.getGraphics();
-	    g.setFont(font);
-	    
-	    //Calculate x and y for that string
-
-	    //g.setColor(Color.gray);
-	    g.drawString(s, 0, 0);
-	    
-	    //Release resources
-	    g.dispose();
-	    //Return the image
-	    return img;
 	}
 }
