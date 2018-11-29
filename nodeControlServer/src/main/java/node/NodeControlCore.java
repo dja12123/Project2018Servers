@@ -67,6 +67,7 @@ public class NodeControlCore
 			try
 			{
 				display = new OLEDDisplay();
+				
 			}
 			catch (IOException e1)
 			{
@@ -81,11 +82,11 @@ public class NodeControlCore
 			int i = 0;
     		while(true)
     		{
-    			
+    			display.clear();
     			display.drawStringCentered("count:"+i, Font.FONT_5X8, 25, true);
     			try
 				{
-    				display.clear();
+    				
 					display.update();
 				}
 				catch (IOException e)
