@@ -38,7 +38,7 @@ public class TestMain
 				for(int j = 0; j < img.getHeight(); ++j)
 				{
 
-					if(img.getRGB(i, j) != 0)
+					if(img.getRGB(i, j) == -1)
 					{
 						System.out.println(img.getRGB(i, j));
 						display.setPixel(i, j, true);
