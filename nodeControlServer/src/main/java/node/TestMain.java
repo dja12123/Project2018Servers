@@ -33,7 +33,17 @@ public class TestMain
 			display.clear();
 			BufferedImage img = stringToBufferedImage("테스트카운트:"+x);
 			System.out.println(img.getWidth() + " " + img.getHeight());
-			display.drawImage(img, 0, 0);
+			for(int i = 0; i < img.getWidth(); ++i)
+			{
+				for(int j = 0; j < img.getHeight(); ++j)
+				{
+
+					if(img.getRGB(i, j) != 0)
+					{
+						display.setPixel(i, j, true);
+					}
+				}
+			}
 
 			
 			display.update();
@@ -59,11 +69,10 @@ public class TestMain
         g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
         g2d.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_NORMALIZE);
         g2d.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_OFF);
-        
+
         g2d.setFont(font);
         fm = g2d.getFontMetrics();
         g2d.setColor(Color.BLACK);
-        g2d.setColor(Color.white);
         g2d.drawString(s, 0, fm.getAscent());
         g2d.dispose();
         return img;
