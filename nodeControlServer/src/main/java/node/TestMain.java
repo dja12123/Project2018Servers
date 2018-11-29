@@ -38,26 +38,9 @@ public class TestMain
 	public static void main(String[] args) throws IOException, ReflectiveOperationException, UnsupportedBusNumberException, InterruptedException, FontFormatException
 	{
 		
-		Thread t = new Thread(()->{
-			while(true)
-			{
-				System.out.println("test");
-				try
-				{
-					Thread.sleep(100);
-				}
-				catch (InterruptedException e)
-				{
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
 
-		});
-		t.start();
-		
 		font = Font.createFont(Font.TRUETYPE_FONT, TestMain.class.getResourceAsStream("/font/neodgm.ttf"));
-		font = font.deriveFont(Font.PLAIN, 12);
+		font = font.deriveFont(Font.PLAIN, 14);
 		OLEDDisplay display = new OLEDDisplay();
 		int x = 0;
 		while(true)
@@ -65,7 +48,7 @@ public class TestMain
 			display.clear();
 			BufferedImage img = stringToBufferedImage("카운트:"+x);
 			System.out.println(img.getWidth() + " " + img.getHeight());
-			/*for(int i = 0; i < img.getWidth(); ++i)
+			for(int i = 0; i < img.getWidth(); ++i)
 			{
 				for(int j = 0; j < img.getHeight(); ++j)
 				{
@@ -78,15 +61,7 @@ public class TestMain
 						display.setPixel(i, j, true);
 					}
 				}
-			}*/
-			for(int i = 0; i < 128; ++i)
-			{
-				for(int j = 0; j < 64; ++j)
-				{
-					display.setPixel(i, j, true);
-				}
 			}
-			
 
 			
 			display.update();
