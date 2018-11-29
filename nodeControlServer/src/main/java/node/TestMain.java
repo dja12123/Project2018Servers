@@ -50,6 +50,10 @@ public class TestMain
 			{
 				for(int j = 0; j < img.getHeight(); ++j)
 				{
+					if(i == 0 || j == 0 || i == img.getWidth() - 1 || j == img.getHeight() - 1)
+					{
+						display.setPixel(i, j, true);
+					}
 					if(img.getRGB(i, j) != 0)
 					{
 						display.setPixel(i, j, true);
