@@ -33,20 +33,7 @@ public class TestMain
 			display.clear();
 			BufferedImage img = stringToBufferedImage("테스트카운트:"+x);
 			System.out.println(img.getWidth() + " " + img.getHeight());
-			for(int i = 0; i < img.getWidth(); ++i)
-			{
-				for(int j = 0; j < img.getHeight(); ++j)
-				{
-					if(i == 0 || j == 0 || i == img.getWidth() - 1 || j == img.getHeight() - 1)
-					{
-						display.setPixel(i, j, true);
-					}
-					if(img.getRGB(i, j) != 0)
-					{
-						display.setPixel(i, j, true);
-					}
-				}
-			}
+			display.drawImage(img, 0, 0);
 
 			
 			display.update();
