@@ -57,14 +57,12 @@ public class TestMain
 		
 	    BufferedImage img = new BufferedImage(1, 1, BufferedImage.TYPE_4BYTE_ABGR);
 	    Graphics g = img.getGraphics();
-
 	    //Set the font to be used when drawing the string
-	    java.awt.Font f = new java.awt.Font("Tahoma", java.awt.Font.PLAIN, 14);
-	    g.setFont(f);
+	    g.setFont(font);
 
 	    //Get the string visual bounds
 	    FontRenderContext frc = g.getFontMetrics().getFontRenderContext();
-	    Rectangle2D rect = f.getStringBounds(s, frc);
+	    Rectangle2D rect = font.getStringBounds(s, frc);
 	    //Release resources
 	    g.dispose();
 	    //Then, we have to draw the string on the final image
@@ -72,7 +70,7 @@ public class TestMain
 	    //Create a new image where to print the character
 	    img = new BufferedImage((int) Math.ceil(rect.getWidth()), (int) Math.ceil(rect.getHeight()), BufferedImage.TYPE_4BYTE_ABGR);
 	    g = img.getGraphics();
-	    g.setFont(f);
+	    g.setFont(font);
 
 	    //Calculate x and y for that string
 	    FontMetrics fm = g.getFontMetrics();
