@@ -55,7 +55,7 @@ public class TestMain
 		
 	}
 	public static BufferedImage stringToBufferedImage(String s) {
-		BufferedImage img = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB);
+		BufferedImage img = new BufferedImage(1, 1, BufferedImage.TYPE_BYTE_BINARY);
         Graphics2D g2d = img.createGraphics();
    
         g2d.setFont(font);
