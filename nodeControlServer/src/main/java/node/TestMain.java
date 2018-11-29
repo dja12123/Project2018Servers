@@ -9,28 +9,10 @@ import java.awt.Graphics;
 import java.awt.font.FontRenderContext;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.Scanner;
-import java.util.logging.Logger;
-
-
-import com.pi4j.io.gpio.GpioFactory;
-import com.pi4j.io.gpio.RaspiPin;
-import com.pi4j.io.i2c.I2CBus;
-import com.pi4j.io.i2c.I2CDevice;
-import com.pi4j.io.i2c.I2CFactory;
 import com.pi4j.io.i2c.I2CFactory.UnsupportedBusNumberException;
-import com.pi4j.io.spi.SpiChannel;
-import com.pi4j.io.spi.SpiFactory;
-
 
 import de.pi3g.pi.oled.OLEDDisplay;
-import node.util.observer.Observable;
-import node.util.observer.Observer;
-import node.web.WebEvent;
-import node.web.WebManager;
 
 public class TestMain
 {
@@ -41,12 +23,13 @@ public class TestMain
 
 		font = Font.createFont(Font.TRUETYPE_FONT, TestMain.class.getResourceAsStream("/font/neodgm.ttf"));
 		font = font.deriveFont(Font.PLAIN, 14);
+
 		OLEDDisplay display = new OLEDDisplay();
 		int x = 0;
 		while(true)
 		{
 			display.clear();
-			BufferedImage img = stringToBufferedImage("카운트:"+x);
+			BufferedImage img = stringToBufferedImage("테스트가나다안녕:"+x);
 			System.out.println(img.getWidth() + " " + img.getHeight());
 			for(int i = 0; i < img.getWidth(); ++i)
 			{
@@ -69,7 +52,7 @@ public class TestMain
 		
 			Thread.sleep(100);
 		}
-		
+
 		
 	}
 	public static BufferedImage stringToBufferedImage(String s) {
@@ -96,7 +79,7 @@ public class TestMain
 	    FontMetrics fm = g.getFontMetrics();
 	    int x = 0;
 	    int y = fm.getAscent(); //getAscent() = baseline
-	    g.setColor(Color.WHITE);
+	    g.setColor(Color.gray);
 	    g.drawString(s, x, y);
 	    
 	    //Release resources
