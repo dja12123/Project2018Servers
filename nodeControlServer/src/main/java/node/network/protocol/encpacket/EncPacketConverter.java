@@ -16,23 +16,19 @@ public class EncPacketConverter
 			
 			if(firstLine[0] == EncPacketUtil.MAGIC_NO_PART[0] && firstLine[1] == EncPacketUtil.MAGIC_NO_PART[1]) //분할일때
 			{
-				int byteSize = 0; 
-				byte[][] bufferArr = new byte[targetPacket.partCount][];
-				bufferArr[0] = deleteHead(firstLine);
-				byteSize += bufferArr[0].length;
-				
-				for(int i = 1; i < targetPacket.partCount; ++i)
-				{
-					bufferArr[i] = deleteHead(RSAEncrypt.decode(targetPacket.payLoad[i], privateKey));
-					byteSize += bufferArr[i].length;
-				}
-				
-				ByteBuffer buffer = ByteBuffer.allocate(byteSize);
-				
-				
-				for(byte[] value : bufferArr)
-					buffer.put(value);
-					
+                byte[] lastLine = RSAEncrypt.decode(targetPacket.payLoad[targetPacket.partCount - 1], privateKey);
+                
+                int totalPayloadSize = (EncPacketUtil.PAYLOAD_SIZE * (targetPacket.partCount - 1)) + (lastLine.length - EncPacketUtil.MAGIC_NO_PART.length);
+                
+                ByteBuffer buffer = ByteBuffer.allocate(totalPayloadSize);
+
+				buffer.put(deleteHead(firstLine));
+                
+				for(int i = 1; i < targetPacket.partCount - 1; ++i)
+					buffer.put(deleteHead(RSAEncrypt.decode(targetPacket.payLoad[i], privateKey)));
+                
+                buffer.put(deleteHead(lastLine));
+
 				return EncPacketUtil.convertByteBufferToByteArr(buffer);
 			}
 			else	//분할이 아닐때
