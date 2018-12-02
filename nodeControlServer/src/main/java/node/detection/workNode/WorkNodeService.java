@@ -14,6 +14,8 @@ import node.detection.NodeInfoProtocol;
 import node.detection.masterNode.MasterNodeService;
 import node.device.Device;
 import node.device.DeviceInfoManager;
+import node.gpio.lcd.LCDControl;
+import node.gpio.lcd.LCDObject;
 import node.device.DeviceChangeEvent;
 import node.log.LogWriter;
 import node.network.NetworkManager;
@@ -42,6 +44,10 @@ public class WorkNodeService implements Runnable
 	
 	private Observer<NetworkEvent> networkObserverFunc;
 	private Observer<DeviceChangeEvent> deviceStateObserverFunc;
+
+	private LCDObject ipNoStr;
+	private LCDObject masterSigRect;
+	private LCDObject sendMsgRect;
 	
 	public WorkNodeService(NodeDetectionService nodeDetectionService, DeviceInfoManager deviceInfoManager, NetworkManager networkManager)
 	{
@@ -78,6 +84,7 @@ public class WorkNodeService implements Runnable
 						return;
 					}
 					this.networkManager.sendMessage(packet);
+					LCDControl.inst.blinkShape(this.sendMsgRect, 300, 1);
 				}
 			}
 			catch(Exception e)
@@ -126,6 +133,10 @@ public class WorkNodeService implements Runnable
 		
 		this.broadcastThread = new Thread(this);
 		this.broadcastThread.start();
+		
+		this.ipNoStr = LCDControl.inst.showString(0, 0, "W:noip");
+		this.masterSigRect = LCDControl.inst.showFillRect(1, 15, 5, 5);
+		this.sendMsgRect = LCDControl.inst.showFillRect(7, 15, 5, 5);
 		return;
 	}
 	
@@ -133,6 +144,9 @@ public class WorkNodeService implements Runnable
 	{
 		if(!this.isRun) return;
 		logger.log(Level.INFO, "워커 노드 서비스 중지");
+		LCDControl.inst.removeShape(this.ipNoStr);
+		LCDControl.inst.removeShape(this.masterSigRect);
+		LCDControl.inst.removeShape(this.sendMsgRect);
 		this.networkManager.removeObserver(this.networkObserverFunc);
 		this.deviceInfoManager.removeObserver(this.deviceStateObserverFunc);
 		this.isRun = false;
@@ -141,6 +155,7 @@ public class WorkNodeService implements Runnable
 	
 	private void processFromMasterNodePacket(NodeInfoProtocol nodeInfoProtocol)
 	{
+		LCDControl.inst.blinkShape(this.masterSigRect, 300, 1);
 		Device myDevice = this.deviceInfoManager.getMyDevice();
 		for(int i = 0; i < nodeInfoProtocol.getSize(); ++i)
 		{
@@ -158,6 +173,7 @@ public class WorkNodeService implements Runnable
 				{// 내 아이피가 문제 있을때.
 					this.networkManager.setInetAddr(taskAddr);
 					logger.log(Level.INFO, String.format("IP설정 (%s)", taskAddr.getHostAddress()));
+					this.ipNoStr = LCDControl.inst.replaceString(this.ipNoStr, String.format("W:%d", taskAddr.getAddress()[3]));
 				}
 			}
 			
