@@ -216,22 +216,20 @@ public class LCDControl
 			{
 				if(!LCDControl.this.lcdObjList.contains(obj))
 				{
-					System.out.println("제거됨");
 					this.cancel();
 					return;
 				}
 				if(this.blink)
 				{
 					this.blink = false;
-					LCDControl.this.removeLCDObj(obj);
+					LCDControl.this.undraw(obj);
 				}
 				else
 				{
 					this.blink = true;
-					LCDControl.this.addLCDObj(obj);
+					LCDControl.this.draw(obj);
 					if(this.c != -1)
 					{
-						System.out.println("무한깜빡");
 						--this.c;
 						if(this.c == 0)
 						{
@@ -249,6 +247,11 @@ public class LCDControl
 	private synchronized void addLCDObj(LCDObject obj)
 	{
 		this.lcdObjList.add(obj);
+		this.draw(obj);
+	}
+	
+	private synchronized void draw(LCDObject obj)
+	{// 실제 LCD에 그림
 		for(int x = 0; x < obj.shape.length; ++x)
 		{
 			for(int y = 0; y < obj.shape[x].length; ++y)
@@ -262,9 +265,8 @@ public class LCDControl
 		}
 	}
 	
-	private synchronized void removeLCDObj(LCDObject obj)
-	{
-		this.lcdObjList.remove(obj);
+	private synchronized void undraw(LCDObject obj)
+	{// 실제 LCD에 지움
 		for(int x = 0; x < obj.width; ++x)
 		{
 			for(int y = 0; y < obj.height; ++y)
@@ -304,6 +306,12 @@ public class LCDControl
 				}
 			}
 		}
+	}
+	
+	private synchronized void removeLCDObj(LCDObject obj)
+	{
+		this.lcdObjList.remove(obj);
+		this.undraw(obj);
 	}
 	
 	private void updateDisplay()
