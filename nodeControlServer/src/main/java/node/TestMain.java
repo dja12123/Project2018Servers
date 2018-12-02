@@ -34,10 +34,13 @@ public class TestMain
 		obj = LCDControl.inst.replaceShape(obj, "테스트");
 		Thread.sleep(500);
 		LCDControl.inst.showShape(30, 30, "안녕");
-		LCDControl.inst.showShape(20, 30, "1234");
+		LCDObject obj1 = LCDControl.inst.showShape(20, 30, "1234");
+		
 		Thread.sleep(500);
 		LCDControl.inst.removeShape(obj);
-		Thread.sleep(100000);
+		Thread.sleep(2000);
+		LCDControl.inst.removeShape(obj1);
+		Thread.sleep(200000);
 		
 	}
 
