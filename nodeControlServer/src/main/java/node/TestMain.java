@@ -37,7 +37,7 @@ public class TestMain
 		Thread.sleep(500);
 		obj = LCDControl.inst.replaceString(obj, "테스트");
 		Thread.sleep(500);
-		LCDObject hello = LCDControl.inst.showString(30, 30, "안녕");
+		LCDObject hello = LCDControl.inst.showString(-1, -1, "안녕");
 		LCDObject obj1 = LCDControl.inst.showString(20, 30, "1234");
 		
 		Thread.sleep(500);

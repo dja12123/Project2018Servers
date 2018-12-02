@@ -22,6 +22,8 @@ import node.log.LogWriter;
 public class LCDControl
 {
 	public static final Logger logger = LogWriter.createLogger(LCDControl.class, "LCDControl");
+	public static final int DISPLAY_WIDTH = 128;
+	public static final int DISPLAY_HEIGHT = 64;
 	
 	public static final LCDControl inst = new LCDControl();
 	
@@ -71,7 +73,10 @@ public class LCDControl
 	
 	public LCDObject showString(int x, int y, String str)
 	{// 해당 좌표에 문자열 출력(한글지원)
+	 // x나 y에 -1을 입력할 경우 해당 좌표가 중앙으로 정렬됨
 		boolean[][] bitmap = this.stringToBitMap(str);
+		if(x == -1) x = (DISPLAY_WIDTH / 2) - (bitmap.length / 2);
+		if(y == -1) y = (DISPLAY_HEIGHT / 2) - (bitmap[0].length / 2);
 		return showShape(x, y, bitmap);
 	}
 	
@@ -186,7 +191,7 @@ public class LCDControl
 	}
 	
 	public LCDObject removeShapeTimer(LCDObject obj, int time)
-	{
+	{// 지정한 시간 뒤에 도형 삭제
 		TimerTask task = new TimerTask()
 		{
 			@Override
@@ -201,7 +206,7 @@ public class LCDControl
 	}
 	
 	public LCDObject blinkShape(LCDObject obj, int time, int count)
-	{
+	{// 깜빡임간격, 깜빡임횟수 입력
 		TimerTask task = new TimerTask()
 		{
 			boolean blink = true;
