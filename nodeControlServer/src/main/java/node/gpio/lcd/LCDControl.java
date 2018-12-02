@@ -145,6 +145,7 @@ public class LCDControl
 			int cy = Math.max(obj.y, nextObj.y);
 			int cwidth = Math.min(obj.x + obj.width, nextObj.x + nextObj.width);
 			int cheight = Math.min(obj.y + obj.height, nextObj.y + nextObj.height);
+			System.out.println(cwidth + " " + cheight);
 			for(int x = 0; x < cwidth; ++x)
 			{
 				for(int y = 0; y < cheight; ++y)
