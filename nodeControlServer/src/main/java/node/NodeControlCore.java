@@ -159,6 +159,7 @@ public class NodeControlCore
 			LCDControl.inst.replaceString(moduleLog, "스파크 모듈");
 			if(!this.clusterService.startModule()) throw new Exception("스파크 모듈 로드 실패");
 			
+			LCDControl.inst.replaceString(moduleLog, "정상 시작");
 			this.dbHandler.getInstaller().complete();
 		}
 		catch(Exception e)
@@ -171,7 +172,7 @@ public class NodeControlCore
 		}
 		logger.log(Level.INFO, "서비스 시작 완료");
 		LCDControl.inst.removeShape(lcd);
-		LCDControl.inst.removeShape(moduleLog);
+		LCDControl.inst.removeShapeTimer(moduleLog, 2000);
 	}
 	
 	private void stopService()
