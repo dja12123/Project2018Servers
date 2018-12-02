@@ -137,7 +137,7 @@ public class WorkNodeService implements Runnable
 		this.ipNoStr = LCDControl.inst.showString(7, 0, "W:noip");
 		this.masterSigRect = LCDControl.inst.showFillRect(0, 1, 5, 5);
 		this.sendMsgRect = LCDControl.inst.showRect(0, 7, 5, 5);
-		LCDControl.inst.showRect(0, 45, 20, 14);
+		LCDControl.inst.showRect(45, 0, 20, 14);
 		return;
 	}
 	
