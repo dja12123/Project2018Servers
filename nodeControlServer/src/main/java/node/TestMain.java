@@ -25,7 +25,8 @@ public class TestMain
 		font = font.deriveFont(Font.PLAIN, 14);
 
 		LCDControl.inst.init();
-		LCDControl.inst.showRect(0, 0, 10, 10);
+		LCDControl.inst.blinkShape(LCDControl.inst.showRect(0, 0, 10, 10), 500, 3);
+		
 		LCDControl.inst.showLine(0, 0, 25, 25);
 		LCDControl.inst.showLine(10, 0, 25, 50);
 		LCDObject obj = LCDControl.inst.showString(25, 25, "안녕");
