@@ -27,6 +27,7 @@ public class TestMain
 		LCDControl.inst.init();
 		LCDControl.inst.showRect(0, 0, 10, 10);
 		LCDControl.inst.showLine(0, 0, 25, 25);
+		LCDControl.inst.showLine(10, 0, 25, 50);
 		LCDObject obj = LCDControl.inst.showString(25, 25, "안녕");
 		Thread.sleep(500);
 		LCDControl.inst.removeShape(obj);
