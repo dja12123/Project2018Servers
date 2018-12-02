@@ -58,7 +58,7 @@ public class NodeDetectionService extends Observable<NodeDetectionEvent> impleme
 	public synchronized void nodeInit()
 	{
 		if(this.nodeDetectionStr != null) LCDControl.inst.removeShape(this.nodeDetectionStr);
-		this.nodeDetectionStr = LCDControl.inst.showString(-1, 15, "노드감지:init");
+		this.nodeDetectionStr = LCDControl.inst.showString(-1, 0, "노드감지:init");
 		this.state = STATE_INIT;
 		this.masterNodeService.stop();
 		this.workNodeService.stop();
@@ -72,7 +72,7 @@ public class NodeDetectionService extends Observable<NodeDetectionEvent> impleme
 	public synchronized void workNodeSelectionCallback(NodeInfoProtocol nodeInfoProtocol)
 	{
 		if(this.nodeDetectionStr != null) LCDControl.inst.removeShape(this.nodeDetectionStr);
-		this.nodeDetectionStr = LCDControl.inst.removeShapeTimer(LCDControl.inst.showString(-1, 15, "노드감지:worker"), 1000);
+		this.nodeDetectionStr = LCDControl.inst.removeShapeTimer(LCDControl.inst.showString(-1, 0, "노드감지:worker"), 1000);
 		
 		this.state = STATE_WORKNODE;
 		this.nodeInstaller.stop();
@@ -88,7 +88,7 @@ public class NodeDetectionService extends Observable<NodeDetectionEvent> impleme
 	public synchronized void masterNodeSelectionCallback()
 	{
 		if(this.nodeDetectionStr != null) LCDControl.inst.removeShape(this.nodeDetectionStr);
-		this.nodeDetectionStr = LCDControl.inst.removeShapeTimer(LCDControl.inst.showString(-1, 15, "노드감지:master"), 1000);
+		this.nodeDetectionStr = LCDControl.inst.removeShapeTimer(LCDControl.inst.showString(-1, 0, "노드감지:master"), 1000);
 		
 		this.state = STATE_MASTERNODE;
 		this.nodeInstaller.stop();
