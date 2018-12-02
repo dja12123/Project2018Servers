@@ -6,6 +6,7 @@ import javax.crypto.Cipher;
 public class RSAEncrypt 
 {
 	public static int RSA_ENCRYPT_BYTE_SIZE = 1024;
+	public static int RSA_ENCRYPT_HEAD_SIZE = 11;
 	
     public static byte[] incode(byte[] target, Key publicKey) throws Exception 
     {
