@@ -37,7 +37,7 @@ public class TestMain
 		LCDControl.inst.showShape(20, 30, "1234");
 		Thread.sleep(500);
 		LCDControl.inst.removeShape(obj);
-		Thread.sleep(5000);
+		Thread.sleep(100000);
 		
 	}
 
