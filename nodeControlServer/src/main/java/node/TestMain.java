@@ -33,7 +33,8 @@ public class TestMain
 		Thread.sleep(500);
 		obj = LCDControl.inst.replaceShape(obj, "테스트");
 		Thread.sleep(500);
-		obj = LCDControl.inst.showShape(30, 30, "안녕");
+		LCDControl.inst.showShape(30, 30, "안녕");
+		LCDControl.inst.showShape(20, 30, "1234");
 		Thread.sleep(500);
 		LCDControl.inst.removeShape(obj);
 		Thread.sleep(5000);
