@@ -111,19 +111,35 @@ public class LCDControl
 		}
 		int dx = x1 - x0;
 		int dy = y1 - y0;
+		int basex = x0;
+		int basey = y0;
 		boolean[][] bitmap = new boolean[dx][dy];
-		int x = x0;
-		int y = y0;
-		float m = (float) dy / (float) dx;
-		float n = y0 - m * x0;
-		dx = (x1 > x0) ? 1 : -1;
-		while (x0 != x1)
+		if (Math.abs(dx) > Math.abs(dy))
 		{
-			x0 += dx;
-			y0 = (int) (m * (float) x0 + n + (float) 0.5);
-			bitmap[x0 - dx][y0 - dy] = true;
+			float m = (float) dy / (float) dx;
+			float n = y0 - m * x0;
+			dx = (x1 > x0) ? 1 : -1;
+			while (x0 != x1)
+			{
+				x0 += dx;
+				y0 = (int) (m * (float) x0 + n + (float) 0.5);
+				bitmap[basex - x0][basey - y0] = true;
+			}
+
 		}
-		return showShape(x, y, dx, dy, bitmap);
+		else if (dy != 0)
+		{
+			float m = (float) dx / (float) dy;
+			float n = x0 - m * y0;
+			dy = (dy < 0) ? -1 : 1;
+			while (y0 != y1)
+			{
+				y0 += dy;
+				x0 = (int) (m * (float) y0 + n + (float) 0.5);
+				bitmap[basex - x0][basey - y0] = true;
+			}
+		}
+		return showShape(basex, basey, bitmap.length, bitmap[0].length, bitmap);
 	}
 	
 	public LCDObject showShape(int x, int y, int width, int height, boolean[][] shape)
