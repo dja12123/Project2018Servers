@@ -134,21 +134,22 @@ public class LCDControl
 		}
 		for(int i = 0; i < this.lcdObjList.size(); ++i)
 		{
-			LCDObject beforeObj = this.lcdObjList.get(i);
-			if(!(obj.x < beforeObj.x + beforeObj.width && obj.x + obj.width > beforeObj.x
-					&& obj.y > beforeObj.y + beforeObj.height && obj.y + obj.height < beforeObj.y))
-			{// 사각형 겹치는지 확인
-				continue;
-			}
-			int cx = Math.max(obj.x, beforeObj.x);
-			int cy = Math.max(obj.y, beforeObj.y);
-			int cwidth = Math.min(obj.x + obj.width, beforeObj.x + beforeObj.width);
-			int cheight = Math.min(obj.y + obj.height, beforeObj.y + beforeObj.height);
+			LCDObject nextObj = this.lcdObjList.get(i);
+			if(obj.x > nextObj.x + nextObj.width) continue;
+			if(obj.x + obj.width < nextObj.x) continue;
+			if(obj.y > nextObj.y + nextObj.height) continue;
+			if(obj.y + obj.height < nextObj.y) continue;
+			//사각형 겹치는지 확인
+			
+			int cx = Math.max(obj.x, nextObj.x);
+			int cy = Math.max(obj.y, nextObj.y);
+			int cwidth = Math.min(obj.x + obj.width, nextObj.x + nextObj.width);
+			int cheight = Math.min(obj.y + obj.height, nextObj.y + nextObj.height);
 			for(int x = 0; x < cwidth; ++x)
 			{
 				for(int y = 0; y < cheight; ++y)
 				{
-					if(beforeObj.shape[cx + x - beforeObj.x][cy + y - beforeObj.y] != true)
+					if(nextObj.shape[cx + x - nextObj.x][cy + y - nextObj.y] != true)
 					{
 						continue;
 					}
