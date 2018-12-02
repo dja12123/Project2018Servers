@@ -48,6 +48,7 @@ public class WorkNodeService implements Runnable
 	private LCDObject ipNoStr;
 	private LCDObject masterSigRect;
 	private LCDObject sendMsgRect;
+	private LCDObject stateStr;
 	
 	public WorkNodeService(NodeDetectionService nodeDetectionService, DeviceInfoManager deviceInfoManager, NetworkManager networkManager)
 	{
@@ -130,14 +131,13 @@ public class WorkNodeService implements Runnable
 		this.masterNode = nodeInfoProtocol.getMasterNode();
 		this.broadCastDelay = Integer.parseInt(NodeControlCore.getProp(DetectionUtil.PROP_delayWorkerBroadcast));
 		
-		
 		this.broadcastThread = new Thread(this);
 		this.broadcastThread.start();
 		
 		this.ipNoStr = LCDControl.inst.showString(7, 0, "W:noip");
 		this.masterSigRect = LCDControl.inst.showFillRect(0, 1, 5, 5);
 		this.sendMsgRect = LCDControl.inst.showRect(0, 7, 5, 5);
-		LCDControl.inst.showRect(45, 0, 20, 14);
+		this.stateStr = LCDControl.inst.showString(64, 0, "시작");
 		return;
 	}
 	
@@ -148,6 +148,7 @@ public class WorkNodeService implements Runnable
 		LCDControl.inst.removeShape(this.ipNoStr);
 		LCDControl.inst.removeShape(this.masterSigRect);
 		LCDControl.inst.removeShape(this.sendMsgRect);
+		LCDControl.inst.removeShape(this.stateStr);
 		this.networkManager.removeObserver(this.networkObserverFunc);
 		this.deviceInfoManager.removeObserver(this.deviceStateObserverFunc);
 		this.isRun = false;
@@ -174,6 +175,7 @@ public class WorkNodeService implements Runnable
 				{// 내 아이피가 문제 있을때.
 					this.networkManager.setInetAddr(taskAddr);
 					logger.log(Level.INFO, String.format("IP설정 (%s)", taskAddr.getHostAddress()));
+					this.stateStr = LCDControl.inst.replaceString(this.stateStr, "정상");
 					this.ipNoStr = LCDControl.inst.replaceString(this.ipNoStr, String.format("W:%d", taskAddr.getAddress()[3]));
 				}
 			}
@@ -200,6 +202,8 @@ public class WorkNodeService implements Runnable
 			{// 새로운 마스터 노드가 내 마스터 노드가 아닐경우!
 				if(DetectionUtil.isChangeMasterNode(nodeInfoProtocol, this.masterNode, this.deviceInfoManager))
 				{
+					LCDControl.inst.blinkShape(this.stateStr, 2000, 1);
+					LCDControl.inst.removeShapeTimer(LCDControl.inst.showString(64, 0, "충돌"), 1900);
 					logger.log(Level.INFO, String.format("마스터 노드 변경 (%s -> %s)",
 							this.masterNode.toString(), nodeInfoProtocol.getMasterNode().toString()));
 					this.nodeDetectionService.workNodeSelectionCallback(nodeInfoProtocol);

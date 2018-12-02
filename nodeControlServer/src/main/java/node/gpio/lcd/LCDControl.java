@@ -276,7 +276,7 @@ public class LCDControl
 					continue;
 				}
 				this.display.setPixel(x + obj.x, y + obj.y, false);
-				// 켜진 픽셀 끄기.
+				// 켜진 픽셀 끄기
 			}
 		}
 		for(int i = 0; i < this.lcdObjList.size(); ++i)
