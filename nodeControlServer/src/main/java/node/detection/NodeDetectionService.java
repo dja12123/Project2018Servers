@@ -11,6 +11,8 @@ import node.detection.masterNode.MasterNodeService;
 import node.detection.workNode.WorkNodeService;
 import node.device.Device;
 import node.device.DeviceInfoManager;
+import node.gpio.lcd.LCDControl;
+import node.gpio.lcd.LCDObject;
 import node.log.LogWriter;
 import node.network.NetworkManager;
 import node.util.observer.Observable;
@@ -36,6 +38,8 @@ public class NodeDetectionService extends Observable<NodeDetectionEvent> impleme
 	private WorkNodeService workNodeService;
 	private MasterNodeService masterNodeService;
 	
+	private LCDObject nodeDetectionStr;
+	
 	private UUID masterNode;
 	
 	public NodeDetectionService(DB_Handler dbHandler, DeviceInfoManager deviceInfoManager, NetworkManager networkManager)
@@ -47,10 +51,14 @@ public class NodeDetectionService extends Observable<NodeDetectionEvent> impleme
 		this.nodeInstaller = new NodeInstaller(this, this.networkManager);
 		this.workNodeService = new WorkNodeService(this, this.deviceInfoManager, this.networkManager);
 		this.masterNodeService = new MasterNodeService(this, this.deviceInfoManager, this.networkManager);
+		
+		this.nodeDetectionStr = null;
 	}
 	
 	public synchronized void nodeInit()
 	{
+		if(this.nodeDetectionStr != null) LCDControl.inst.removeShape(this.nodeDetectionStr);
+		this.nodeDetectionStr = LCDControl.inst.showString(-1, 15, "노드감지:init");
 		this.state = STATE_INIT;
 		this.masterNodeService.stop();
 		this.workNodeService.stop();
@@ -63,6 +71,9 @@ public class NodeDetectionService extends Observable<NodeDetectionEvent> impleme
 	
 	public synchronized void workNodeSelectionCallback(NodeInfoProtocol nodeInfoProtocol)
 	{
+		if(this.nodeDetectionStr != null) LCDControl.inst.removeShape(this.nodeDetectionStr);
+		this.nodeDetectionStr = LCDControl.inst.removeShapeTimer(LCDControl.inst.showString(-1, 15, "노드감지:worker"), 1000);
+		
 		this.state = STATE_WORKNODE;
 		this.nodeInstaller.stop();
 		this.masterNodeService.stop();
@@ -76,6 +87,9 @@ public class NodeDetectionService extends Observable<NodeDetectionEvent> impleme
 	
 	public synchronized void masterNodeSelectionCallback()
 	{
+		if(this.nodeDetectionStr != null) LCDControl.inst.removeShape(this.nodeDetectionStr);
+		this.nodeDetectionStr = LCDControl.inst.removeShapeTimer(LCDControl.inst.showString(-1, 15, "노드감지:master"), 1000);
+		
 		this.state = STATE_MASTERNODE;
 		this.nodeInstaller.stop();
 		this.workNodeService.stop();
