@@ -15,8 +15,6 @@ import com.pi4j.io.i2c.I2CFactory.UnsupportedBusNumberException;
 
 import de.pi3g.pi.oled.OLEDDisplay;
 import node.NodeControlCore;
-import node.TestMain;
-import node.gpio.led.LEDControl;
 import node.log.LogWriter;
 
 public class LCDControl
@@ -68,19 +66,19 @@ public class LCDControl
 	}
 	
 	public LCDObject showString(int x, int y, String str)
-	{
+	{// 해당 좌표에 문자열 출력(한글지원)
 		boolean[][] bitmap = this.stringToBitMap(str);
-		return showShape(x, y, bitmap.length, bitmap[0].length, bitmap);
+		return showShape(x, y, bitmap);
 	}
 	
 	public LCDObject replaceString(LCDObject before, String str)
-	{
+	{// 문자열 교체
 		boolean[][] bitmap = this.stringToBitMap(str);
 		return replaceShape(before, bitmap);
 	}
 	
 	public LCDObject showRect(int x, int y, int width, int height)
-	{
+	{// 사각형 출력(기준좌표, 사각형크기)
 		boolean[][] bitmap = new boolean[width][height];
 		for(int i = 0; i < height; ++i)
 		{
@@ -92,11 +90,11 @@ public class LCDControl
 			bitmap[i][0] = true;
 			bitmap[i][height - 1] = true;
 		}
-		return showShape(x, y, width, height, bitmap);
+		return showShape(x, y, bitmap);
 	}
 	
 	public LCDObject showFillRect(int x, int y, int width, int height)
-	{
+	{// 꽉찬 사각형 출력(기준좌표, 사각형크기)
 		boolean[][] bitmap = new boolean[width][height];
 		for(int i = 0; i < height; ++i)
 		{
@@ -105,11 +103,11 @@ public class LCDControl
 				bitmap[i][j] = true;
 			}
 		}
-		return showShape(x, y, width, height, bitmap);
+		return showShape(x, y, bitmap);
 	}
 	
 	public LCDObject showLine(int x0, int y0, int x1, int y1)
-	{
+	{// 선 출력(시작좌표, 끝좌표)
 		int temp;
 		if (x0 > x1)
 		{
@@ -153,12 +151,16 @@ public class LCDControl
 				bitmap[x0 - basex][y0 - basey] = true;
 			}
 		}
-		return showShape(basex, basey, bitmap.length, bitmap[0].length, bitmap);
+		return showShape(basex, basey, bitmap);
 	}
 	
-	public LCDObject showShape(int x, int y, int width, int height, boolean[][] shape)
-	{
-		LCDObject obj = new LCDObject(x, y, width, height, shape);
+	public LCDObject showShape(int x, int y, boolean[][] shape)
+	{// 비트맵 도형 출력
+		if(shape.length <= 0)
+		{
+			return null;
+		}
+		LCDObject obj = new LCDObject(x, y, shape.length, shape[0].length, shape);
 		this.addLCDObj(obj);
 		this.updateDisplay();
 		return obj;
@@ -254,7 +256,8 @@ public class LCDControl
 		});
 	}
 	
-	private boolean[][] stringToBitMap(String s) {
+	private boolean[][] stringToBitMap(String s)
+	{
 		BufferedImage img = new BufferedImage(1, 1, BufferedImage.TYPE_BYTE_BINARY);
         Graphics2D g2d = img.createGraphics();
    
