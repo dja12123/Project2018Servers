@@ -145,29 +145,7 @@ public class LCDControl
 			int cy = Math.max(obj.y, nextObj.y);
 			int cwidth = Math.min(obj.x + obj.width, nextObj.x + nextObj.width) - cx;
 			int cheight = Math.min(obj.y + obj.height, nextObj.y + nextObj.height) - cy;
-			System.out.println(cwidth + " " + cheight);
-			for(int x = 0; x < cwidth; ++x)
-			{
-				for(int y = 0; y < cheight; ++y)
-				{
-					if(x == 0 || x == cwidth - 1 || y == 0 || x == cheight - 1)
-					{
-						this.display.setPixel(x + cx, y + cy, true);
-					}
-					// 이전 픽셀 보이게
-				}
-				
-			}
-			this.updateDisplay();
-			try
-			{
-				Thread.sleep(1000);
-			}
-			catch (InterruptedException e)
-			{
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+
 			for(int x = 0; x < cwidth; ++x)
 			{
 				for(int y = 0; y < cheight; ++y)
