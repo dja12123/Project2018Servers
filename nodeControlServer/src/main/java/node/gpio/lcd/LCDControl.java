@@ -123,7 +123,7 @@ public class LCDControl
 			{
 				x0 += dx;
 				y0 = (int) (m * (float) x0 + n + (float) 0.5);
-				bitmap[basex - x0][basey - y0] = true;
+				bitmap[basex - x0 + 1][basey - y0 + 1] = true;
 			}
 
 		}
@@ -136,7 +136,7 @@ public class LCDControl
 			{
 				y0 += dy;
 				x0 = (int) (m * (float) y0 + n + (float) 0.5);
-				bitmap[basex - x0][basey - y0] = true;
+				bitmap[basex - x0 + 1][basey - y0 + 1] = true;
 			}
 		}
 		return showShape(basex, basey, bitmap.length, bitmap[0].length, bitmap);
