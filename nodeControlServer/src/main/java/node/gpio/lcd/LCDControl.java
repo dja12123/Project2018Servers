@@ -236,7 +236,6 @@ public class LCDControl
 							this.cancel();
 						}
 					}
-
 				}
 				LCDControl.this.updateDisplay();
 			}
