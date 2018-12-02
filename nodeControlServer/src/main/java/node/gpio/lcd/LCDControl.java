@@ -8,6 +8,8 @@ import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -26,6 +28,7 @@ public class LCDControl
 	private Font font;
 	private OLEDDisplay display;
 	private ArrayList<LCDObject> lcdObjList;
+	private Timer timer;
 	
 	private boolean isInit;
 	
@@ -34,6 +37,7 @@ public class LCDControl
 		this.font = null;
 		this.isInit = false;
 		this.lcdObjList = new ArrayList<>();
+		this.timer = new Timer(true);
 	}
 	
 	public void init()
@@ -179,6 +183,52 @@ public class LCDControl
 	{
 		this.removeLCDObj(obj);
 		this.updateDisplay();
+	}
+	
+	public LCDObject removeShapeTimer(LCDObject obj, int time)
+	{
+		TimerTask task = new TimerTask()
+		{
+			@Override
+			public void run()
+			{
+				LCDControl.this.removeLCDObj(obj);
+				LCDControl.this.updateDisplay();
+			}
+		};
+		this.timer.schedule(task, time);
+		return obj;
+	}
+	
+	public LCDObject blinkShape(LCDObject obj, int time, int count)
+	{
+		TimerTask task = new TimerTask()
+		{
+			boolean blink = true;
+			int c = count;
+			@Override
+			public void run()
+			{
+				if(this.blink)
+				{
+					this.blink = false;
+					LCDControl.this.removeLCDObj(obj);
+				}
+				else
+				{
+					this.blink = true;
+					LCDControl.this.addLCDObj(obj);
+					--this.c;
+					if(this.c < 0)
+					{
+						this.cancel();
+					}
+				}
+				LCDControl.this.updateDisplay();
+			}
+		};
+		this.timer.schedule(task, 0, time);
+		return obj;
 	}
 	
 	private synchronized void addLCDObj(LCDObject obj)
