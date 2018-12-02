@@ -36,6 +36,7 @@ public class TestMain
 		obj = LCDControl.inst.showShape(30, 30, "안녕");
 		Thread.sleep(500);
 		LCDControl.inst.removeShape(obj);
+		Thread.sleep(5000);
 		
 	}
 	public static BufferedImage stringToBufferedImage(String s) {
