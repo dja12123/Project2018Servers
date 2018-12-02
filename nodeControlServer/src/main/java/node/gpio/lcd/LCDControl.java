@@ -14,6 +14,7 @@ import java.util.logging.Logger;
 import com.pi4j.io.i2c.I2CFactory.UnsupportedBusNumberException;
 
 import de.pi3g.pi.oled.OLEDDisplay;
+import node.NodeControlCore;
 import node.TestMain;
 import node.gpio.led.LEDControl;
 import node.log.LogWriter;
@@ -94,6 +95,19 @@ public class LCDControl
 		return showShape(x, y, width, height, bitmap);
 	}
 	
+	public LCDObject showFillRect(int x, int y, int width, int height)
+	{
+		boolean[][] bitmap = new boolean[width][height];
+		for(int i = 0; i < height; ++i)
+		{
+			for(int j = 0; j < width; ++j)
+			{
+				bitmap[i][j] = true;
+			}
+		}
+		return showShape(x, y, width, height, bitmap);
+	}
+	
 	public LCDObject showLine(int x0, int y0, int x1, int y1)
 	{
 		int temp;
@@ -113,7 +127,6 @@ public class LCDControl
 		int dy = y1 - y0;
 		int basex = x0;
 		int basey = y0;
-		System.out.println(dx + " " + dy);
 		boolean[][] bitmap = new boolean[dx + 1][dy + 1];
 		if (Math.abs(dx) > Math.abs(dy))
 		{
@@ -127,7 +140,6 @@ public class LCDControl
 				
 				bitmap[x0 - basex][y0 - basey] = true;
 			}
-
 		}
 		else if (dy != 0)
 		{
@@ -167,7 +179,7 @@ public class LCDControl
 		this.updateDisplay();
 	}
 	
-	private void addLCDObj(LCDObject obj)
+	private synchronized void addLCDObj(LCDObject obj)
 	{
 		this.lcdObjList.add(obj);
 		for(int x = 0; x < obj.shape.length; ++x)
@@ -183,7 +195,7 @@ public class LCDControl
 		}
 	}
 	
-	private void removeLCDObj(LCDObject obj)
+	private synchronized void removeLCDObj(LCDObject obj)
 	{
 		this.lcdObjList.remove(obj);
 		for(int x = 0; x < obj.width; ++x)
@@ -229,14 +241,17 @@ public class LCDControl
 	
 	private void updateDisplay()
 	{
-		try
+		NodeControlCore.mainThreadPool.execute(()->
 		{
-			this.display.update();
-		}
-		catch (IOException e)
-		{
-			logger.log(Level.SEVERE, "LCD컨트롤 오류", e);
-		}
+			try
+			{
+				this.display.update();
+			}
+			catch (IOException e)
+			{
+				logger.log(Level.SEVERE, "LCD컨트롤 오류", e);
+			}
+		});
 	}
 	
 	private boolean[][] stringToBitMap(String s) {
