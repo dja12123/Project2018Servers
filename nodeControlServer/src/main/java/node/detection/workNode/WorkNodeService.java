@@ -134,9 +134,9 @@ public class WorkNodeService implements Runnable
 		this.broadcastThread = new Thread(this);
 		this.broadcastThread.start();
 		
-		this.ipNoStr = LCDControl.inst.showString(6, 0, "W:noip");
-		this.masterSigRect = LCDControl.inst.showFillRect(0, 0, 5, 5);
-		this.sendMsgRect = LCDControl.inst.showRect(0, 6, 5, 5);
+		this.ipNoStr = LCDControl.inst.showString(7, 0, "W:noip");
+		this.masterSigRect = LCDControl.inst.showFillRect(0, 1, 5, 5);
+		this.sendMsgRect = LCDControl.inst.showRect(0, 7, 5, 5);
 		return;
 	}
 	
