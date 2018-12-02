@@ -80,6 +80,7 @@ public class LCDControl
 	
 	public LCDObject replaceString(LCDObject before, String str)
 	{// 문자열 교체
+	 // 주의사항!! 새 오브젝트가 반환되므로 다음에 변환할때는 반환된 오브젝트를 사용해야 함
 		boolean[][] bitmap = this.stringToBitMap(str);
 		return replaceShape(before, bitmap);
 	}

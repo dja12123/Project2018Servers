@@ -172,7 +172,8 @@ public class NodeControlCore
 		}
 		logger.log(Level.INFO, "서비스 시작 완료");
 		LCDControl.inst.removeShape(lcd);
-		LCDControl.inst.removeShapeTimer(moduleLog, 2000);
+		LCDControl.inst.removeShapeTimer(moduleLog, 1000);
+		LCDControl.inst.showLine(0, 32, 127, 32);
 	}
 	
 	private void stopService()
