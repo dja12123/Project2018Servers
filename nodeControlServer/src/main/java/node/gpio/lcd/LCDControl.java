@@ -213,16 +213,17 @@ public class LCDControl
 				{
 					this.blink = false;
 					LCDControl.this.removeLCDObj(obj);
+					--this.c;
+					if(this.c <= 0)
+					{
+						this.cancel();
+					}
 				}
 				else
 				{
 					this.blink = true;
 					LCDControl.this.addLCDObj(obj);
-					--this.c;
-					if(this.c < 0)
-					{
-						this.cancel();
-					}
+
 				}
 				LCDControl.this.updateDisplay();
 			}
