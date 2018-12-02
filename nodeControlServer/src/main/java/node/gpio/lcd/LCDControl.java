@@ -206,7 +206,7 @@ public class LCDControl
 	}
 	
 	public LCDObject blinkShape(LCDObject obj, int time, int count)
-	{// 깜빡임간격, 깜빡임횟수 입력
+	{// 깜빡임간격, 깜빡임횟수 입력(-1이면 무한 깜빡임)
 		TimerTask task = new TimerTask()
 		{
 			boolean blink = true;
@@ -214,6 +214,11 @@ public class LCDControl
 			@Override
 			public void run()
 			{
+				if(!LCDControl.this.lcdObjList.contains(obj))
+				{
+					this.cancel();
+					return;
+				}
 				if(this.blink)
 				{
 					this.blink = false;
@@ -223,11 +228,15 @@ public class LCDControl
 				{
 					this.blink = true;
 					LCDControl.this.addLCDObj(obj);
-					--this.c;
-					if(this.c <= 0)
+					if(this.c != -1)
 					{
-						this.cancel();
+						--this.c;
+						if(this.c == 0)
+						{
+							this.cancel();
+						}
 					}
+
 				}
 				LCDControl.this.updateDisplay();
 			}

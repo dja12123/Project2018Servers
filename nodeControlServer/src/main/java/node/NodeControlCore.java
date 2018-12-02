@@ -19,6 +19,8 @@ import node.db.DB_Handler;
 import node.detection.NodeDetectionService;
 import node.device.DeviceInfoManager;
 import node.fileIO.FileHandler;
+import node.gpio.lcd.LCDControl;
+import node.gpio.lcd.LCDObject;
 import node.gpio.led.LEDControl;
 import node.log.LogWriter;
 import node.network.NetworkManager;
@@ -65,6 +67,7 @@ public class NodeControlCore
     		logger.log(Level.SEVERE, "초기화 실패");
     		return;
     	}
+    	LCDControl.inst.init();
 		NodeControlCore core = new NodeControlCore();
 		core.startService();
 	}
@@ -141,6 +144,7 @@ public class NodeControlCore
 	
 	private void startService()
 	{
+		LCDObject lcd = LCDControl.inst.blinkShape(LCDControl.inst.showString(-1, -1, "초기화..."), 500, -1);
 		try
 		{
 			if(!this.dbHandler.startModule()) throw new Exception("DB핸들러 로드 실패");
@@ -153,11 +157,14 @@ public class NodeControlCore
 		}
 		catch(Exception e)
 		{
+			LCDControl.inst.removeShape(lcd);
+			LCDControl.inst.showString(-1, -1, "서비스 시작 불가");
 			logger.log(Level.SEVERE, "서비스 시작중 오류", e);
 			this.stopService();
 			return;
 		}
 		logger.log(Level.INFO, "서비스 시작 완료");
+		LCDControl.inst.removeShape(lcd);
 	}
 	
 	private void stopService()
