@@ -25,16 +25,18 @@ public class TestMain
 		font = font.deriveFont(Font.PLAIN, 14);
 
 		LCDControl.inst.init();
-		LCDObject obj = LCDControl.inst.showShape(25, 25, "안녕");
+		LCDControl.inst.showRect(0, 0, 10, 10);
+		LCDControl.inst.showLine(0, 0, 25, 25);
+		LCDObject obj = LCDControl.inst.showString(25, 25, "안녕");
 		Thread.sleep(500);
 		LCDControl.inst.removeShape(obj);
 		Thread.sleep(500);
-		obj = LCDControl.inst.showShape(25, 25, "안녕");
+		obj = LCDControl.inst.showString(25, 25, "안녕");
 		Thread.sleep(500);
-		obj = LCDControl.inst.replaceShape(obj, "테스트");
+		obj = LCDControl.inst.replaceString(obj, "테스트");
 		Thread.sleep(500);
-		LCDControl.inst.showShape(30, 30, "안녕");
-		LCDObject obj1 = LCDControl.inst.showShape(20, 30, "1234");
+		LCDControl.inst.showString(30, 30, "안녕");
+		LCDObject obj1 = LCDControl.inst.showString(20, 30, "1234");
 		
 		Thread.sleep(500);
 		LCDControl.inst.removeShape(obj);

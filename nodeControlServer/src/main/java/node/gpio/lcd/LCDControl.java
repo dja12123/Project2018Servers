@@ -66,10 +66,60 @@ public class LCDControl
 		this.isInit = true;
 	}
 	
-	public LCDObject showShape(int x, int y, String str)
+	public LCDObject showString(int x, int y, String str)
 	{
 		boolean[][] bitmap = this.stringToBitMap(str);
 		return showShape(x, y, bitmap.length, bitmap[0].length, bitmap);
+	}
+	
+	public LCDObject replaceString(LCDObject before, String str)
+	{
+		boolean[][] bitmap = this.stringToBitMap(str);
+		return replaceShape(before, bitmap);
+	}
+	
+	public LCDObject showRect(int x, int y, int width, int height)
+	{
+		boolean[][] bitmap = new boolean[width][height];
+		for(int i = 0; i < height; ++i)
+		{
+			bitmap[0][i] = true;
+			bitmap[width - 1][i] = true;
+		}
+		for(int i = 0; i < width; ++i)
+		{
+			bitmap[i][0] = true;
+			bitmap[i][height - 1] = true;
+		}
+		return showShape(x, y, width, height, bitmap);
+	}
+	
+	public LCDObject showLine(int sx, int sy, int tx, int ty)
+	{
+		int temp;
+		if(sx > tx)
+		{
+			temp = sx;
+			sx = tx;
+			tx = temp;
+		}
+		if(sy > ty)
+		{
+			temp = sy;
+			sy = ty;
+			ty = temp;
+		}
+		
+		int dx = tx - sx;
+		int dy = ty - sy;
+		boolean[][] bitmap = new boolean[dx][dy];
+		int y;
+		for(int x = sx; x < tx; ++x)
+		{
+			y = sy + dy * (x - sx) / dx;
+			bitmap[x - dx][y - dy] = true;
+		}
+		return showShape(sx, sy, dx, dy, bitmap);
 	}
 	
 	public LCDObject showShape(int x, int y, int width, int height, boolean[][] shape)
@@ -78,12 +128,6 @@ public class LCDControl
 		this.addLCDObj(obj);
 		this.updateDisplay();
 		return obj;
-	}
-	
-	public LCDObject replaceShape(LCDObject before, String str)
-	{
-		boolean[][] bitmap = this.stringToBitMap(str);
-		return replaceShape(before, bitmap);
 	}
 	
 	public LCDObject replaceShape(LCDObject before, boolean[][] shape)
