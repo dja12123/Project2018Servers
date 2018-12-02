@@ -149,6 +149,17 @@ public class LCDControl
 			{
 				for(int y = 0; y < cheight; ++y)
 				{
+					if(x == 0 || x == cwidth - 1 || y == 0 || x == cheight - 1)
+					{
+						this.display.setPixel(x + cx, y + cy, true);
+					}
+					// 이전 픽셀 보이게
+				}
+			}
+			for(int x = 0; x < cwidth; ++x)
+			{
+				for(int y = 0; y < cheight; ++y)
+				{
 					if(nextObj.shape[cx + x - nextObj.x][cy + y - nextObj.y] != true)
 					{
 						continue;
