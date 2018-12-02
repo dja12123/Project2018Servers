@@ -88,7 +88,7 @@ public class LCDControl
 	
 	public LCDObject replaceShape(LCDObject before, boolean[][] shape)
 	{
-		LCDObject obj = new LCDObject(before.x, before.y, before.width, before.height, shape);
+		LCDObject obj = new LCDObject(before.x, before.y, shape.length, shape[0].length, shape);
 		this.removeLCDObj(before);
 		this.addLCDObj(obj);
 		this.updateDisplay();
