@@ -134,7 +134,7 @@ public class LCDControl
 		for(int i = 0; i < this.lcdObjList.size(); ++i)
 		{
 			LCDObject beforeObj = this.lcdObjList.get(i);
-			if((obj.x < beforeObj.x + beforeObj.width && obj.x + obj.width > beforeObj.x
+			if(!(obj.x < beforeObj.x + beforeObj.width && obj.x + obj.width > beforeObj.x
 					&& obj.y > beforeObj.y + beforeObj.height && obj.y + obj.height < beforeObj.y))
 			{// 사각형 겹치는지 확인
 				continue;
