@@ -98,6 +98,7 @@ public class LCDControl
 	public void removeShape(LCDObject obj)
 	{
 		this.removeLCDObj(obj);
+		this.updateDisplay();
 	}
 	
 	private void addLCDObj(LCDObject obj)
@@ -119,15 +120,15 @@ public class LCDControl
 	private void removeLCDObj(LCDObject obj)
 	{
 		this.lcdObjList.remove(obj);
-		for(int i = 0; i < obj.width; ++i)
+		for(int x = 0; x < obj.width; ++x)
 		{
-			for(int j = 0; j < obj.height; ++j)
+			for(int y = 0; y < obj.height; ++y)
 			{
-				if(obj.shape[i][j] != true)
+				if(obj.shape[x][y] != true)
 				{
 					continue;
 				}
-				this.display.setPixel(i + obj.x, j + obj.y, false);
+				this.display.setPixel(x + obj.x, y + obj.y, false);
 				// 켜진 픽셀 끄기.
 			}
 		}

@@ -39,24 +39,5 @@ public class TestMain
 		Thread.sleep(5000);
 		
 	}
-	public static BufferedImage stringToBufferedImage(String s) {
-		BufferedImage img = new BufferedImage(1, 1, BufferedImage.TYPE_BYTE_BINARY);
-        Graphics2D g2d = img.createGraphics();
-   
-        g2d.setFont(font);
-        FontMetrics fm = g2d.getFontMetrics();
-        int width = fm.stringWidth(s);
-        int height = fm.getHeight();
-        g2d.dispose();
 
-        img = new BufferedImage(width, height, BufferedImage.TYPE_BYTE_BINARY);
-        g2d = img.createGraphics();
-        g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
-
-        g2d.setFont(font);
-        fm = g2d.getFontMetrics();
-        g2d.drawString(s, 0, fm.getAscent());
-        g2d.dispose();
-        return img;
-	}
 }
