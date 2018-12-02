@@ -21,7 +21,6 @@ import node.device.DeviceInfoManager;
 import node.fileIO.FileHandler;
 import node.gpio.lcd.LCDControl;
 import node.gpio.lcd.LCDObject;
-import node.gpio.led.LEDControl;
 import node.log.LogWriter;
 import node.network.NetworkManager;
 
@@ -50,9 +49,6 @@ public class NodeControlCore
 	
 	public NodeControlCore()
 	{
-		LEDControl.ledControl.setDefaultFlick(2, 500, 50, 50, 25, 0, 0, 0, 0);
-		LEDControl.ledControl.flick(0, 200, 200, 5, 100, 100, 100);
-		
 		this.dbHandler = new DB_Handler();
 		this.deviceInfoManager = new DeviceInfoManager(this.dbHandler);
 		this.networkManager = new NetworkManager(this.deviceInfoManager);
