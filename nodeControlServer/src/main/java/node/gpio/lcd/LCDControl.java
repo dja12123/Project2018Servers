@@ -155,7 +155,9 @@ public class LCDControl
 					}
 					// 이전 픽셀 보이게
 				}
+				
 			}
+			this.updateDisplay();
 			for(int x = 0; x < cwidth; ++x)
 			{
 				for(int y = 0; y < cheight; ++y)
