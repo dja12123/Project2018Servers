@@ -75,8 +75,6 @@ public class LCDControl
 	{// 해당 좌표에 문자열 출력(한글지원)
 	 // x나 y에 -1을 입력할 경우 해당 좌표가 중앙으로 정렬됨
 		boolean[][] bitmap = this.stringToBitMap(str);
-		if(x == -1) x = (DISPLAY_WIDTH / 2) - (bitmap.length / 2);
-		if(y == -1) y = (DISPLAY_HEIGHT / 2) - (bitmap[0].length / 2);
 		return showShape(x, y, bitmap);
 	}
 	
@@ -177,7 +175,8 @@ public class LCDControl
 	
 	public LCDObject replaceShape(LCDObject before, boolean[][] shape)
 	{
-		LCDObject obj = new LCDObject(before.x, before.y, shape.length, shape[0].length, shape);
+		LCDObject obj = new LCDObject(before.xcenter?-1:before.x, before.ycenter?-1:before.y,
+				shape.length, shape[0].length, shape);
 		this.removeLCDObj(before);
 		this.addLCDObj(obj);
 		this.updateDisplay();
@@ -252,15 +251,15 @@ public class LCDControl
 	
 	private synchronized void draw(LCDObject obj)
 	{// 실제 LCD에 그림
-		for(int x = 0; x < obj.shape.length; ++x)
+		for(int x = 0; x < obj.bitmap.length; ++x)
 		{
-			for(int y = 0; y < obj.shape[x].length; ++y)
+			for(int y = 0; y < obj.bitmap[x].length; ++y)
 			{
-				if(obj.shape[x][y] != true)
+				if(obj.bitmap[x][y] != true)
 				{
 					continue;
 				}
-				this.display.setPixel(x + obj.x, y + obj.y, obj.shape[x][y]);
+				this.display.setPixel(x + obj.x, y + obj.y, obj.bitmap[x][y]);
 			}
 		}
 	}
@@ -271,7 +270,7 @@ public class LCDControl
 		{
 			for(int y = 0; y < obj.height; ++y)
 			{
-				if(obj.shape[x][y] != true)
+				if(obj.bitmap[x][y] != true)
 				{
 					continue;
 				}
@@ -299,7 +298,7 @@ public class LCDControl
 			{
 				for(int y = 0; y < cheight; ++y)
 				{
-					if(nextObj.shape[cx + x - nextObj.x][cy + y - nextObj.y] != true)
+					if(nextObj.bitmap[cx + x - nextObj.x][cy + y - nextObj.y] != true)
 					{
 						continue;
 					}

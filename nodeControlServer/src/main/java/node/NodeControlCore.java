@@ -140,13 +140,23 @@ public class NodeControlCore
 	
 	private void startService()
 	{
-		LCDObject lcd = LCDControl.inst.blinkShape(LCDControl.inst.showString(-1, -1, "초기화..."), 500, -1);
+		LCDObject lcd = LCDControl.inst.blinkShape(LCDControl.inst.showString(-1, 40, "초기화..."), 500, -1);
+		LCDObject moduleLog = LCDControl.inst.showString(-1, 15, "모듈 초기화");
 		try
 		{
+			LCDControl.inst.replaceString(moduleLog, "DB핸들러");
 			if(!this.dbHandler.startModule()) throw new Exception("DB핸들러 로드 실패");
+			
+			LCDControl.inst.replaceString(moduleLog, "노드정보 모듈");
 			if(!this.deviceInfoManager.startModule()) throw new Exception("노드 정보 모듈 로드 실패");
+			
+			LCDControl.inst.replaceString(moduleLog, "네트워크 모듈");
 			if(!this.networkManager.startModule()) throw new Exception("네트워크 모듈 로드 실패");
+			
+			LCDControl.inst.replaceString(moduleLog, "노드 감지 서비스");
 			if(!this.nodeDetectionService.startModule()) throw new Exception("노드 감지 서비스 모듈 로드 실패");
+			
+			LCDControl.inst.replaceString(moduleLog, "스파크 모듈");
 			if(!this.clusterService.startModule()) throw new Exception("스파크 모듈 로드 실패");
 			
 			this.dbHandler.getInstaller().complete();
@@ -161,6 +171,7 @@ public class NodeControlCore
 		}
 		logger.log(Level.INFO, "서비스 시작 완료");
 		LCDControl.inst.removeShape(lcd);
+		LCDControl.inst.removeShape(moduleLog);
 	}
 	
 	private void stopService()
