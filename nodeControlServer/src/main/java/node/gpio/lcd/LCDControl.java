@@ -113,7 +113,8 @@ public class LCDControl
 		int dy = y1 - y0;
 		int basex = x0;
 		int basey = y0;
-		boolean[][] bitmap = new boolean[dx][dy];
+		System.out.println(dx + " " + dy);
+		boolean[][] bitmap = new boolean[dx + 1][dy + 1];
 		if (Math.abs(dx) > Math.abs(dy))
 		{
 			float m = (float) dy / (float) dx;
