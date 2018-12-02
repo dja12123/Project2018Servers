@@ -11,6 +11,8 @@ import java.io.IOException;
 import com.pi4j.io.i2c.I2CFactory.UnsupportedBusNumberException;
 
 import de.pi3g.pi.oled.OLEDDisplay;
+import node.gpio.lcd.LCDControl;
+import node.gpio.lcd.LCDObject;
 
 public class TestMain
 {
@@ -22,33 +24,18 @@ public class TestMain
 		font = Font.createFont(Font.TRUETYPE_FONT, TestMain.class.getResourceAsStream("/font/D2Coding.ttf"));
 		font = font.deriveFont(Font.PLAIN, 14);
 
-		OLEDDisplay display = new OLEDDisplay();
-		int x = 0;
-		while(true)
-		{
-			display.clear();
-			BufferedImage img = stringToBufferedImage("테스트카운트:"+x);
-			System.out.println(img.getWidth() + " " + img.getHeight());
-			for(int i = 0; i < img.getWidth(); ++i)
-			{
-				for(int j = 0; j < img.getHeight(); ++j)
-				{
-
-					if(img.getRGB(i, j) == -1)
-					{
-
-						display.setPixel(i, j, true);
-					}
-				}
-			}
-
-			
-			display.update();
-			++x;
-		
-			Thread.sleep(100);
-		}
-
+		LCDControl.inst.init();
+		LCDObject obj = LCDControl.inst.showShape(25, 25, "안녕");
+		Thread.sleep(500);
+		LCDControl.inst.removeShape(obj);
+		Thread.sleep(500);
+		obj = LCDControl.inst.showShape(25, 25, "안녕");
+		Thread.sleep(500);
+		obj = LCDControl.inst.replaceShape(obj, "테스트");
+		Thread.sleep(500);
+		obj = LCDControl.inst.showShape(30, 30, "안녕");
+		Thread.sleep(500);
+		LCDControl.inst.removeShape(obj);
 		
 	}
 	public static BufferedImage stringToBufferedImage(String s) {
