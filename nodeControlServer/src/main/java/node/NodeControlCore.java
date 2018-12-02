@@ -144,22 +144,22 @@ public class NodeControlCore
 		LCDObject moduleLog = LCDControl.inst.showString(-1, 15, "모듈 초기화");
 		try
 		{
-			LCDControl.inst.replaceString(moduleLog, "DB핸들러");
+			moduleLog = LCDControl.inst.replaceString(moduleLog, "DB핸들러");
 			if(!this.dbHandler.startModule()) throw new Exception("DB핸들러 로드 실패");
 			
-			LCDControl.inst.replaceString(moduleLog, "노드정보 모듈");
+			moduleLog = LCDControl.inst.replaceString(moduleLog, "노드정보 모듈");
 			if(!this.deviceInfoManager.startModule()) throw new Exception("노드 정보 모듈 로드 실패");
 			
-			LCDControl.inst.replaceString(moduleLog, "네트워크 모듈");
+			moduleLog = LCDControl.inst.replaceString(moduleLog, "네트워크 모듈");
 			if(!this.networkManager.startModule()) throw new Exception("네트워크 모듈 로드 실패");
 			
-			LCDControl.inst.replaceString(moduleLog, "노드 감지 서비스");
+			moduleLog = LCDControl.inst.replaceString(moduleLog, "노드 감지 서비스");
 			if(!this.nodeDetectionService.startModule()) throw new Exception("노드 감지 서비스 모듈 로드 실패");
 			
-			LCDControl.inst.replaceString(moduleLog, "스파크 모듈");
+			moduleLog = LCDControl.inst.replaceString(moduleLog, "스파크 모듈");
 			if(!this.clusterService.startModule()) throw new Exception("스파크 모듈 로드 실패");
 			
-			LCDControl.inst.replaceString(moduleLog, "정상 시작");
+			moduleLog = LCDControl.inst.replaceString(moduleLog, "정상 시작");
 			this.dbHandler.getInstaller().complete();
 		}
 		catch(Exception e)

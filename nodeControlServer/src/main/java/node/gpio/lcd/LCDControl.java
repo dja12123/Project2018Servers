@@ -174,7 +174,7 @@ public class LCDControl
 	}
 	
 	public LCDObject replaceShape(LCDObject before, boolean[][] shape)
-	{
+	{// 주의사항!! 새 오브젝트가 반환되므로 다음에 변환할때는 반환된 오브젝트를 사용해야 함
 		LCDObject obj = new LCDObject(before.xcenter?-1:before.x, before.ycenter?-1:before.y,
 				shape.length, shape[0].length, shape);
 		this.removeLCDObj(before);
