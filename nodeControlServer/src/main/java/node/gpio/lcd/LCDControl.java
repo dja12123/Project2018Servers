@@ -94,32 +94,36 @@ public class LCDControl
 		return showShape(x, y, width, height, bitmap);
 	}
 	
-	public LCDObject showLine(int sx, int sy, int tx, int ty)
+	public LCDObject showLine(int x0, int y0, int x1, int y1)
 	{
 		int temp;
-		if(sx > tx)
+		if (x0 > x1)
 		{
-			temp = sx;
-			sx = tx;
-			tx = temp;
+			temp = x1;
+			x1 = x0;
+			x0 = temp;
 		}
-		if(sy > ty)
+		if (y0 > y1)
 		{
-			temp = sy;
-			sy = ty;
-			ty = temp;
+			temp = y1;
+			y1 = x0;
+			y0 = temp;
 		}
-		
-		int dx = tx - sx;
-		int dy = ty - sy;
+		int dx = x1 - x0;
+		int dy = y1 - y0;
 		boolean[][] bitmap = new boolean[dx][dy];
-		int y;
-		for(int x = sx; x < tx; ++x)
+		int x = x0;
+		int y = y0;
+		float m = (float) dy / (float) dx;
+		float n = y0 - m * x0;
+		dx = (x1 > x0) ? 1 : -1;
+		while (x0 != x1)
 		{
-			y = sy + dy * (x - sx) / dx;
-			bitmap[x - dx][y - dy] = true;
+			x0 += dx;
+			y0 = (int) (m * (float) x0 + n + (float) 0.5);
+			bitmap[x0 - dx][y0 - dy] = true;
 		}
-		return showShape(sx, sy, dx, dy, bitmap);
+		return showShape(x, y, dx, dy, bitmap);
 	}
 	
 	public LCDObject showShape(int x, int y, int width, int height, boolean[][] shape)
