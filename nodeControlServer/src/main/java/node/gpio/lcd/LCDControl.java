@@ -216,6 +216,7 @@ public class LCDControl
 			{
 				if(!LCDControl.this.lcdObjList.contains(obj))
 				{
+					System.out.println("제거됨");
 					this.cancel();
 					return;
 				}
@@ -230,6 +231,7 @@ public class LCDControl
 					LCDControl.this.addLCDObj(obj);
 					if(this.c != -1)
 					{
+						System.out.println("무한깜빡");
 						--this.c;
 						if(this.c == 0)
 						{
