@@ -282,6 +282,8 @@ public class LCDControl
 		for(int i = 0; i < this.lcdObjList.size(); ++i)
 		{
 			LCDObject nextObj = this.lcdObjList.get(i);
+			if(nextObj == obj) continue;
+			
 			if(obj.x > nextObj.x + nextObj.width) continue;
 			if(obj.x + obj.width < nextObj.x) continue;
 			if(obj.y > nextObj.y + nextObj.height) continue;
