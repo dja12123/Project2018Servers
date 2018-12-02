@@ -137,7 +137,7 @@ public class WorkNodeService implements Runnable
 		this.ipNoStr = LCDControl.inst.showString(7, 0, "W:noip");
 		this.masterSigRect = LCDControl.inst.showFillRect(0, 1, 5, 5);
 		this.sendMsgRect = LCDControl.inst.showRect(0, 7, 5, 5);
-		this.stateStr = LCDControl.inst.showString(64, 0, "시작");
+		this.stateStr = LCDControl.inst.showString(100, 0, "시작");
 		return;
 	}
 	
@@ -203,7 +203,7 @@ public class WorkNodeService implements Runnable
 				if(DetectionUtil.isChangeMasterNode(nodeInfoProtocol, this.masterNode, this.deviceInfoManager))
 				{
 					LCDControl.inst.blinkShape(this.stateStr, 2000, 1);
-					LCDControl.inst.removeShapeTimer(LCDControl.inst.showString(64, 0, "충돌"), 1900);
+					LCDControl.inst.removeShapeTimer(LCDControl.inst.showString(100, 0, "충돌"), 1900);
 					logger.log(Level.INFO, String.format("마스터 노드 변경 (%s -> %s)",
 							this.masterNode.toString(), nodeInfoProtocol.getMasterNode().toString()));
 					this.nodeDetectionService.workNodeSelectionCallback(nodeInfoProtocol);
