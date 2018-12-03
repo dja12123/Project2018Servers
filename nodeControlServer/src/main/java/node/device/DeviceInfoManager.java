@@ -17,6 +17,8 @@ import javax.sql.rowset.CachedRowSet;
 import node.IServiceModule;
 import node.NodeControlCore;
 import node.db.DB_Handler;
+import node.gpio.lcd.LCDControl;
+import node.gpio.lcd.LCDObject;
 import node.log.LogWriter;
 import node.network.NetworkManager;
 import node.network.protocol.keyvaluePacket.PacketBuilder;
@@ -48,6 +50,10 @@ public class DeviceInfoManager extends Observable<DeviceChangeEvent> implements 
 	
 	private Thread manageThread;
 	private boolean isRun;
+	
+	private LCDObject myUIDString;
+	private LCDObject checkDeviceRect;
+	private LCDObject stateString;
 	
 	/*public static void main(String[] args)
 	{
@@ -88,6 +94,11 @@ public class DeviceInfoManager extends Observable<DeviceChangeEvent> implements 
 		return deviceArr;
 	}
 	
+	public int getDeviceCount()
+	{
+		return this.deviceMap.size();
+	}
+	
 	@Override
 	public boolean startModule()
 	{
@@ -95,16 +106,22 @@ public class DeviceInfoManager extends Observable<DeviceChangeEvent> implements 
 		this.isRun = true;
 		
 		logger.log(Level.INFO, "노드 정보 관리 서비스 시작");
+
 		
 		this.checkInterval = Integer.parseInt(NodeControlCore.getProp(PROP_checkInterval));
 		this.timeOut = Integer.parseInt(NodeControlCore.getProp(PROP_nodeTimeout));
 		
 		String uidStr = this.dbHandler.getOrSetDefaultVariableProperty(this.getClass(), VP_MYDEVICE_INFO, UUID.randomUUID().toString());
 		UUID myUUID = UUID.fromString(uidStr);
-		logger.log(Level.INFO, String.format("my UUID: %s", myUUID.toString()));
+
 		this.myDevice = new Device(myUUID);
 		this.deviceMap.put(this.myDevice.uuid, this.myDevice);
 		
+		String myUID = this.myDevice.uuid.toString();
+		logger.log(Level.INFO, String.format("my UUID: %s", myUID));
+		myUID = myUID.substring(myUID.length() - 4, myUID.length() - 1);
+		this.myUIDString = LCDControl.inst.showString(7, 15, String.format("ID:%s", myUID));
+		this.checkDeviceRect = LCDControl.inst.showFillRect(0, 16, 5, 5);
 		
 		this.manageThread = new Thread(this);
 		this.manageThread.start();
@@ -116,6 +133,9 @@ public class DeviceInfoManager extends Observable<DeviceChangeEvent> implements 
 	{
 		if(!this.isRun) return;
 		logger.log(Level.INFO, "노드 정보 관리 서비스 종료");
+		LCDControl.inst.removeShape(this.myUIDString);
+		LCDControl.inst.removeShape(this.checkDeviceRect);
+		LCDControl.inst.removeShape(this.stateString);
 		this.deviceMap.clear();
 		this.isRun = false;
 		this.manageThread.interrupt();
@@ -139,6 +159,12 @@ public class DeviceInfoManager extends Observable<DeviceChangeEvent> implements 
 			device.masterNode = isMasterNode;
 			DeviceChangeEvent eventObj = new DeviceChangeEvent(DeviceChangeEvent.CONNECT_NEW_DEVICE, device);
 			this.notifyObservers(NodeControlCore.mainThreadPool, eventObj);
+			
+			String uid = uuid.toString();
+			logger.log(Level.INFO, String.format("노드 추가 (%s)", uid));
+			uid = uid.substring(uid.length() - 4, uid.length() - 1);
+			LCDControl.inst.removeShape(this.stateString);
+			this.stateString = LCDControl.inst.removeShapeTimer(LCDControl.inst.showString(55, 15, String.format("추가:%s", uid)), 2000);
 		}
 		else
 		{
@@ -179,7 +205,11 @@ public class DeviceInfoManager extends Observable<DeviceChangeEvent> implements 
 		DeviceChangeEvent eventObj = new DeviceChangeEvent(DeviceChangeEvent.DISCONNECT_DEVICE, this.getDevice(uuid));
 		this.deviceMap.remove(uuid);
 		this.notifyObservers(NodeControlCore.mainThreadPool, eventObj);
-		logger.log(Level.INFO, String.format("노드 삭제(%s)", uuid.toString()));
+		String uid = uuid.toString();
+		logger.log(Level.INFO, String.format("노드 삭제(%s)", uid));
+		uid = uid.substring(uid.length() - 4, uid.length() - 1);
+		LCDControl.inst.removeShape(this.stateString);
+		this.stateString = LCDControl.inst.removeShapeTimer(LCDControl.inst.showString(55, 15, String.format("삭제:%s", uid)), 2000);
 	}
 	
 	public synchronized int getNodeCount()
@@ -216,7 +246,7 @@ public class DeviceInfoManager extends Observable<DeviceChangeEvent> implements 
 					this.removeDevice(device.uuid);
 				}
 			}
-
+			LCDControl.inst.blinkShape(this.checkDeviceRect, 300, 1);
 			try
 			{
 				Thread.sleep(this.checkInterval);

@@ -13,6 +13,8 @@ import node.detection.NodeInfoProtocol;
 import node.detection.workNode.WorkNodeService;
 import node.device.Device;
 import node.device.DeviceInfoManager;
+import node.gpio.lcd.LCDControl;
+import node.gpio.lcd.LCDObject;
 import node.device.DeviceChangeEvent;
 import node.log.LogWriter;
 import node.network.NetworkManager;
@@ -40,6 +42,12 @@ public class MasterNodeService implements Runnable
 	private Observer<NetworkEvent> networkObserverFunc;
 	private Observer<DeviceChangeEvent> deviceObserverFunc;
 	private IPManager ipManager;
+
+
+	private LCDObject workCountStr;
+	private LCDObject masterSigRect;
+	private LCDObject recvWorkMsgRect;
+	private LCDObject stateStr;
 	
 	/*public static void main(String[] args)
 	{
@@ -91,7 +99,11 @@ public class MasterNodeService implements Runnable
 		this.broadCastDelay = Integer.parseInt(NodeControlCore.getProp(DetectionUtil.PROP_delayMasterNodeBroadcast));
 		this.broadcastThread = new Thread(this);
 		this.broadcastThread.start();
-		return;
+		
+		this.workCountStr = LCDControl.inst.showString(7, 0, "M:1");
+		this.masterSigRect = LCDControl.inst.showFillRect(0, 1, 5, 5);
+		this.recvWorkMsgRect = LCDControl.inst.showRect(0, 7, 5, 5);
+		this.stateStr = LCDControl.inst.showString(100, 0, "정상");
 	}
 
 	public synchronized void stop()
@@ -102,6 +114,11 @@ public class MasterNodeService implements Runnable
 		this.networkManager.removeObserver(this.networkObserverFunc);
 		this.deviceInfoManager.removeObserver(this.deviceObserverFunc);
 		this.broadcastThread.interrupt();
+		
+		LCDControl.inst.removeShape(this.workCountStr);
+		LCDControl.inst.removeShape(this.masterSigRect);
+		LCDControl.inst.removeShape(this.recvWorkMsgRect);
+		LCDControl.inst.removeShape(this.stateStr);
 	}
 	
 	public synchronized void updateNetwork(Observable<NetworkEvent> object, NetworkEvent data)
@@ -115,6 +132,7 @@ public class MasterNodeService implements Runnable
 			}
 			if(data.key.equals(WorkNodeService.KPROTO_NODE_INFO_MSG))
 			{
+				LCDControl.inst.blinkShape(this.recvWorkMsgRect, 100, 1);
 				if(this.deviceInfoManager.deviceExist(sender))
 				{// 기존 노드일때
 					Device device = this.deviceInfoManager.getDevice(sender);
@@ -122,7 +140,13 @@ public class MasterNodeService implements Runnable
 					if(device.getInetAddr() == null || deviceInet == null)
 					{// ip가 없을때 ip를 새로 할당
 						deviceInet = this.ipManager.assignmentInetAddr(sender);
-						logger.log(Level.INFO, String.format("노드에 IP 할당 (%s, %s)", device.uuid.toString(), deviceInet.getHostAddress()));
+						
+						String uid = device.uuid.toString();
+						logger.log(Level.INFO, String.format("노드에 IP 할당 (%s, %s)", uid, deviceInet.getHostAddress()));
+						uid = uid.substring(uid.length() - 4, uid.length() - 1);
+						byte[] addr = deviceInet.getAddress();
+						LCDControl.inst.blinkShape(this.stateStr, 2000, 1);
+						LCDControl.inst.removeShapeTimer(LCDControl.inst.showString(40, 0, String.format("할당:%s:%s", uid, addr[3])), 1900);
 					}
 					
 					this.deviceInfoManager.updateDevice(sender, deviceInet, false);
@@ -131,7 +155,11 @@ public class MasterNodeService implements Runnable
 				{// 처음 접근하는 노드일때
 					InetAddress inetAddr =  this.ipManager.assignmentInetAddr(sender);
 					this.deviceInfoManager.updateDevice(sender, inetAddr, false);
-					logger.log(Level.INFO, String.format("새 노드 접근 (%s %s)", sender.toString(), inetAddr.getHostAddress()));
+					String uid = sender.toString();
+					logger.log(Level.INFO, String.format("새 노드 접근 (%s %s)", uid, inetAddr.getHostAddress()));
+					uid = uid.substring(uid.length() - 4, uid.length() - 1);
+					LCDControl.inst.blinkShape(this.stateStr, 2000, 1);
+					LCDControl.inst.removeShapeTimer(LCDControl.inst.showString(40, 0, String.format("접근:%s", uid)), 1900);
 				}
 			}
 			if(data.key.equals(KPROTO_MASTER_BROADCAST))
@@ -152,16 +180,22 @@ public class MasterNodeService implements Runnable
 	
 	public synchronized void updateDevice(Observable<DeviceChangeEvent> object, DeviceChangeEvent data)
 	{
+		this.workCountStr = LCDControl.inst.replaceString(this.workCountStr, String.format("M:%d", this.deviceInfoManager.getDeviceCount()));
 		if(data.getState(DeviceChangeEvent.DISCONNECT_DEVICE))
 		{
 			InetAddress deviceInetAddr = data.device.getInetAddr();
+			String uid = data.device.uuid.toString();
 			if(deviceInetAddr != null)
 			{
 				logger.log(Level.INFO, String.format("IP할당 해제 (%s %s)",
-						data.device.uuid.toString(), data.device.getInetAddr().getHostAddress()));
+						uid, data.device.getInetAddr().getHostAddress()));
 				this.ipManager.removeInetAddr(data.device.uuid);
 			}
-			logger.log(Level.INFO, String.format("노드 연결 끊김  (%s)", data.device.uuid));
+			
+			logger.log(Level.INFO, String.format("노드 연결 끊김  (%s)", uid));
+			uid = uid.substring(uid.length() - 4, uid.length() - 1);
+			LCDControl.inst.blinkShape(this.stateStr, 2000, 1);
+			LCDControl.inst.removeShapeTimer(LCDControl.inst.showString(40, 0, String.format("끊김:%s", uid)), 1900);
 		}
 	}
 
@@ -202,6 +236,7 @@ public class MasterNodeService implements Runnable
 				}
 				
 				this.networkManager.sendMessage(packet);
+				LCDControl.inst.blinkShape(this.masterSigRect, 300, 1);
 			}
 			
 			try
