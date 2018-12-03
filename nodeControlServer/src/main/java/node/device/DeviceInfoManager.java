@@ -154,9 +154,9 @@ public class DeviceInfoManager extends Observable<DeviceChangeEvent> implements 
 			this.notifyObservers(NodeControlCore.mainThreadPool, eventObj);
 			
 			String uid = uuid.toString();
-			logger.log(Level.INFO, String.format("노드 추가(%s)", uid));
+			logger.log(Level.INFO, String.format("노드 추가 (%s)", uid));
 			uid = uid.substring(uid.length() - 4, uid.length() - 1);
-			LCDControl.inst.removeShapeTimer(LCDControl.inst.showString(55, 15, String.format("노드추가:%s", uid)), 2000);
+			LCDControl.inst.removeShapeTimer(LCDControl.inst.showString(55, 15, String.format("추가:%s", uid)), 2000);
 		}
 		else
 		{
@@ -200,7 +200,7 @@ public class DeviceInfoManager extends Observable<DeviceChangeEvent> implements 
 		String uid = uuid.toString();
 		logger.log(Level.INFO, String.format("노드 삭제(%s)", uid));
 		uid = uid.substring(uid.length() - 4, uid.length() - 1);
-		LCDControl.inst.removeShapeTimer(LCDControl.inst.showString(55, 15, String.format("노드삭제:%s", uid)), 2000);
+		LCDControl.inst.removeShapeTimer(LCDControl.inst.showString(55, 15, String.format("삭제:%s", uid)), 2000);
 	}
 	
 	public synchronized int getNodeCount()
