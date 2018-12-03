@@ -17,6 +17,8 @@ import javax.sql.rowset.CachedRowSet;
 import node.IServiceModule;
 import node.NodeControlCore;
 import node.db.DB_Handler;
+import node.gpio.lcd.LCDControl;
+import node.gpio.lcd.LCDObject;
 import node.log.LogWriter;
 import node.network.NetworkManager;
 import node.network.protocol.keyvaluePacket.PacketBuilder;
@@ -48,6 +50,9 @@ public class DeviceInfoManager extends Observable<DeviceChangeEvent> implements 
 	
 	private Thread manageThread;
 	private boolean isRun;
+	
+	private LCDObject myUIDString;
+	private LCDObject checkDeviceRect;
 	
 	/*public static void main(String[] args)
 	{
@@ -95,6 +100,10 @@ public class DeviceInfoManager extends Observable<DeviceChangeEvent> implements 
 		this.isRun = true;
 		
 		logger.log(Level.INFO, "노드 정보 관리 서비스 시작");
+		String myUID = this.myDevice.uuid.toString();
+		myUID = myUID.substring(myUID.length() - 4, myUID.length() - 1);
+		this.myUIDString = LCDControl.inst.showString(90, 15, String.format("ID:%s", myUID));
+		this.checkDeviceRect = LCDControl.inst.showFillRect(18, 0, 5, 5);
 		
 		this.checkInterval = Integer.parseInt(NodeControlCore.getProp(PROP_checkInterval));
 		this.timeOut = Integer.parseInt(NodeControlCore.getProp(PROP_nodeTimeout));
@@ -116,6 +125,8 @@ public class DeviceInfoManager extends Observable<DeviceChangeEvent> implements 
 	{
 		if(!this.isRun) return;
 		logger.log(Level.INFO, "노드 정보 관리 서비스 종료");
+		LCDControl.inst.removeShape(this.myUIDString);
+		LCDControl.inst.removeShape(this.checkDeviceRect);
 		this.deviceMap.clear();
 		this.isRun = false;
 		this.manageThread.interrupt();
@@ -179,7 +190,10 @@ public class DeviceInfoManager extends Observable<DeviceChangeEvent> implements 
 		DeviceChangeEvent eventObj = new DeviceChangeEvent(DeviceChangeEvent.DISCONNECT_DEVICE, this.getDevice(uuid));
 		this.deviceMap.remove(uuid);
 		this.notifyObservers(NodeControlCore.mainThreadPool, eventObj);
-		logger.log(Level.INFO, String.format("노드 삭제(%s)", uuid.toString()));
+		String uid = uuid.toString();
+		logger.log(Level.INFO, String.format("노드 삭제(%s)", uid));
+		uid = uid.substring(uid.length() - 4, uid.length() - 1);
+		LCDControl.inst.removeShapeTimer(LCDControl.inst.showString(7, 15, String.format("노드삭제:%s", uid)), 2000);
 	}
 	
 	public synchronized int getNodeCount()
@@ -216,7 +230,7 @@ public class DeviceInfoManager extends Observable<DeviceChangeEvent> implements 
 					this.removeDevice(device.uuid);
 				}
 			}
-
+			LCDControl.inst.blinkShape(this.checkDeviceRect, 300, 1);
 			try
 			{
 				Thread.sleep(this.checkInterval);
