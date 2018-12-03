@@ -115,7 +115,7 @@ public class DeviceInfoManager extends Observable<DeviceChangeEvent> implements 
 		logger.log(Level.INFO, String.format("my UUID: %s", myUID));
 		myUID = myUID.substring(myUID.length() - 4, myUID.length() - 1);
 		this.myUIDString = LCDControl.inst.showString(90, 15, String.format("ID:%s", myUID));
-		this.checkDeviceRect = LCDControl.inst.showFillRect(18, 0, 5, 5);
+		this.checkDeviceRect = LCDControl.inst.showFillRect(0, 18, 5, 5);
 		
 		this.manageThread = new Thread(this);
 		this.manageThread.start();
