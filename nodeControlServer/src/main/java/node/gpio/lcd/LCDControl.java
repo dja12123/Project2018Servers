@@ -31,7 +31,7 @@ public class LCDControl
 	private OLEDDisplay display;
 	private ArrayList<LCDObject> lcdObjList;
 	private Timer timer;
-	
+
 	private boolean isInit;
 	
 	private LCDControl()
@@ -40,6 +40,7 @@ public class LCDControl
 		this.isInit = false;
 		this.lcdObjList = new ArrayList<>();
 		this.timer = new Timer(true);
+
 	}
 	
 	public void init()
@@ -252,6 +253,7 @@ public class LCDControl
 	
 	private synchronized void draw(LCDObject obj)
 	{// 실제 LCD에 그림
+		if(this.isInit != true) return;
 		for(int x = 0; x < obj.bitmap.length; ++x)
 		{
 			for(int y = 0; y < obj.bitmap[x].length; ++y)
@@ -260,13 +262,14 @@ public class LCDControl
 				{
 					continue;
 				}
-				if(this.display != null) this.display.setPixel(x + obj.x, y + obj.y, obj.bitmap[x][y]);
+				this.display.setPixel(x + obj.x, y + obj.y, obj.bitmap[x][y]);
 			}
 		}
 	}
 	
 	private synchronized void undraw(LCDObject obj)
 	{// 실제 LCD에 지움
+		if(this.isInit != true) return;
 		for(int x = 0; x < obj.width; ++x)
 		{
 			for(int y = 0; y < obj.height; ++y)
@@ -275,7 +278,7 @@ public class LCDControl
 				{
 					continue;
 				}
-				if(this.display != null) this.display.setPixel(x + obj.x, y + obj.y, false);
+				this.display.setPixel(x + obj.x, y + obj.y, false);
 				// 켜진 픽셀 끄기
 			}
 		}
@@ -303,7 +306,7 @@ public class LCDControl
 					{
 						continue;
 					}
-					if(this.display != null) this.display.setPixel(cx + x, cy + y, true);
+					this.display.setPixel(cx + x, cy + y, true);
 					// 이전 픽셀 보이게
 				}
 			}
@@ -320,11 +323,12 @@ public class LCDControl
 	
 	private void updateDisplay()
 	{
+		if(this.isInit != true) return;
 		NodeControlCore.mainThreadPool.execute(()->
 		{
 			try
 			{
-				if(this.display != null) this.display.update();
+				this.display.update();
 			}
 			catch (IOException e)
 			{
