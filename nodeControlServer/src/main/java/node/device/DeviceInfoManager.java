@@ -53,6 +53,7 @@ public class DeviceInfoManager extends Observable<DeviceChangeEvent> implements 
 	
 	private LCDObject myUIDString;
 	private LCDObject checkDeviceRect;
+	private LCDObject stateString;
 	
 	/*public static void main(String[] args)
 	{
@@ -129,6 +130,7 @@ public class DeviceInfoManager extends Observable<DeviceChangeEvent> implements 
 		logger.log(Level.INFO, "노드 정보 관리 서비스 종료");
 		LCDControl.inst.removeShape(this.myUIDString);
 		LCDControl.inst.removeShape(this.checkDeviceRect);
+		LCDControl.inst.removeShape(this.stateString);
 		this.deviceMap.clear();
 		this.isRun = false;
 		this.manageThread.interrupt();
@@ -156,7 +158,8 @@ public class DeviceInfoManager extends Observable<DeviceChangeEvent> implements 
 			String uid = uuid.toString();
 			logger.log(Level.INFO, String.format("노드 추가 (%s)", uid));
 			uid = uid.substring(uid.length() - 4, uid.length() - 1);
-			LCDControl.inst.removeShapeTimer(LCDControl.inst.showString(55, 15, String.format("추가:%s", uid)), 2000);
+			LCDControl.inst.removeShape(this.stateString);
+			this.stateString = LCDControl.inst.removeShapeTimer(LCDControl.inst.showString(55, 15, String.format("추가:%s", uid)), 2000);
 		}
 		else
 		{
@@ -200,7 +203,8 @@ public class DeviceInfoManager extends Observable<DeviceChangeEvent> implements 
 		String uid = uuid.toString();
 		logger.log(Level.INFO, String.format("노드 삭제(%s)", uid));
 		uid = uid.substring(uid.length() - 4, uid.length() - 1);
-		LCDControl.inst.removeShapeTimer(LCDControl.inst.showString(55, 15, String.format("삭제:%s", uid)), 2000);
+		LCDControl.inst.removeShape(this.stateString);
+		this.stateString = LCDControl.inst.removeShapeTimer(LCDControl.inst.showString(55, 15, String.format("삭제:%s", uid)), 2000);
 	}
 	
 	public synchronized int getNodeCount()

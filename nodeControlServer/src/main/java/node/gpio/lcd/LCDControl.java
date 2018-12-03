@@ -312,6 +312,8 @@ public class LCDControl
 	
 	private synchronized void removeLCDObj(LCDObject obj)
 	{
+		if(obj == null) return;
+		if(!this.lcdObjList.contains(obj)) return;
 		this.lcdObjList.remove(obj);
 		this.undraw(obj);
 	}
