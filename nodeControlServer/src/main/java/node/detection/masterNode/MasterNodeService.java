@@ -146,7 +146,7 @@ public class MasterNodeService implements Runnable
 						uid = uid.substring(uid.length() - 4, uid.length() - 1);
 						byte[] addr = deviceInet.getAddress();
 						LCDControl.inst.blinkShape(this.stateStr, 2000, 1);
-						LCDControl.inst.removeShapeTimer(LCDControl.inst.showString(40, 0, String.format("할당:%s:%s", uid, addr[3])), 1900);
+						LCDControl.inst.removeShapeTimer(LCDControl.inst.showString(40, 0, String.format("할당:%s:%d", uid, addr[3])), 1900);
 					}
 					
 					this.deviceInfoManager.updateDevice(sender, deviceInet, false);
@@ -160,7 +160,7 @@ public class MasterNodeService implements Runnable
 					uid = uid.substring(uid.length() - 4, uid.length() - 1);
 					LCDControl.inst.blinkShape(this.stateStr, 2000, 1);
 					byte[] addr = inetAddr.getAddress();
-					LCDControl.inst.removeShapeTimer(LCDControl.inst.showString(40, 0, String.format("접근:%s:%s", uid, addr[3])), 1900);
+					LCDControl.inst.removeShapeTimer(LCDControl.inst.showString(40, 0, String.format("접근:%s:%d", uid, addr[3])), 1900);
 				}
 			}
 			if(data.key.equals(KPROTO_MASTER_BROADCAST))
