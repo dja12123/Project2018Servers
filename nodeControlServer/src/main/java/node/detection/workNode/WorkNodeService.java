@@ -179,7 +179,7 @@ public class WorkNodeService implements Runnable
 					byte[] addr = taskAddr.getAddress();
 					String master = this.masterNode.toString();
 					master = master.substring(master.length() - 4, master.length() - 1);
-					this.ipNoStr = LCDControl.inst.replaceString(this.ipNoStr, String.format("W(%s):%d.%d", master, addr[2], addr[3]));
+					this.ipNoStr = LCDControl.inst.replaceString(this.ipNoStr, String.format("W:%s:%d.%d", master, addr[2], addr[3]));
 				}
 			}
 			
