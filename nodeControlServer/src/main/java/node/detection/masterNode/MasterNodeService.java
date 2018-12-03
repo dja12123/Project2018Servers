@@ -100,7 +100,7 @@ public class MasterNodeService implements Runnable
 		this.broadcastThread = new Thread(this);
 		this.broadcastThread.start();
 		
-		this.workCountStr = LCDControl.inst.showString(7, 0, "M:0");
+		this.workCountStr = LCDControl.inst.showString(7, 0, "M:1");
 		this.masterSigRect = LCDControl.inst.showFillRect(0, 1, 5, 5);
 		this.recvWorkMsgRect = LCDControl.inst.showRect(0, 7, 5, 5);
 		this.stateStr = LCDControl.inst.showString(40, 0, "정상");
@@ -160,6 +160,7 @@ public class MasterNodeService implements Runnable
 					uid = uid.substring(uid.length() - 4, uid.length() - 1);
 					LCDControl.inst.blinkShape(this.stateStr, 2000, 1);
 					LCDControl.inst.removeShapeTimer(LCDControl.inst.showString(40, 0, String.format("접근:%s", uid)), 1900);
+					this.workCountStr = LCDControl.inst.replaceString(this.workCountStr, String.format("M:%d", this.deviceInfoManager.getDeviceCount()));
 				}
 			}
 			if(data.key.equals(KPROTO_MASTER_BROADCAST))

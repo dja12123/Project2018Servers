@@ -94,6 +94,11 @@ public class DeviceInfoManager extends Observable<DeviceChangeEvent> implements 
 		return deviceArr;
 	}
 	
+	public int getDeviceCount()
+	{
+		return this.deviceMap.size();
+	}
+	
 	@Override
 	public boolean startModule()
 	{
