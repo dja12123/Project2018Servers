@@ -159,7 +159,8 @@ public class MasterNodeService implements Runnable
 					logger.log(Level.INFO, String.format("새 노드 접근 (%s %s)", uid, inetAddr.getHostAddress()));
 					uid = uid.substring(uid.length() - 4, uid.length() - 1);
 					LCDControl.inst.blinkShape(this.stateStr, 2000, 1);
-					LCDControl.inst.removeShapeTimer(LCDControl.inst.showString(40, 0, String.format("접근:%s", uid)), 1900);
+					byte[] addr = inetAddr.getAddress();
+					LCDControl.inst.removeShapeTimer(LCDControl.inst.showString(40, 0, String.format("접근:%s:%s", uid, addr[3])), 1900);
 				}
 			}
 			if(data.key.equals(KPROTO_MASTER_BROADCAST))
