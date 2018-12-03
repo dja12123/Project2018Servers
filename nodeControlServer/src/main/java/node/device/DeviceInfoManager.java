@@ -100,20 +100,22 @@ public class DeviceInfoManager extends Observable<DeviceChangeEvent> implements 
 		this.isRun = true;
 		
 		logger.log(Level.INFO, "노드 정보 관리 서비스 시작");
-		String myUID = this.myDevice.uuid.toString();
-		myUID = myUID.substring(myUID.length() - 4, myUID.length() - 1);
-		this.myUIDString = LCDControl.inst.showString(90, 15, String.format("ID:%s", myUID));
-		this.checkDeviceRect = LCDControl.inst.showFillRect(18, 0, 5, 5);
+
 		
 		this.checkInterval = Integer.parseInt(NodeControlCore.getProp(PROP_checkInterval));
 		this.timeOut = Integer.parseInt(NodeControlCore.getProp(PROP_nodeTimeout));
 		
 		String uidStr = this.dbHandler.getOrSetDefaultVariableProperty(this.getClass(), VP_MYDEVICE_INFO, UUID.randomUUID().toString());
 		UUID myUUID = UUID.fromString(uidStr);
-		logger.log(Level.INFO, String.format("my UUID: %s", myUUID.toString()));
+
 		this.myDevice = new Device(myUUID);
 		this.deviceMap.put(this.myDevice.uuid, this.myDevice);
 		
+		String myUID = this.myDevice.uuid.toString();
+		logger.log(Level.INFO, String.format("my UUID: %s", myUID));
+		myUID = myUID.substring(myUID.length() - 4, myUID.length() - 1);
+		this.myUIDString = LCDControl.inst.showString(90, 15, String.format("ID:%s", myUID));
+		this.checkDeviceRect = LCDControl.inst.showFillRect(18, 0, 5, 5);
 		
 		this.manageThread = new Thread(this);
 		this.manageThread.start();
