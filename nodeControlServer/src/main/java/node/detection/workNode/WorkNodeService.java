@@ -138,7 +138,6 @@ public class WorkNodeService implements Runnable
 		this.masterSigRect = LCDControl.inst.showFillRect(0, 1, 5, 5);
 		this.sendMsgRect = LCDControl.inst.showRect(0, 7, 5, 5);
 		this.stateStr = LCDControl.inst.showString(100, 0, "시작");
-		return;
 	}
 	
 	public synchronized void stop()
