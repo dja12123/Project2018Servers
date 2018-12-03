@@ -260,7 +260,7 @@ public class LCDControl
 				{
 					continue;
 				}
-				this.display.setPixel(x + obj.x, y + obj.y, obj.bitmap[x][y]);
+				if(this.display != null) this.display.setPixel(x + obj.x, y + obj.y, obj.bitmap[x][y]);
 			}
 		}
 	}
@@ -275,7 +275,7 @@ public class LCDControl
 				{
 					continue;
 				}
-				this.display.setPixel(x + obj.x, y + obj.y, false);
+				if(this.display != null) this.display.setPixel(x + obj.x, y + obj.y, false);
 				// 켜진 픽셀 끄기
 			}
 		}
@@ -303,7 +303,7 @@ public class LCDControl
 					{
 						continue;
 					}
-					this.display.setPixel(cx + x, cy + y, true);
+					if(this.display != null) this.display.setPixel(cx + x, cy + y, true);
 					// 이전 픽셀 보이게
 				}
 			}
@@ -324,7 +324,7 @@ public class LCDControl
 		{
 			try
 			{
-				this.display.update();
+				if(this.display != null) this.display.update();
 			}
 			catch (IOException e)
 			{
