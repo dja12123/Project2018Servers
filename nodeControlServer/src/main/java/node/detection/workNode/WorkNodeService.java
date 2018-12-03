@@ -176,7 +176,10 @@ public class WorkNodeService implements Runnable
 					this.networkManager.setInetAddr(taskAddr);
 					logger.log(Level.INFO, String.format("IP설정 (%s)", taskAddr.getHostAddress()));
 					this.stateStr = LCDControl.inst.replaceString(this.stateStr, "정상");
-					this.ipNoStr = LCDControl.inst.replaceString(this.ipNoStr, String.format("W:%d", taskAddr.getAddress()[3]));
+					byte[] addr = taskAddr.getAddress();
+					String master = this.masterNode.toString();
+					master = master.substring(master.length() - 4, master.length() - 1);
+					this.ipNoStr = LCDControl.inst.replaceString(this.ipNoStr, String.format("W(%s):%d.%d", master, addr[2], addr[3]));
 				}
 			}
 			
