@@ -5,3 +5,4 @@ apt-get -y upgrade
 apt-get -y install openjdk-8-jre
 apt-get -y install openjdk-8-jdk
 apt-get -y install gradle
+apt-get -y install wiringpi
