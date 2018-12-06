@@ -229,6 +229,10 @@ public class MasterNodeService implements Runnable
 				{
 					uuids[i] = deviceArr[i].uuid;
 					addrs[i] = deviceArr[i].getInetAddr();
+					if(deviceArr[i].getInetAddr() == null)
+					{
+						addrs[i] = this.ipManager.assignmentInetAddr(uuids[i]);
+					}
 				}
 				
 				NodeInfoProtocol nodeInfoProtocol = new NodeInfoProtocol(this.deviceInfoManager.getMyDevice().uuid, uuids, addrs, deviceArr.length);
