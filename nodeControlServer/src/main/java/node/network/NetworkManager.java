@@ -43,6 +43,8 @@ public class NetworkManager implements IServiceModule
 	private final RawSocketReceiver rawSocketReceiver;
 	private final UnicastHandler unicastHandler;
 	
+	boolean isAlive;
+	
 	private final SplitPacketAnalyser splitPacketAnalyser;
 	
 	private HashMap<String, Observable<NetworkEvent>> observerMap;
@@ -116,6 +118,7 @@ public class NetworkManager implements IServiceModule
 	
 	public void sendMessage(Packet packet)
 	{
+		if(!this.isAlive) return;
 		NodeControlCore.mainThreadPool.execute(()->
 		{
 			byte[] id;
@@ -139,7 +142,7 @@ public class NetworkManager implements IServiceModule
 				{
 					this.broadcastSender.sendMessage(splitData[i]);
 				}
-				//this.ipJumpBroadcast.ipJump();
+			
 			}
 			else
 			{
@@ -227,6 +230,7 @@ public class NetworkManager implements IServiceModule
 		this.unicastHandler.start(this.inetAddress, this.netConfig.unicastPort());
 		this.rawSocketReceiver.start(this.netConfig.getNIC(), this.netConfig.broadcastPort());
 		this.broadcastSender.start(this.netConfig.broadcastIA(NetworkConfig.DEFAULT_SUBNET), this.netConfig.broadcastPort());
+		this.isAlive = true;
 		return true;
 	}
 
@@ -234,7 +238,7 @@ public class NetworkManager implements IServiceModule
 	public void stopModule()
 	{
 		logger.log(Level.INFO, "네트워크 매니저 종료");
-		
+		this.isAlive = false;
 		this.observerMap.clear();
 		this.unicastHandler.stop();
 		this.broadcastSender.stop();
@@ -256,6 +260,7 @@ public class NetworkManager implements IServiceModule
 		}
 
 		logger.log(Level.INFO, "IP변경 시작");
+		this.isAlive = false;
 		this.unicastHandler.stop();
 		this.broadcastSender.stop();
 		this.rawSocketReceiver.stop();
@@ -280,5 +285,6 @@ public class NetworkManager implements IServiceModule
 		this.unicastHandler.start(this.inetAddress, this.netConfig.unicastPort());
 		this.broadcastSender.start(this.netConfig.broadcastIA(NetworkConfig.DEFAULT_SUBNET), this.netConfig.broadcastPort());
 		this.rawSocketReceiver.start(this.netConfig.getNIC(), this.netConfig.broadcastPort());
+		this.isAlive = true;
 	}
 }

@@ -123,7 +123,7 @@ public class MasterNodeService implements Runnable
 		
 		this.broadcastThread.interrupt();
 		System.out.println("pass5");
-		System.out.println("pass6");
+		
 	}
 	
 	public boolean isRun()
@@ -259,7 +259,7 @@ public class MasterNodeService implements Runnable
 				e.printStackTrace();
 			}
 		}
-		
+		System.out.println("쓰레드다이 ");
 	}
 	
 
