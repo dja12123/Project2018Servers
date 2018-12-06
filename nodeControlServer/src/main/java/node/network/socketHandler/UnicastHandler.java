@@ -46,7 +46,7 @@ public class UnicastHandler
 		
 		try
 		{
-			this.socket = new DatagramSocket();
+			this.socket = new DatagramSocket(this.port);
 			//this.socket.bind(new InetSocketAddress(this.senderAddress, this.port));
 		}
 		catch (SocketException e)
