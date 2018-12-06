@@ -1,14 +1,13 @@
 package node.detection;
 
-import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import node.network.NetworkManager;
 import node.NodeControlCore;
 import node.detection.masterNode.MasterNodeService;
 import node.log.LogWriter;
 import node.network.NetworkEvent;
+import node.network.NetworkManager;
 import node.util.observer.Observable;
 import node.util.observer.Observer;
 
@@ -69,6 +68,14 @@ public class NodeInstaller implements Runnable
 		logger.log(Level.INFO, "노드 초기화 중지");
 		this.networkManager.removeObserver(MasterNodeService.KPROTO_MASTER_BROADCAST, this.networkObserverFunc);
 		this.isRun = false;
+		this.waitThread.interrupt();
+		try
+		{
+			this.waitThread.join();
+		}
+		catch (InterruptedException e)
+		{
+		}
 	}
 
 	@Override
@@ -80,6 +87,7 @@ public class NodeInstaller implements Runnable
 		}
 		catch (InterruptedException e)
 		{
+			if(!this.isRun) return;
 			//마스터 노드 감지
 			logger.log(Level.INFO, String.format("마스터 노드 감지(%s)", this.masterNodeData.getMasterNode().toString()));
 			this.stop();
@@ -94,6 +102,7 @@ public class NodeInstaller implements Runnable
 		}
 		catch (InterruptedException e)
 		{
+			if(!this.isRun) return;
 			logger.log(Level.INFO, String.format("마스터 노드 감지(%s)", this.masterNodeData.getMasterNode().toString()));
 			this.stop();
 			this.nodeDetectionService.workNodeSelectionCallback(this.masterNodeData);

@@ -141,6 +141,7 @@ public class WorkNodeService implements Runnable
 	public synchronized void stop()
 	{
 		if(!this.isRun) return;
+		this.isRun = false;
 		logger.log(Level.INFO, "워커 노드 서비스 중지");
 		LCDControl.inst.removeShape(this.ipNoStr);
 		LCDControl.inst.removeShape(this.masterSigRect);
@@ -148,8 +149,14 @@ public class WorkNodeService implements Runnable
 		LCDControl.inst.removeShape(this.stateStr);
 		this.networkManager.removeObserver(this.networkObserverFunc);
 		this.deviceInfoManager.removeObserver(this.deviceStateObserverFunc);
-		this.isRun = false;
 		this.broadcastThread.interrupt();
+		try
+		{
+			this.broadcastThread.join();
+		}
+		catch (InterruptedException e)
+		{
+		}
 	}
 	
 	private void processFromMasterNodePacket(NodeInfoProtocol nodeInfoProtocol)
@@ -206,9 +213,8 @@ public class WorkNodeService implements Runnable
 					LCDControl.inst.removeShapeTimer(LCDControl.inst.showString(100, 0, "충돌"), 1900);
 					logger.log(Level.INFO, String.format("마스터 노드 변경 (%s -> %s)",
 							this.masterNode.toString(), nodeInfoProtocol.getMasterNode().toString()));
-					this.nodeDetectionService.nodeInit();
+					this.nodeDetectionService.workNodeSelectionCallback(nodeInfoProtocol);
 				}
-			
 			}
 		}
 	}

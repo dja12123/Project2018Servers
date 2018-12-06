@@ -1,7 +1,6 @@
 package node.detection.masterNode;
 
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -12,17 +11,16 @@ import node.detection.NodeDetectionService;
 import node.detection.NodeInfoProtocol;
 import node.detection.workNode.WorkNodeService;
 import node.device.Device;
+import node.device.DeviceChangeEvent;
 import node.device.DeviceInfoManager;
 import node.gpio.lcd.LCDControl;
 import node.gpio.lcd.LCDObject;
-import node.device.DeviceChangeEvent;
 import node.log.LogWriter;
+import node.network.NetworkEvent;
 import node.network.NetworkManager;
-import node.network.NetworkUtil;
 import node.network.protocol.keyvaluePacket.Packet;
 import node.network.protocol.keyvaluePacket.PacketBuildFailureException;
 import node.network.protocol.keyvaluePacket.PacketBuilder;
-import node.network.NetworkEvent;
 import node.util.observer.Observable;
 import node.util.observer.Observer;
 
@@ -114,7 +112,13 @@ public class MasterNodeService implements Runnable
 		this.networkManager.removeObserver(this.networkObserverFunc);
 		this.deviceInfoManager.removeObserver(this.deviceObserverFunc);
 		this.broadcastThread.interrupt();
-		
+		try
+		{
+			this.broadcastThread.join();
+		}
+		catch (InterruptedException e)
+		{
+		}
 		LCDControl.inst.removeShape(this.workCountStr);
 		LCDControl.inst.removeShape(this.masterSigRect);
 		LCDControl.inst.removeShape(this.recvWorkMsgRect);
@@ -164,7 +168,7 @@ public class MasterNodeService implements Runnable
 				}
 			}
 			if(data.key.equals(KPROTO_MASTER_BROADCAST))
-			{
+			{// 마스터 노드 충돌이 발생했을 때
 				NodeInfoProtocol nodeInfoProtocol = new NodeInfoProtocol(data.packet);
 				if(DetectionUtil.isChangeMasterNode(nodeInfoProtocol, this.deviceInfoManager.getMyDevice().uuid, this.deviceInfoManager))
 				{
