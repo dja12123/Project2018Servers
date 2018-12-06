@@ -125,6 +125,11 @@ public class MasterNodeService implements Runnable
 		LCDControl.inst.removeShape(this.stateStr);
 	}
 	
+	public boolean isRun()
+	{
+		return this.isRun;
+	}
+	
 	public synchronized void updateNetwork(Observable<NetworkEvent> object, NetworkEvent data)
 	{
 		try

@@ -77,6 +77,11 @@ public class NodeInstaller implements Runnable
 		{
 		}
 	}
+	
+	public boolean isRun()
+	{
+		return this.isRun;
+	}
 
 	@Override
 	public void run()

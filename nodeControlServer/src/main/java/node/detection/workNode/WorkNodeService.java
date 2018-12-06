@@ -159,6 +159,11 @@ public class WorkNodeService implements Runnable
 		}
 	}
 	
+	public boolean isRun()
+	{
+		return this.isRun;
+	}
+	
 	private void processFromMasterNodePacket(NodeInfoProtocol nodeInfoProtocol)
 	{
 		LCDControl.inst.blinkShape(this.masterSigRect, 300, 1);

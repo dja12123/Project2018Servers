@@ -62,6 +62,7 @@ public class NodeDetectionService extends Observable<NodeDetectionEvent> impleme
 		this.state = STATE_INIT;
 		this.masterNodeService.stop();
 		this.workNodeService.stop();
+		if(this.nodeInstaller.isRun()) this.nodeInstaller.stop();
 		this.nodeInstaller.start();
 		this.masterNode = null;
 		
@@ -77,6 +78,7 @@ public class NodeDetectionService extends Observable<NodeDetectionEvent> impleme
 		this.state = STATE_WORKNODE;
 		this.nodeInstaller.stop();
 		this.masterNodeService.stop();
+		if(this.workNodeService.isRun()) this.workNodeService.stop();
 		this.workNodeService.start(nodeInfoProtocol);
 		this.masterNode = nodeInfoProtocol.getMasterNode();
 		
@@ -93,6 +95,7 @@ public class NodeDetectionService extends Observable<NodeDetectionEvent> impleme
 		this.state = STATE_MASTERNODE;
 		this.nodeInstaller.stop();
 		this.workNodeService.stop();
+		if(this.masterNodeService.isRun()) this.masterNodeService.stop();
 		this.masterNodeService.start();
 		this.masterNode = this.deviceInfoManager.getMyDevice().uuid;
 		
