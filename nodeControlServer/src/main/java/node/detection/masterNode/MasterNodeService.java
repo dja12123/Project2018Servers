@@ -240,7 +240,7 @@ public class MasterNodeService implements Runnable
 				}
 				
 				NodeInfoProtocol nodeInfoProtocol = new NodeInfoProtocol(this.deviceInfoManager.getMyDevice().uuid, uuids, addrs, deviceArr.length);
-				
+			
 				try
 				{
 					packetBuilder.setSender(this.deviceInfoManager.getMyDevice().uuid);
@@ -255,9 +255,9 @@ public class MasterNodeService implements Runnable
 				}
 				
 				this.networkManager.sendMessage(packet);
-				LCDControl.inst.blinkShape(this.masterSigRect, 300, 1);
 			}
-			
+				LCDControl.inst.blinkShape(this.masterSigRect, 300, 1);
+		
 			try
 			{
 				Thread.sleep(this.broadCastDelay);
