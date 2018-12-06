@@ -264,20 +264,26 @@ public class NetworkManager implements IServiceModule
 		this.unicastHandler.stop();
 		this.broadcastSender.stop();
 		this.rawSocketReceiver.stop();
-		
-		try
+		for(int i = 0; i < 100; ++i)
 		{
-			CommandExecutor.executeCommand(String.format("ifdown -a"));
-			
-			CommandExecutor.executeCommand(String.format("ip addr flush dev %s", this.netConfig.getNIC()));
-			CommandExecutor.executeCommand(String.format("ip addr add %s/24 brd + dev %s", inetAddress.getHostAddress(), this.netConfig.getNIC()));
-			
-			CommandExecutor.executeCommand(String.format("ip route add default via %s", gatewayAddr));
-			CommandExecutor.executeCommand(String.format("ifup -a"));
-		}
-		catch (Exception e)
-		{
-			logger.log(Level.SEVERE, "IP변경중 오류", e);
+			try
+			{
+				CommandExecutor.executeCommand(String.format("ifdown -a"));
+				
+				CommandExecutor.executeCommand(String.format("ip addr flush dev %s", this.netConfig.getNIC()));
+				CommandExecutor.executeCommand(String.format("ip addr add %s/24 brd + dev %s", inetAddress.getHostAddress(), this.netConfig.getNIC()));
+				
+				CommandExecutor.executeCommand(String.format("ip route add default via %s", gatewayAddr));
+				CommandExecutor.executeCommand(String.format("ifup -a"));
+			}
+			catch (Exception e)
+			{
+				
+				logger.log(Level.SEVERE, "IP변경중 오류", e);
+				continue;
+			}
+			break;
+
 		}
 
 		logger.log(Level.INFO, String.format("IP변경 완료(%s)", inetAddress.getHostAddress()));
