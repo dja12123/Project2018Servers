@@ -123,14 +123,6 @@ public class MasterNodeService implements Runnable
 		
 		this.broadcastThread.interrupt();
 		System.out.println("pass5");
-		try
-		{
-			this.broadcastThread.join();
-		}
-		catch (InterruptedException e)
-		{
-			e.printStackTrace();
-		}
 		System.out.println("pass6");
 	}
 	
@@ -256,7 +248,7 @@ public class MasterNodeService implements Runnable
 				
 				this.networkManager.sendMessage(packet);
 			}
-				LCDControl.inst.blinkShape(this.masterSigRect, 300, 1);
+			LCDControl.inst.blinkShape(this.masterSigRect, 300, 1);
 		
 			try
 			{

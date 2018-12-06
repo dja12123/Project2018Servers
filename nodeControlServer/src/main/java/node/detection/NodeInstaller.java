@@ -69,13 +69,7 @@ public class NodeInstaller implements Runnable
 		this.networkManager.removeObserver(MasterNodeService.KPROTO_MASTER_BROADCAST, this.networkObserverFunc);
 		this.isRun = false;
 		this.waitThread.interrupt();
-		try
-		{
-			this.waitThread.join();
-		}
-		catch (InterruptedException e)
-		{
-		}
+
 	}
 	
 	public boolean isRun()

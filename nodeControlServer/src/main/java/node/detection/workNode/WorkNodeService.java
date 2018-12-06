@@ -153,14 +153,6 @@ public class WorkNodeService implements Runnable
 		this.networkManager.removeObserver(this.networkObserverFunc);
 		this.deviceInfoManager.removeObserver(this.deviceStateObserverFunc);
 		this.broadcastThread.interrupt();
-		try
-		{
-			this.broadcastThread.join();
-		}
-		catch (InterruptedException e)
-		{
-			e.printStackTrace();
-		}
 	}
 	
 	public boolean isRun()
