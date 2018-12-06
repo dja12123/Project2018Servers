@@ -11,7 +11,7 @@ import node.cluster.spark.SparkManager;
 import node.log.LogWriter;
 import node.util.observer.Observable;
 import node.detection.NodeDetectionEvent;
-//import node.gpio.led.LEDControl;
+import node.gpio.lcd.*;
 
 public class ClusterService implements IServiceModule {
 	public static final int SPARK_INSTALLED = 0;
@@ -22,6 +22,11 @@ public class ClusterService implements IServiceModule {
 	private int connectState;
 	private int instFlag;
 	private boolean isWorkerRun;
+	
+	private LCDControl lcdControl;
+	private LCDObject lcdObject;
+	
+	private int lcdX = 1, lcdY = 35, lcdW = 50;
 	
 	public final NodeDetectionEventReceiver ndEventReceiver = new NodeDetectionEventReceiver(this);
 	public final NodeInfoChangeEventSender nicEventSender = new NodeInfoChangeEventSender();
@@ -95,6 +100,11 @@ public class ClusterService implements IServiceModule {
 			sparkManager.startSparkWorker(masterIp, "");
 			isWorkerRun = true;
 		}
+		lcdObject = lcdControl.replaceString(lcdObject, "스파크 워커 동작중..");
+		if(isMaster == true)	{
+			lcdObject = lcdControl.replaceString(lcdObject, "스파크 마스터 동작중..");
+		}
+		
 		return true;
 	}
 	
@@ -102,14 +112,19 @@ public class ClusterService implements IServiceModule {
 	@Override
 	public boolean startModule() {		//객체 초기화 생성및 쓰레드 초기화 생성
 		// TODO Auto-generated method stub
+		lcdControl = LCDControl.inst;
+		lcdObject = lcdControl.showString(lcdX, lcdY, "클러스터 초기화중..");
+		
 		nds.addObserver(ndEventReceiver);
 		this.instSpark();
 		if(this.instFlag == SPARK_NOT_INSTALLED) {
 			clusterLogger.log(Level.SEVERE, "Not Installed Spark", new Exception("Not Installed Spark"));
+			lcdObject = lcdControl.replaceString(lcdObject, "클러스터 시작실패");
 			
 			return false;
 		}
 		clusterLogger.log(Level.INFO, "Spark 설치 여부 : " + instFlag);
+		lcdObject = lcdControl.replaceString(lcdObject, "클러스터 시작중..");
 		
 		return true;
 	}

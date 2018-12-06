@@ -21,8 +21,6 @@ public class SparkManager {
 	private String sparkWorkerCores;
 	private String sparkWorkerMemory;
 	
-	private int lcdX = 1, lcdY = 35, lcdW = 50;
-	
 	public static final Logger sparkLogger = LogWriter.createLogger(SparkManager.class, "spark");
 	
 	public SparkManager() {
