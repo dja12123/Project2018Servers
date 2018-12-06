@@ -66,6 +66,7 @@ public class IPManager
 	public void removeInetAddr(UUID uuid)
 	{
 		InetAddress addr = this.ipMap.get(uuid);
+		if(addr == null) return;
 		this.ipArr[addr.getAddress()[3]] = null;
 		this.ipMap.remove(uuid);
 	}
