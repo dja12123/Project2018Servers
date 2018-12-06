@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.net.InetSocketAddress;
 import java.net.SocketException;
 import java.util.Arrays;
 import java.util.function.BiConsumer;
@@ -12,7 +11,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import node.log.LogWriter;
-import node.network.NetworkUtil;
 import node.network.protocol.keyvaluePacket.PacketUtil;
 
 public class UnicastHandler
@@ -48,7 +46,7 @@ public class UnicastHandler
 		
 		try
 		{
-			this.socket = new DatagramSocket(port);
+			this.socket = new DatagramSocket();
 			//this.socket.bind(new InetSocketAddress(this.senderAddress, this.port));
 		}
 		catch (SocketException e)
