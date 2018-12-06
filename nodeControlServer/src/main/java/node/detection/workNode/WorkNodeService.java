@@ -1,8 +1,6 @@
 package node.detection.workNode;
 
 import java.net.InetAddress;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -13,16 +11,16 @@ import node.detection.NodeDetectionService;
 import node.detection.NodeInfoProtocol;
 import node.detection.masterNode.MasterNodeService;
 import node.device.Device;
+import node.device.DeviceChangeEvent;
 import node.device.DeviceInfoManager;
 import node.gpio.lcd.LCDControl;
 import node.gpio.lcd.LCDObject;
-import node.device.DeviceChangeEvent;
 import node.log.LogWriter;
+import node.network.NetworkEvent;
 import node.network.NetworkManager;
 import node.network.protocol.keyvaluePacket.Packet;
 import node.network.protocol.keyvaluePacket.PacketBuildFailureException;
 import node.network.protocol.keyvaluePacket.PacketBuilder;
-import node.network.NetworkEvent;
 import node.util.observer.Observable;
 import node.util.observer.Observer;
 
@@ -208,7 +206,7 @@ public class WorkNodeService implements Runnable
 					LCDControl.inst.removeShapeTimer(LCDControl.inst.showString(100, 0, "충돌"), 1900);
 					logger.log(Level.INFO, String.format("마스터 노드 변경 (%s -> %s)",
 							this.masterNode.toString(), nodeInfoProtocol.getMasterNode().toString()));
-					this.nodeDetectionService.workNodeSelectionCallback(nodeInfoProtocol);
+					this.nodeDetectionService.nodeInit();
 				}
 			
 			}
