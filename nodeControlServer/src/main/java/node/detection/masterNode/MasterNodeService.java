@@ -111,6 +111,11 @@ public class MasterNodeService implements Runnable
 		logger.log(Level.INFO, "마스터 노드 서비스 중지");
 		this.networkManager.removeObserver(this.networkObserverFunc);
 		this.deviceInfoManager.removeObserver(this.deviceObserverFunc);
+		LCDControl.inst.removeShape(this.workCountStr);
+		LCDControl.inst.removeShape(this.masterSigRect);
+		LCDControl.inst.removeShape(this.recvWorkMsgRect);
+		LCDControl.inst.removeShape(this.stateStr);
+		
 		this.broadcastThread.interrupt();
 		try
 		{
@@ -118,11 +123,8 @@ public class MasterNodeService implements Runnable
 		}
 		catch (InterruptedException e)
 		{
+			e.printStackTrace();
 		}
-		LCDControl.inst.removeShape(this.workCountStr);
-		LCDControl.inst.removeShape(this.masterSigRect);
-		LCDControl.inst.removeShape(this.recvWorkMsgRect);
-		LCDControl.inst.removeShape(this.stateStr);
 	}
 	
 	public boolean isRun()
@@ -253,7 +255,10 @@ public class MasterNodeService implements Runnable
 			{
 				Thread.sleep(this.broadCastDelay);
 			}
-			catch (InterruptedException e) {}
+			catch (InterruptedException e)
+			{
+				e.printStackTrace();
+			}
 		}
 		
 	}
