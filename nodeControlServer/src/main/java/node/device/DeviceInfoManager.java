@@ -243,7 +243,7 @@ public class DeviceInfoManager extends Observable<DeviceChangeEvent> implements 
 				
 				for(Device device : removeDevices)
 				{
-					this.removeDevice(device.uuid);
+					//this.removeDevice(device.uuid);
 				}
 			}
 			LCDControl.inst.blinkShape(this.checkDeviceRect, 300, 1);
