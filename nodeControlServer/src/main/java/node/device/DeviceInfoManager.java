@@ -196,7 +196,7 @@ public class DeviceInfoManager extends Observable<DeviceChangeEvent> implements 
 			}
 			
 		}
-		device.updateTime = new Date(System.currentTimeMillis());
+		device.updateTime = new Date();
 	}
 	
 	public synchronized void removeDevice(UUID uuid)
@@ -220,13 +220,13 @@ public class DeviceInfoManager extends Observable<DeviceChangeEvent> implements 
 	@Override
 	public void run()
 	{// 장치가 타임아웃 됬을 경우를 감지.
-		Date compareTime;
+		long compareTime;
 		LinkedList<Device> removeDevices = new LinkedList<Device>();
 		while(this.isRun)
 		{
 			synchronized (this)
 			{
-				compareTime = new Date(System.currentTimeMillis() - this.timeOut);
+				compareTime = new Date().getTime() - this.timeOut;
 				removeDevices.clear();
 				
 				for(Device device : this.getDevices())
@@ -235,7 +235,7 @@ public class DeviceInfoManager extends Observable<DeviceChangeEvent> implements 
 					{
 						continue;
 					}
-					if(compareTime.after(device.updateTime))
+					if(compareTime > device.updateTime.getTime())
 					{//타임아웃일때
 						removeDevices.add(device);
 					}
@@ -243,7 +243,7 @@ public class DeviceInfoManager extends Observable<DeviceChangeEvent> implements 
 				
 				for(Device device : removeDevices)
 				{
-					//this.removeDevice(device.uuid);
+					this.removeDevice(device.uuid);
 				}
 			}
 			LCDControl.inst.blinkShape(this.checkDeviceRect, 300, 1);
