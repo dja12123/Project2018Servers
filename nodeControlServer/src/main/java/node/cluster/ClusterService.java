@@ -100,11 +100,11 @@ public class ClusterService implements IServiceModule {
 		}
 		
 		if(isMaster == true)	{
-			lcdObject = lcdControl.replaceString(lcdObject, "스파크 마스터 작동중");
+			lcdObject = lcdControl.replaceString(lcdObject, "스파크 마스터");
 		}
 		else
 		{
-			lcdObject = lcdControl.replaceString(lcdObject, "스파크 워커 작동중");
+			lcdObject = lcdControl.replaceString(lcdObject, "스파크 워커");
 		}
 		
 		return true;
@@ -121,7 +121,7 @@ public class ClusterService implements IServiceModule {
 		this.instSpark();
 		if(this.instFlag == SPARK_NOT_INSTALLED) {
 			clusterLogger.log(Level.SEVERE, "Not Installed Spark", new Exception("Not Installed Spark"));
-			lcdObject = lcdControl.replaceString(lcdObject, "클러스터 시작실패");
+			lcdObject = lcdControl.replaceString(lcdObject, "클러스터 실패");
 			
 			return false;
 		}
