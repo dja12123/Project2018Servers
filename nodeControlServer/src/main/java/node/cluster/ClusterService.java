@@ -23,16 +23,6 @@ public class ClusterService implements IServiceModule {
 	private int instFlag;
 	private boolean isWorkerRun;
 	
-	public final int LEDno = 3;
-	public final int lightTime = 50;
-	public final int blackTime = 50;
-	public final int LEDr = 0;
-	public final int LEDg = 0;
-	public final int LEDb = 255;
-	public final int LEDbr = 0;
-	public final int LEDbg = 0;
-	public final int LEDbb = 0;
-	
 	public final NodeDetectionEventReceiver ndEventReceiver = new NodeDetectionEventReceiver(this);
 	public final NodeInfoChangeEventSender nicEventSender = new NodeInfoChangeEventSender();
 	public final SparkManager sparkManager = new SparkManager();
@@ -50,19 +40,9 @@ public class ClusterService implements IServiceModule {
 		
 	}
 	public void instSpark() {
-		LEDControl(true);
 		clusterLogger.log(Level.INFO, "스파크 설치확인");
 		if(sparkManager.initSpark()) {
 			instFlag = SPARK_INSTALLED;
-		}
-		LEDControl(false);
-	}
-	
-	public void LEDControl(boolean isOn) {
-		if(isOn) {
-			//LEDControl.ledControl.setDefaultFlick(LEDno, lightTime, blackTime, LEDr, LEDg, LEDb, LEDbr, LEDbg, LEDbb);
-		}else {
-			//LEDControl.ledControl.killInfLED(LEDno);
 		}
 	}
 
@@ -76,10 +56,8 @@ public class ClusterService implements IServiceModule {
 		this.connectState = eventInfo.state;
 		
 		if(this.masterIp == null || eventInfo.masterIP == null ) {	//마스터가 현재 없을때 모든 스파크 프로세스 중지
-			LEDControl(true);
 			sparkManager.stopSparkMaster();
 			sparkManager.stopSparkWorker();
-			LEDControl(false);
 			isWorkerRun = false;
 			
 			//스파크 시작
@@ -87,10 +65,8 @@ public class ClusterService implements IServiceModule {
 			this.masterIp = eventInfo.masterIP.getHostAddress();
 			startSpark();
 		} else if( !this.masterIp.equals(eventInfo.masterIP.getHostAddress()) || this.isMaster != eventInfo.isMaster) { //마스터가 바뀔때 마스터, 워커 프로세스를 종료시켜준다.(잔존 프로세스 제거)
-			LEDControl(true);
 			sparkManager.stopSparkMaster();
 			sparkManager.stopSparkWorker();
-			LEDControl(false);
 			isWorkerRun = false;
 			
 			//스파크 시작
@@ -112,7 +88,6 @@ public class ClusterService implements IServiceModule {
 			return false;
 		}
 		
-		LEDControl(true);
 		if(isMaster == true)	{
 			sparkManager.startSparkMaster(masterIp, "");
 		}
@@ -120,7 +95,6 @@ public class ClusterService implements IServiceModule {
 			sparkManager.startSparkWorker(masterIp, "");
 			isWorkerRun = true;
 		}
-		LEDControl(false);
 		return true;
 	}
 	
