@@ -109,14 +109,20 @@ public class MasterNodeService implements Runnable
 		if(!this.isRun) return;
 		this.isRun = false;
 		logger.log(Level.INFO, "마스터 노드 서비스 중지");
+		System.out.println("pass1");
 		this.networkManager.removeObserver(this.networkObserverFunc);
+		System.out.println("pass2");
 		this.deviceInfoManager.removeObserver(this.deviceObserverFunc);
+		
+		System.out.println("pass3");
 		LCDControl.inst.removeShape(this.workCountStr);
 		LCDControl.inst.removeShape(this.masterSigRect);
 		LCDControl.inst.removeShape(this.recvWorkMsgRect);
 		LCDControl.inst.removeShape(this.stateStr);
+		System.out.println("pass4");
 		
 		this.broadcastThread.interrupt();
+		System.out.println("pass5");
 		try
 		{
 			this.broadcastThread.join();
@@ -125,6 +131,7 @@ public class MasterNodeService implements Runnable
 		{
 			e.printStackTrace();
 		}
+		System.out.println("pass6");
 	}
 	
 	public boolean isRun()
