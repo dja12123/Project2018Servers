@@ -98,7 +98,10 @@ public class WorkNodeService implements Runnable
 				Thread.sleep(this.broadCastDelay);
 			}
 			
-			catch (InterruptedException e) {}
+			catch (InterruptedException e)
+			{
+				e.printStackTrace();
+			}
 		}
 	}
 	
@@ -156,6 +159,7 @@ public class WorkNodeService implements Runnable
 		}
 		catch (InterruptedException e)
 		{
+			e.printStackTrace();
 		}
 	}
 	
