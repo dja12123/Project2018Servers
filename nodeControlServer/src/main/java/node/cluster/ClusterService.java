@@ -2,16 +2,14 @@ package node.cluster;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 
 import node.IServiceModule;
-import node.bash.CommandExecutor;
 import node.cluster.spark.SparkManager;
+import node.detection.NodeDetectionEvent;
+import node.gpio.lcd.LCDControl;
+import node.gpio.lcd.LCDObject;
 import node.log.LogWriter;
 import node.util.observer.Observable;
-import node.detection.NodeDetectionEvent;
-import node.gpio.lcd.*;
 
 public class ClusterService implements IServiceModule {
 	public static final int SPARK_INSTALLED = 0;
@@ -100,9 +98,13 @@ public class ClusterService implements IServiceModule {
 			sparkManager.startSparkWorker(masterIp, "");
 			isWorkerRun = true;
 		}
-		lcdObject = lcdControl.replaceString(lcdObject, "스파크 워커 동작중..");
+		
 		if(isMaster == true)	{
-			lcdObject = lcdControl.replaceString(lcdObject, "스파크 마스터 동작중..");
+			lcdObject = lcdControl.replaceString(lcdObject, "스파크 마스터 작동중");
+		}
+		else
+		{
+			lcdObject = lcdControl.replaceString(lcdObject, "스파크 워커 작동중");
 		}
 		
 		return true;
@@ -113,7 +115,7 @@ public class ClusterService implements IServiceModule {
 	public boolean startModule() {		//객체 초기화 생성및 쓰레드 초기화 생성
 		// TODO Auto-generated method stub
 		lcdControl = LCDControl.inst;
-		lcdObject = lcdControl.showString(lcdX, lcdY, "클러스터 초기화중..");
+		lcdObject = lcdControl.showString(lcdX, lcdY, "클러스터 초기화...");
 		
 		nds.addObserver(ndEventReceiver);
 		this.instSpark();
@@ -124,7 +126,7 @@ public class ClusterService implements IServiceModule {
 			return false;
 		}
 		clusterLogger.log(Level.INFO, "Spark 설치 여부 : " + instFlag);
-		lcdObject = lcdControl.replaceString(lcdObject, "클러스터 시작중..");
+		lcdObject = lcdControl.replaceString(lcdObject, "클러스터 시작...");
 		
 		return true;
 	}
