@@ -18,7 +18,4 @@ public class NodeDetectionEvent {
 		this.isMaster = isMaster;
 		this.state = what;
 	}
-	public NodeDetectionEvent(InetAddress masterIP, boolean isMaster) {
-		this(masterIP, isMaster, 0);
-	}
 }

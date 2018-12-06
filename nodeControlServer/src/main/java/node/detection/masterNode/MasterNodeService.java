@@ -88,8 +88,8 @@ public class MasterNodeService implements Runnable
 		if(this.isRun) return;
 		this.isRun = true;
 		logger.log(Level.INFO, "마스터 노드 서비스 시작");
-		this.deviceInfoManager.updateDevice(this.deviceInfoManager.getMyDevice().uuid, DetectionUtil.masterAddr(), true);
 		this.networkManager.setInetAddr(DetectionUtil.masterAddr());
+		this.deviceInfoManager.updateDevice(this.deviceInfoManager.getMyDevice().uuid, DetectionUtil.masterAddr(), true);
 		this.networkManager.addObserver(WorkNodeService.KPROTO_NODE_INFO_MSG, this.networkObserverFunc);
 		this.networkManager.addObserver(KPROTO_MASTER_BROADCAST, this.networkObserverFunc);
 		this.deviceInfoManager.addObserver(this.deviceObserverFunc);
