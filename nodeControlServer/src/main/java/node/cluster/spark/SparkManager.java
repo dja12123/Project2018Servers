@@ -88,7 +88,6 @@ public class SparkManager {
 	public boolean initSpark() {
 		lcdPanM = LCDControl.inst.showString(lcdX, lcdY, "스파크 초기화 중");
 		sparkLogger.log(Level.INFO, "스파크 초기화 중..");
-		lcdPanM = LCDControl.inst.removeShapeTimer(lcdPanW, 500);
 		confSpark();
 		String haveSpark = BashSet.execSh(BashSet.check_spark, sparkInstDir);
 		if(haveSpark.equals("false" + CommandExecutor.lineSeparator) ) {
@@ -98,6 +97,7 @@ public class SparkManager {
 			sparkLogger.log(Level.SEVERE, "Spark is Missing", new Exception("Spark is Missing"));
 			return false;
 		}
+		lcdPanM = LCDControl.inst.replaceString(lcdPanM, " ");
 		
 		return true;
 	}
