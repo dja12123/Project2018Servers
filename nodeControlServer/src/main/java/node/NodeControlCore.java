@@ -156,8 +156,8 @@ public class NodeControlCore
 			moduleLog = LCDControl.inst.replaceString(moduleLog, "노드 감지 서비스");
 			if(!this.nodeDetectionService.startModule()) throw new Exception("노드 감지 서비스 모듈 로드 실패");
 			
-			moduleLog = LCDControl.inst.replaceString(moduleLog, "스파크 모듈");
-			if(!this.clusterService.startModule()) throw new Exception("스파크 모듈 로드 실패");
+			//moduleLog = LCDControl.inst.replaceString(moduleLog, "스파크 모듈");
+			//if(!this.clusterService.startModule()) throw new Exception("스파크 모듈 로드 실패");
 			
 			moduleLog = LCDControl.inst.replaceString(moduleLog, "정상 시작");
 			this.dbHandler.getInstaller().complete();
