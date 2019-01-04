@@ -17,7 +17,6 @@ public class BashSet {
 	
 	//파일상수, 매개변수(옵션)1, 매개변수(옵션)2,... 이런식으로 사용
 	public static String execSh(File shFile, String... arg) {
-		//현재 노드에서 주키퍼 서버 실행
 		StringBuffer cmdline = new StringBuffer();
 		String result = null;
 		
