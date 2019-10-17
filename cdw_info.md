@@ -14,11 +14,11 @@
 # 관련 내용 #
 
 
-![01.JPG](./mdImage/01.JPG)
-![02.JPG](./mdImage/02.JPG)
-![03.JPG](./mdImage/03.JPG)
-![04.JPG](./mdImage/04.JPG)
-![05.JPG](./mdImage/05.JPG)
+![01.jpg](./mdImage/01.jpg)
+![02.jpg](./mdImage/02.jpg)
+![03.jpg](./mdImage/03.jpg)
+![04.jpg](./mdImage/04.jpg)
+![05.jpg](./mdImage/05.jpg)
 
 # 참고 #
 - **수상 내역**</br>&nbsp;&nbsp;&nbsp;&nbsp;
