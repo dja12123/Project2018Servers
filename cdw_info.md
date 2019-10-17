@@ -21,8 +21,6 @@
 ![05.JPG](./mdImage/05.jpg)
 
 # 참고 #
-- [Github Link](https://github.com/dja12123/Project2018Servers)
-
 - **수상 내역**</br>&nbsp;&nbsp;&nbsp;&nbsp;
 18.12.03 연합대학 SW프로젝트 발표회 우수상 - 지역선도대학 육성사업 </br>&nbsp;&nbsp;&nbsp;&nbsp;
 18.11.23 연합대학 SW동아리 경진대회 장려상 - 충북대학교 지역선도대학
